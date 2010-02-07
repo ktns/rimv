@@ -25,9 +25,38 @@ ARGV.options do |opt|
 	opt.parse!
 end
 
+module IMV
+	class DB
+		require 'sqlite3'
+		include SQLite3
+
+		private_class_method :new
+
+		public
+		def self.open
+			db = new
+			begin
+				yield db
+			ensure
+				db.close
+			end
+		end
+
+		def initialize
+			@db = Database.new("#{ENV['HOME']}/.imv.sqlite3")
+		end
+
+		def close
+			@db.close
+		end
+	end
+end
+
 case $mode
 when 'add'
-	#TODO: sqliteに画像を追加
+	IMV::DB.open do |db|
+		#TODO: DBに画像を追加
+	end
 when 'view',nil
 	require "gtk2"
 
