@@ -1,4 +1,5 @@
 #!/usr/bin/ruby
+# vim: set foldmethod=syntax :
 
 require 'optparse'
 
