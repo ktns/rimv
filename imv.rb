@@ -29,6 +29,8 @@ end
 module IMV
 	class DB
 		require 'sqlite3'
+		require 'digest/md5'
+
 		include SQLite3
 
 		private_class_method :new
@@ -50,13 +52,49 @@ module IMV
 		def close
 			@db.close
 		end
+
+		def addimage name,img
+			raise TypeError unless img.kind_of?(String)
+			hash = Digest::MD5.digest(img)
+			@db.transaction do |db|
+				hash = Digest::MD5.digest(img)
+				begin
+				db.execute('insert into img values(?,?)', hash,
+									 Blob.new(img) )
+				rescue SQLException
+					unless $!.message.include?('column hash is not unique')
+						raise $!
+					end
+				end
+				db.execute('insert into name values(?,?)', hash, File.basename(name) )
+			end and hash
+		end
+
+		def addfile path
+			if File.directory?(path)
+				Dir.foreach(path) do |file|
+					next if %w<. ..>.include?(file)
+					$stderr.puts "adding directory `#{path}/#{file}'" if $verbose
+					addfile("#{path}/#{file}")
+				end
+			elsif File.file?(path)
+				File.open(path) do |file|
+					$stderr.puts "adding file `#{path}'" if $verbose
+					addimage(path,file.read)
+				end
+			else
+				raise ArgumentError
+			end
+		end
 	end
 end
 
 case $mode
 when 'add'
 	IMV::DB.open do |db|
-		#TODO: DBに画像を追加
+		ARGV.each do |name|
+			db.addfile(name)
+		end
 	end
 when 'view',nil
 	require "gtk2"
