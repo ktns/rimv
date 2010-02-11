@@ -1,5 +1,6 @@
 #!/usr/bin/ruby
 # vim: set foldmethod=syntax :
+APP_NAME = "imv"
 
 require 'optparse'
 
@@ -86,6 +87,32 @@ module IMV
 				raise ArgumentError
 			end
 		end
+
+		def getimage hash
+			require 'tempfile'
+			tmp = Tempfile.new(APP_NAME)
+			begin
+				tmp.write(
+					@db.execute(<<SQL,hash).collect.first.first
+SELECT img
+FROM img
+WHERE hash = ?
+LIMIT 1
+SQL
+				)
+				tmp.close
+				return Gtk::Image.new(tmp.path)
+			ensure
+				tmp.close(true)
+			end
+		end
+
+		def getallhash
+			@db.execute(<<SQL).collect {|set| set.first}
+SELECT hash
+FROM img
+SQL
+		end
 	end
 end
 
@@ -99,18 +126,17 @@ when 'add'
 when 'view',nil
 	require "gtk2"
 
-	APP_NAME = "rview"
 	WINDOW_SIZE = [640, 480]
 
 	class MainWin < Gtk::Window
 		def initialize
 			super(APP_NAME)
-			self.set_default_size(*WINDOW_SIZE)
+			set_default_size(*WINDOW_SIZE)
 
-			self.signal_connect("delete_event") do
+			signal_connect("delete_event") do
 				Gtk.main_quit
 			end
-			self.signal_connect("key-press-event") do |w, e|
+			signal_connect("key-press-event") do |w, e|
 				if e.keyval == Gdk::Keyval::GDK_q
 					Gtk.main_quit
 				end
@@ -118,26 +144,19 @@ when 'view',nil
 		end
 	end
 
-	if ARGV.empty?
-		puts "Usage: #{$0} <file>"
-		exit(1)
-	end
-	unless File.exist?(ARGV[0])
-		puts "#{$0}: #{ARGV[0]}: No such file"
-		exit(1)
-	end
+	IMV::DB.open do |db|
+		image = db.getimage(db.getallhash.first)
+		width, height = image.pixbuf.width, image.pixbuf.height
 
-	image = Gtk::Image.new(ARGV[0])
-	width, height = image.pixbuf.width, image.pixbuf.height
+		if width > WINDOW_SIZE[0] || height > WINDOW_SIZE[1]
+			image.pixbuf = image.pixbuf.scale(*WINDOW_SIZE)
+		end
 
-	if width > WINDOW_SIZE[0] || height > WINDOW_SIZE[1]
-		image.pixbuf = image.pixbuf.scale(*WINDOW_SIZE)
+		main_win = MainWin.new
+		main_win.add(image)
+		main_win.show_all
+		Gtk.main
 	end
-
-	main_win = MainWin.new
-	main_win.add(image)
-	main_win.show_all
-	Gtk.main
 else
 	raise NotImplementedError, "mode = #{mode}"
 end
