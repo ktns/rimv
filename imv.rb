@@ -127,33 +127,54 @@ when 'view',nil
 
 	WINDOW_SIZE = [640, 480]
 
-	class MainWin < Gtk::Window
-		def initialize
-			super(APP_NAME)
-			set_default_size(*WINDOW_SIZE)
+	module IMV
+		class MainWin < Gtk::Window
+			def initialize db, hash_list
+				raise TypeError, "IMV::DB expected for `db', but #{db.class}" unless db.kind_of?(IMV::DB)
+				raise TypeError, "Array expected for `hash_list', but #{hash_list.class}" unless hash_list.kind_of?(Array)
 
-			signal_connect("delete_event") do
-				Gtk.main_quit
-			end
-			signal_connect("key-press-event") do |w, e|
-				if e.keyval == Gdk::Keyval::GDK_q
+				super(APP_NAME)
+				set_default_size(*WINDOW_SIZE)
+				@db = db
+				@hash_list = hash_list
+
+				signal_connect("delete_event") do
 					Gtk.main_quit
 				end
+				signal_connect("key-press-event") do |w, e|
+					case e.keyval
+					when Gdk::Keyval::GDK_q
+						Gtk.main_quit
+					when Gdk::Keyval::GDK_space
+						display_next
+					end
+				end
+				@cur_img = nil
+				display @hash_list[@cur_index = 0]
+			end
+
+			private
+			def display hash
+				remove(@cur_img) if @cur_img
+				@cur_img = @db.getimage(hash)
+
+				width, height = @cur_img.pixbuf.width, @cur_img.pixbuf.height
+
+				if width > WINDOW_SIZE[0] || height > WINDOW_SIZE[1]
+					@cur_img.pixbuf = @cur_img.pixbuf.scale(*WINDOW_SIZE)
+				end
+				add(@cur_img)
+				show_all
+			end
+
+			def display_next
+				display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
 			end
 		end
 	end
 
 	IMV::DB.open do |db|
-		image = db.getimage(db.getallhash.first)
-		width, height = image.pixbuf.width, image.pixbuf.height
-
-		if width > WINDOW_SIZE[0] || height > WINDOW_SIZE[1]
-			image.pixbuf = image.pixbuf.scale(*WINDOW_SIZE)
-		end
-
-		main_win = MainWin.new
-		main_win.add(image)
-		main_win.show_all
+		main_win = IMV::MainWin.new(db, db.getallhash)
 		Gtk.main
 	end
 else
