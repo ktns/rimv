@@ -56,9 +56,8 @@ module IMV
 
 		def addimage name,img
 			raise TypeError unless img.kind_of?(String)
-			hash = Digest::MD5.digest(img)
+			hash = Digest::MD5.digest(img).unpack('h*').first
 			@db.transaction do |db|
-				hash = Digest::MD5.digest(img)
 				begin
 				db.execute('insert into img values(?,?)', hash,
 									 Blob.new(img) )
