@@ -172,7 +172,8 @@ if $0 == __FILE__
 		WINDOW_SIZE = [640, 480]
 
 		IMV::DB.open do |db|
-			main_win = IMV::MainWin.new(db, db.getallhash)
+			abort 'No Image!' if (hashlist = db.getallhash).empty?
+			main_win = IMV::MainWin.new(db, hashlist)
 			Gtk.main
 		end
 	else
