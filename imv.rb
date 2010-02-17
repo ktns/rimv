@@ -23,6 +23,21 @@ ARGV.options do |opt|
 	end
 	$verbose=false
 	opt.on('--verbose', 'verbosely report information'){$verbose=true}
+	opt.on('-s=VAL', '--score=VAL',
+				 'score of the image to be displayed or added') {|val|
+		if val =~ /\A(-?d+)([+-])\Z/
+			if $2 == '+'
+				$score = (eval $1)..1.0/0
+			else
+				$score = -1.0/0..(eval $1)
+			end
+		else
+			$score = eval val
+			unless [Integer,Range].any?{|cls| $score.kind_of?(cls)}
+				raise ArgumentError, "Can't parse score value string `#{val}'!"
+			end
+		end
+	}
 
 	opt.parse!
 end
@@ -54,13 +69,13 @@ module IMV
 			@db.close
 		end
 
-		def addimage name,img
+		def addimage name, img
 			raise TypeError unless img.kind_of?(String)
 			hash = Digest::MD5.digest(img).unpack('h*').first
 			@db.transaction do |db|
 				begin
-				db.execute('insert into img values(?,?)', hash,
-									 Blob.new(img) )
+				db.execute('insert into img values(?,?,?)', hash,
+									 Blob.new(img), $score || 0)
 				rescue SQLException
 					unless $!.message.include?('column hash is not unique')
 						raise $!
@@ -107,10 +122,27 @@ SQL
 		end
 
 		def getallhash
-			@db.execute(<<SQL).collect {|set| set.first}
+			case $score
+			when nil
+				@db.execute(<<SQL).collect {|set| set.first}
 SELECT hash
 FROM img
 SQL
+			when Integer
+				@db.execute(<<SQL, $score).collect {|set| set.first}
+SELECT hash
+FROM img
+WHERE score = ?
+SQL
+			when Range
+				@db.execute(<<SQL, $score.begin, $score.last).collect {|set| set.first}
+SELECT hash
+FROM img
+WHERE score BETWEEN ? AND ?
+SQL
+			else
+				raise ScriptError
+			end
 		end
 	end
 
@@ -164,6 +196,7 @@ if $0 == __FILE__
 	case $mode
 	when 'add'
 		raise 'No file to add!' if ARGV.empty?
+		raise "Non-integer score is not acceptable in `add' mode!" unless ! $score || $score.kind_of?(Integer)
 		IMV::DB.open do |db|
 			ARGV.each do |name|
 				db.addfile(name)
