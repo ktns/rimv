@@ -163,6 +163,7 @@ end
 if $0 == __FILE__
 	case $mode
 	when 'add'
+		raise 'No file to add!' if ARGV.empty?
 		IMV::DB.open do |db|
 			ARGV.each do |name|
 				db.addfile(name)
