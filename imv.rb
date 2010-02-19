@@ -2,46 +2,6 @@
 # vim: set foldmethod=syntax :
 APP_NAME = "imv"
 
-require 'optparse'
-
-$mode = nil
-
-ARGV.options do |opt|
-	MODES={
-		'add'=>'add image(s) to database',
-		'view'=>'view images in database'
-	}.each do |mode,desc|
-		opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
-			if $mode
-				$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
-											 mode, $mode)
-				abort
-			else
-				$mode = mode
-			end
-		end
-	end
-	$verbose=false
-	opt.on('--verbose', 'verbosely report information'){$verbose=true}
-	opt.on('-s=VAL', '--score=VAL',
-				 'score of the image to be displayed or added') {|val|
-		if val =~ /\A(-?d+)([+-])\Z/
-			if $2 == '+'
-				$score = (eval $1)..1.0/0
-			else
-				$score = -1.0/0..(eval $1)
-			end
-		else
-			$score = eval val
-			unless [Integer,Range].any?{|cls| $score.kind_of?(cls)}
-				raise ArgumentError, "Can't parse score value string `#{val}'!"
-			end
-		end
-	}
-
-	opt.parse!
-end
-
 module IMV
 	class DB
 		require 'sqlite3'
@@ -193,6 +153,46 @@ SQL
 end
 
 if $0 == __FILE__
+	require 'optparse'
+
+	$mode = nil
+
+	ARGV.options do |opt|
+		MODES={
+			'add'=>'add image(s) to database',
+			'view'=>'view images in database'
+		}.each do |mode,desc|
+			opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
+				if $mode
+					$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
+												 mode, $mode)
+					abort
+				else
+					$mode = mode
+				end
+			end
+		end
+		$verbose=false
+		opt.on('--verbose', 'verbosely report information'){$verbose=true}
+		opt.on('-s=VAL', '--score=VAL',
+					 'score of the image to be displayed or added') {|val|
+			if val =~ /\A(-?d+)([+-])\Z/
+				if $2 == '+'
+					$score = (eval $1)..1.0/0
+				else
+					$score = -1.0/0..(eval $1)
+				end
+			else
+				$score = eval val
+				unless [Integer,Range].any?{|cls| $score.kind_of?(cls)}
+					raise ArgumentError, "Can't parse score value string `#{val}'!"
+				end
+			end
+		}
+
+		opt.parse!
+	end
+
 	case $mode
 	when 'add'
 		raise 'No file to add!' if ARGV.empty?
