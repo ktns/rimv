@@ -121,6 +121,8 @@ SQL
 					Gtk.main_quit
 				when Gdk::Keyval::GDK_space
 					display_next
+				when Gdk::Keyval::GDK_BackSpace
+					display_prev
 				end
 			end
 			@cur_img = nil
@@ -144,6 +146,14 @@ SQL
 		def display_next
 			unless $random
 				display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
+			else
+				display_random
+			end
+		end
+
+		def display_prev
+			unless $random
+				display(@hash_list[@cur_index = ((@cur_index-1) % @hash_list.length)])
 			else
 				display_random
 			end
