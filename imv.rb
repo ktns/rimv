@@ -82,27 +82,22 @@ SQL
 		end
 
 		def getallhash
-			case $score
-			when nil
-				@db.execute(<<SQL).collect {|set| set.first}
+			where,arg =
+				case $score
+				when nil
+					['',[]]
+				when Integer
+					['WHERE score = ?', [$score]]
+				when Range
+					['WHERE score BETWEEN ? AND ?', [$score.begin, $score.last]]
+				else
+					raise ScriptError
+				end
+			@db.execute(<<"SQL", *arg).collect {|set| set.first}
 SELECT hash
 FROM img
+#{where}
 SQL
-			when Integer
-				@db.execute(<<SQL, $score).collect {|set| set.first}
-SELECT hash
-FROM img
-WHERE score = ?
-SQL
-			when Range
-				@db.execute(<<SQL, $score.begin, $score.last).collect {|set| set.first}
-SELECT hash
-FROM img
-WHERE score BETWEEN ? AND ?
-SQL
-			else
-				raise ScriptError
-			end
 		end
 	end
 
