@@ -142,7 +142,18 @@ SQL
 		end
 
 		def display_next
-			display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
+			unless $random
+				display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
+			else
+				display_random
+			end
+		end
+
+		def display_random
+			begin
+				next_index = rand(@hash_list.size)
+			end until next_index != @cur_index
+			display(@hash_list[@cur_index = next_index])
 		end
 	end
 end
@@ -169,6 +180,7 @@ if $0 == __FILE__
 		end
 		$verbose=false
 		opt.on('--verbose', 'verbosely report information'){$verbose=true}
+
 		opt.on('-s=VAL', '--score=VAL',
 					 'score of the image to be displayed or added') {|val|
 			if val =~ /\A(-?d+)([+-])\Z/
@@ -184,6 +196,10 @@ if $0 == __FILE__
 				end
 			end
 		}
+
+		$random=false
+		opt.on('-r', '--random',
+					 'randomize order of images to be displayed'){$random=true}
 
 		opt.parse!
 	end
