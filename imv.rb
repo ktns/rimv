@@ -3,7 +3,28 @@
 APP_NAME = "imv"
 
 module IMV
+	@@verbosity = 0
+
+	class DummyIO
+		def method_missing name, *arg
+			unless IO.method_defined?(name)
+				raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
+			end
+		end
+	end
+
+	def verbose verbosity
+		raise ScriptError, "invalid verbosity `#{num}'!" unless verbosity > 0
+		if verbosity <= @@verbosity
+			$stdout
+		else
+			DummyIO.new
+		end
+	end
+
 	class DB
+		include IMV
+
 		require 'sqlite3'
 		require 'digest/md5'
 
@@ -49,12 +70,12 @@ module IMV
 			if File.directory?(path)
 				Dir.foreach(path) do |file|
 					next if %w<. ..>.include?(file)
-					$stderr.puts "adding directory `#{path}/#{file}'" if $verbose
+					verbose(1).puts "adding directory `#{path}/#{file}'"
 					addfile("#{path}/#{file}")
 				end
 			elsif File.file?(path)
 				File.open(path) do |file|
-					$stderr.puts "adding file `#{path}'" if $verbose
+					verbose(1).puts "adding file `#{path}'"
 					addimage(path,file.read)
 				end
 			else
@@ -103,6 +124,8 @@ SQL
 
 	require "gtk2"
 	class MainWin < Gtk::Window
+		include IMV
+
 		def initialize db, hash_list
 			raise TypeError, "IMV::DB expected for `db', but #{db.class}" unless db.kind_of?(IMV::DB)
 			raise TypeError, "Array expected for `hash_list', but #{hash_list.class}" unless hash_list.kind_of?(Array)
@@ -180,6 +203,8 @@ SQL
 end
 
 if $0 == __FILE__
+	include IMV
+
 	require 'optparse'
 
 	$mode = nil
@@ -199,8 +224,10 @@ if $0 == __FILE__
 				end
 			end
 		end
-		$verbose=false
-		opt.on('--verbose', 'verbosely report information'){$verbose=true}
+		opt.on('--verbose=[VERBOSITY]', 'verbosely report information') do |v|
+			@@verbosity = v.nil? ? 1 : v.to_i
+			verbose(1).puts "verbosity = #{@@verbosity}"
+		end
 
 		opt.on('-s=VAL', '--score=VAL',
 					 'score of the image to be displayed or added') {|val|
@@ -229,7 +256,7 @@ if $0 == __FILE__
 	when 'add'
 		raise 'No file to add!' if ARGV.empty?
 		raise "Non-integer score is not acceptable in `add' mode!" unless ! $score || $score.kind_of?(Integer)
-		IMV::DB.open do |db|
+		DB.open do |db|
 			ARGV.each do |name|
 				db.addfile(name)
 			end
@@ -237,9 +264,9 @@ if $0 == __FILE__
 	when 'view',nil
 		WINDOW_SIZE = [640, 480]
 
-		IMV::DB.open do |db|
+		DB.open do |db|
 			abort 'No Image!' if (hashlist = db.getallhash).empty?
-			main_win = IMV::MainWin.new(db, hashlist)
+			main_win = MainWin.new(db, hashlist)
 			Gtk.main
 		end
 	else
