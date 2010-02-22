@@ -111,6 +111,7 @@ SQL
 			set_default_size(*WINDOW_SIZE)
 			@db = db
 			@hash_list = hash_list
+			@random_hist = []
 
 			signal_connect("delete_event") do
 				Gtk.main_quit
@@ -126,10 +127,14 @@ SQL
 				end
 			end
 			@cur_img = nil
-			display @hash_list[@cur_index = 0]
+			display @hash_list[@cur_index = (
+				$random ? rand(@hash_list.size) : 0)]
 		end
 
-		private
+		def cur_hash
+			@hash_list[@cur_index]
+		end
+
 		def display hash
 			remove(@cur_img) if @cur_img
 			@cur_img = @db.getimage(hash)
@@ -155,11 +160,17 @@ SQL
 			unless $random
 				display(@hash_list[@cur_index = ((@cur_index-1) % @hash_list.length)])
 			else
-				display_random
+				hist = @random_hist.pop
+				if hist
+					display hist
+				else
+					display_random
+				end
 			end
 		end
 
 		def display_random
+			@random_hist.push cur_hash
 			begin
 				next_index = rand(@hash_list.size)
 			end until next_index != @cur_index
