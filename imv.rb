@@ -271,6 +271,6 @@ if $0 == __FILE__
 			Gtk.main
 		end
 	else
-		raise NotImplementedError, "mode = #{mode}"
+		raise NotImplementedError, "Unexpected mode `#{mode}'!"
 	end
 end
