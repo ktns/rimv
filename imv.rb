@@ -3,6 +3,9 @@
 APP_NAME = "imv"
 
 module IMV
+	@@mode = nil
+	@@score = nil
+	@@random = false
 	@@verbosity = 0
 
 	class DummyIO
@@ -56,7 +59,7 @@ module IMV
 			@db.transaction do |db|
 				begin
 				db.execute('insert into img values(?,?,?)', hash,
-									 Blob.new(img), $score || 0)
+									 Blob.new(img), @@score || 0)
 				rescue SQLException
 					unless $!.message.include?('column hash is not unique')
 						raise $!
@@ -104,13 +107,13 @@ SQL
 
 		def getallhash
 			where,arg =
-				case $score
+				case @@score
 				when nil
 					['',[]]
 				when Integer
-					['WHERE score = ?', [$score]]
+					['WHERE score = ?', [@@score]]
 				when Range
-					['WHERE score BETWEEN ? AND ?', [$score.begin, $score.last]]
+					['WHERE score BETWEEN ? AND ?', [@@score.begin, @@score.last]]
 				else
 					raise ScriptError
 				end
@@ -151,7 +154,7 @@ SQL
 			end
 			@cur_img = nil
 			display @hash_list[@cur_index = (
-				$random ? rand(@hash_list.size) : 0)]
+				@@random ? rand(@hash_list.size) : 0)]
 		end
 
 		def cur_hash
@@ -172,7 +175,7 @@ SQL
 		end
 
 		def display_next
-			unless $random
+			unless @@random
 				display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
 			else
 				display_random
@@ -180,7 +183,7 @@ SQL
 		end
 
 		def display_prev
-			unless $random
+			unless @@random
 				display(@hash_list[@cur_index = ((@cur_index-1) % @hash_list.length)])
 			else
 				hist = @random_hist.pop
@@ -207,7 +210,6 @@ if $0 == __FILE__
 
 	require 'optparse'
 
-	$mode = nil
 
 	ARGV.options do |opt|
 		MODES={
@@ -215,12 +217,12 @@ if $0 == __FILE__
 			'view'=>'view images in database'
 		}.each do |mode,desc|
 			opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
-				if $mode
+				if @@mode
 					$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
-												 mode, $mode)
+												 mode, @@mode)
 					abort
 				else
-					$mode = mode
+					@@mode = mode
 				end
 			end
 		end
@@ -233,29 +235,28 @@ if $0 == __FILE__
 					 'score of the image to be displayed or added') {|val|
 			if val =~ /\A(-?d+)([+-])\Z/
 				if $2 == '+'
-					$score = (eval $1)..1.0/0
+					@@score = (eval $1)..1.0/0
 				else
-					$score = -1.0/0..(eval $1)
+					@@score = -1.0/0..(eval $1)
 				end
 			else
-				$score = eval val
-				unless [Integer,Range].any?{|cls| $score.kind_of?(cls)}
+				@@score = eval val
+				unless [Integer,Range].any?{|cls| @@score.kind_of?(cls)}
 					raise ArgumentError, "Can't parse score value string `#{val}'!"
 				end
 			end
 		}
 
-		$random=false
 		opt.on('-r', '--random',
-					 'randomize order of images to be displayed'){$random=true}
+					 'randomize order of images to be displayed'){@@random=true}
 
 		opt.parse!
 	end
 
-	case $mode
+	case @@mode
 	when 'add'
 		raise 'No file to add!' if ARGV.empty?
-		raise "Non-integer score is not acceptable in `add' mode!" unless ! $score || $score.kind_of?(Integer)
+		raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
 		DB.open do |db|
 			ARGV.each do |name|
 				db.addfile(name)
