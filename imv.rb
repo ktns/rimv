@@ -227,9 +227,22 @@ SQL
 					display_prev
 				end
 			end
+			tmp_handler_id = signal_connect("window_state_event") do |w, e|
+				if e.changed_mask == Gdk::EventWindowState::MAXIMIZED
+					signal_handler_disconnect tmp_handler_id
+					tmp_handler_id = signal_connect("configure_event") do
+						@max_size = Size[size]
+						verbose(1).puts "max size = #{@max_size}"
+						signal_handler_disconnect tmp_handler_id
+						unmaximize
+						display @hash_list[@cur_index = (
+							@@random ? rand(@hash_list.size) : 0)]
+					end
+				end
+			end
+			show_all
+			maximize
 			@cur_img = nil
-			display @hash_list[@cur_index = (
-				@@random ? rand(@hash_list.size) : 0)]
 		end
 
 		def cur_hash
