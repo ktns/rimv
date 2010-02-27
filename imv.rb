@@ -57,19 +57,15 @@ module IMV
 			raise TypeError unless img.kind_of?(String)
 			hash = Digest::MD5.digest(img).unpack('h*').first
 			@db.transaction do |db|
-				begin
-				db.execute(<<SQL, hash, Blob.new(img), @@score || 0)
+				db.execute(<<SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
 INSERT INTO img (hash, img, score)
-VALUES(?, ?, ?);
+SELECT :hash, :img, :score
+WHERE NOT EXISTS (SELECT 1 FROM img WHERE hash=:hash);
 SQL
-				rescue SQLException
-					unless $!.message.include?('column hash is not unique')
-						raise $!
-					end
-				end
-				db.execute(<<SQL, hash, File.basename(name) )
+				db.execute(<<SQL, :hash => hash, :name => File.basename(name) )
 INSERT INTO name (hash, name)
-VALUES(?, ?);
+SELECT :hash, :name
+WHERE NOT EXISTS (SELECT 1 FROM name WHERE hash=:hash AND name=:name);
 SQL
 			end and hash
 		end
