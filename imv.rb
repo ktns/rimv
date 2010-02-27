@@ -83,7 +83,7 @@ SQL
 					addimage(path,file.read)
 				end
 			else
-				raise ArgumentError
+				$stderr.puts "file `#{path}' does not exist!"
 			end
 		end
 
