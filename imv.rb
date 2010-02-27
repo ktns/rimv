@@ -224,6 +224,9 @@ SQL
 					display_next
 				when Gdk::Keyval::GDK_BackSpace
 					display_prev
+				when Gdk::Keyval::GDK_r
+					verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
+					@@random = ! @@random
 				end
 			end
 			tmp_handler_id = signal_connect("window_state_event") do |w, e|
