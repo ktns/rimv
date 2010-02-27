@@ -321,6 +321,7 @@ if $0 == __FILE__
 		end
 		opt.on('--verbose=[VERBOSITY]', 'verbosely report information') do |v|
 			@@verbosity = v.nil? ? 1 : v.to_i
+			raise "invalid verbosity `#{v}'!" unless @@verbosity > 0
 			verbose(1).puts "verbosity = #{@@verbosity}"
 		end
 
