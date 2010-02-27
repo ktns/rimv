@@ -58,14 +58,19 @@ module IMV
 			hash = Digest::MD5.digest(img).unpack('h*').first
 			@db.transaction do |db|
 				begin
-				db.execute('insert into img values(?,?,?)', hash,
-									 Blob.new(img), @@score || 0)
+				db.execute(<<SQL, hash, Blob.new(img), @@score || 0)
+INSERT INTO img (hash, img, score)
+VALUES(?, ?, ?);
+SQL
 				rescue SQLException
 					unless $!.message.include?('column hash is not unique')
 						raise $!
 					end
 				end
-				db.execute('insert into name values(?,?)', hash, File.basename(name) )
+				db.execute(<<SQL, hash, File.basename(name) )
+INSERT INTO name (hash, name)
+VALUES(?, ?);
+SQL
 			end and hash
 		end
 
