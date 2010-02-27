@@ -301,70 +301,72 @@ SQL
 end
 
 if $0 == __FILE__
-	include IMV
+	begin
+		include IMV
 
-	require 'optparse'
+		require 'optparse'
 
+		ARGV.options do |opt|
+			MODES={
+				'add'=>'add image(s) to database',
+				'view'=>'view images in database'
+			}.each do |mode,desc|
+				opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
+					if @@mode
+						$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
+													 mode, @@mode)
+						abort
+					else
+						@@mode = mode
+					end
+				end
+			end
+			opt.on('--verbose=[VERBOSITY]', 'verbosely report information') do |v|
+				@@verbosity = v.nil? ? 1 : v.to_i
+				raise "invalid verbosity `#{v}'!" unless @@verbosity > 0
+				verbose(1).puts "verbosity = #{@@verbosity}"
+			end
 
-	ARGV.options do |opt|
-		MODES={
-			'add'=>'add image(s) to database',
-			'view'=>'view images in database'
-		}.each do |mode,desc|
-			opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
-				if @@mode
-					$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
-												 mode, @@mode)
-					abort
+			opt.on('-s=VAL', '--score=VAL',
+						 'score of the image to be displayed or added') {|val|
+				if val =~ /\A(-?d+)([+-])\Z/
+					if $2 == '+'
+						@@score = (eval $1)..1.0/0
+					else
+						@@score = -1.0/0..(eval $1)
+					end
 				else
-					@@mode = mode
+					@@score = eval val
+					unless [Integer,Range].any?{|cls| @@score.kind_of?(cls)}
+						raise ArgumentError, "Can't parse score value string `#{val}'!"
+					end
+				end
+			}
+
+			opt.on('-r', '--random',
+						 'randomize order of images to be displayed'){@@random=true}
+
+			opt.parse!
+		end
+
+		case @@mode
+		when 'add'
+			raise 'No file to add!' if ARGV.empty?
+			raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
+			DB.open do |db|
+				ARGV.each do |name|
+					db.addfile(name)
 				end
 			end
-		end
-		opt.on('--verbose=[VERBOSITY]', 'verbosely report information') do |v|
-			@@verbosity = v.nil? ? 1 : v.to_i
-			raise "invalid verbosity `#{v}'!" unless @@verbosity > 0
-			verbose(1).puts "verbosity = #{@@verbosity}"
-		end
-
-		opt.on('-s=VAL', '--score=VAL',
-					 'score of the image to be displayed or added') {|val|
-			if val =~ /\A(-?d+)([+-])\Z/
-				if $2 == '+'
-					@@score = (eval $1)..1.0/0
-				else
-					@@score = -1.0/0..(eval $1)
-				end
-			else
-				@@score = eval val
-				unless [Integer,Range].any?{|cls| @@score.kind_of?(cls)}
-					raise ArgumentError, "Can't parse score value string `#{val}'!"
-				end
+		when 'view',nil
+			DB.open do |db|
+				abort 'No Image!' if (hashlist = db.getallhash).empty?
+				main_win = MainWin.new(db, hashlist)
+				Gtk.main
 			end
-		}
-
-		opt.on('-r', '--random',
-					 'randomize order of images to be displayed'){@@random=true}
-
-		opt.parse!
-	end
-
-	case @@mode
-	when 'add'
-		raise 'No file to add!' if ARGV.empty?
-		raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
-		DB.open do |db|
-			ARGV.each do |name|
-				db.addfile(name)
-			end
+		else
+			raise NotImplementedError, "Unexpected mode `#{mode}'!"
 		end
-	when 'view',nil
-		DB.open do |db|
-			abort 'No Image!' if (hashlist = db.getallhash).empty?
-			main_win = MainWin.new(db, hashlist)
-			Gtk.main
-		end
-	else
-		raise NotImplementedError, "Unexpected mode `#{mode}'!"
+	rescue Interrupt
 	end
 end
