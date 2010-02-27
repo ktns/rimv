@@ -237,6 +237,7 @@ SQL
 						verbose(1).puts "max size = #{@max_size}"
 						signal_handler_disconnect tmp_handler_id
 						unmaximize
+						self.resizable = false
 						display @hash_list[@cur_index = (
 							@@random ? rand(@hash_list.size) : 0)]
 					end
