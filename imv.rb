@@ -209,9 +209,8 @@ SQL
 			raise TypeError, "Array expected for `hash_list', but #{hash_list.class}" unless hash_list.kind_of?(Array)
 
 			super(APP_NAME)
-			set_default_size(*WINDOW_SIZE)
-			@db = db
-			@hash_list = hash_list
+			@db          = db
+			@hash_list   = hash_list
 			@random_hist = []
 
 			signal_connect("delete_event") do
@@ -251,14 +250,17 @@ SQL
 
 		def display hash
 			remove(@cur_img) if @cur_img
+			verbose(1).puts "displaying image with hash #{hash}"
 			@cur_img = @db.getimage(hash)
 
-			width, height = @cur_img.pixbuf.width, @cur_img.pixbuf.height
+			size_orig = Size[@cur_img.pixbuf]
+			size_view = size_orig.fit(@max_size)
+			verbose(2).puts "scaling img with size #{size_orig} to #{size_view}"
 
-			if width > WINDOW_SIZE[0] || height > WINDOW_SIZE[1]
-				@cur_img.pixbuf = @cur_img.pixbuf.scale(*WINDOW_SIZE)
-			end
+			@cur_img.pixbuf = @cur_img.pixbuf.scale(*size_view)
 			add(@cur_img)
+			resize(*size_view)
+			set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
 			show_all
 		end
 
@@ -351,8 +353,6 @@ if $0 == __FILE__
 			end
 		end
 	when 'view',nil
-		WINDOW_SIZE = [640, 480]
-
 		DB.open do |db|
 			abort 'No Image!' if (hashlist = db.getallhash).empty?
 			main_win = MainWin.new(db, hashlist)
