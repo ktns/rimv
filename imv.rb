@@ -4,8 +4,9 @@ APP_NAME = "imv"
 
 module IMV
 	@@mode = nil
-	@@score = nil
+	@@path_tag = false
 	@@random = false
+	@@score = nil
 	@@verbosity = 0
 
 	class DummyIO
@@ -70,21 +71,42 @@ SQL
 			end and hash
 		end
 
-		def addfile path
-			if File.directory?(path)
-				Dir.foreach(path) do |file|
-					next if %w<. ..>.include?(file)
-					verbose(1).puts "adding directory `#{path}/#{file}'"
-					addfile("#{path}/#{file}")
+		def addfile path, base=false
+			@base = path.sub(/\/*$/,'') if base
+			begin
+				if File.directory?(path)
+					Dir.foreach(path) do |file|
+						next if %w<. ..>.include?(file)
+						verbose(1).puts "adding directory `#{path}/#{file}'"
+						addfile("#{path}/#{file}")
+					end
+				elsif File.file?(path)
+					File.open(path) do |file|
+						verbose(1).puts "adding file `#{path}'"
+						hash = addimage(path,file.read)
+						if @base
+							verbose(3).puts "tag base = #{@base}"
+							tag = File.dirname(path.sub(/^#{Regexp.escape(@base)}\/*/,''))
+							unless tag == '.'
+								addtag hash, tag
+							end
+						end
+					end
+				else
+					$stderr.puts "file `#{path}' does not exist!"
 				end
-			elsif File.file?(path)
-				File.open(path) do |file|
-					verbose(1).puts "adding file `#{path}'"
-					addimage(path,file.read)
-				end
-			else
-				$stderr.puts "file `#{path}' does not exist!"
+			ensure
+				@base = nil if base
 			end
+		end
+
+		def addtag hash, tag
+			verbose(1).puts "tagging image `#{hash} as `#{tag}'"
+			@db.execute(<<SQL, :hash => hash, :tag => tag)
+INSERT INTO tag (hash, tag)
+SELECT :hash, :tag
+WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
+SQL
 		end
 
 		def getimage hash
@@ -346,6 +368,9 @@ if $0 == __FILE__
 			opt.on('-r', '--random',
 						 'randomize order of images to be displayed'){@@random=true}
 
+			opt.on('-p', '--path-tag',
+						 'tag image with directory name'){@@path_tag = true}
+
 			opt.parse!
 		end
 
@@ -355,7 +380,7 @@ if $0 == __FILE__
 			raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
 			DB.open do |db|
 				ARGV.each do |name|
-					db.addfile(name)
+					db.addfile(name, @@path_tag)
 				end
 			end
 		when 'view',nil
