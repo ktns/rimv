@@ -109,18 +109,20 @@ WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
 SQL
 		end
 
-		def getimage hash
-			require 'tempfile'
-			tmp = Tempfile.new(APP_NAME)
-			begin
-				tmp.write(
+		def getimage_bin hash
 					@db.execute(<<SQL,hash).collect.first.first
 SELECT img
 FROM img
 WHERE hash = ?
 LIMIT 1
 SQL
-				)
+		end
+
+		def getimage hash
+			require 'tempfile'
+			tmp = Tempfile.new(APP_NAME)
+			begin
+				tmp.write getimage_bin(hash)
 				tmp.close
 				return Gtk::Image.new(tmp.path)
 			ensure
