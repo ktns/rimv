@@ -25,6 +25,7 @@ module IMV
 			DummyIO.new
 		end
 	end
+	require "gtk2"
 
 	class DB
 		include IMV
@@ -81,16 +82,21 @@ SQL
 						addfile("#{path}/#{file}")
 					end
 				elsif File.file?(path)
-					File.open(path) do |file|
-						verbose(1).puts "adding file `#{path}'"
-						hash = addimage(path,file.read)
-						if @base
-							verbose(3).puts "tag base = #{@base}"
-							tag = File.dirname(path.sub(/^#{Regexp.escape(@base)}\/*/,''))
-							unless tag == '.'
-								addtag hash, tag
+					img = Gtk::Image.new(path)
+					if img.pixbuf || img.pixbuf_animation
+						File.open(path) do |file|
+							verbose(1).puts "adding file `#{path}'"
+							hash = addimage(path,file.read)
+							if @base
+								verbose(3).puts "tag base = #{@base}"
+								tag = File.dirname(path.sub(/^#{Regexp.escape(@base)}\/*/,''))
+								unless tag == '.'
+									addtag hash, tag
+								end
 							end
 						end
+					else
+						$stderr.puts "`#{path}' is not a image supported by gtk!"
 					end
 				else
 					$stderr.puts "file `#{path}' does not exist!"
@@ -225,7 +231,6 @@ SQL
 		end
 	end
 
-	require "gtk2"
 	class MainWin < Gtk::Window
 		include IMV
 
