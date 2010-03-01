@@ -250,6 +250,13 @@ SQL
 				case e.keyval
 				when Gdk::Keyval::GDK_q
 					Gtk.main_quit
+				when Gdk::Keyval::GDK_h
+					hide
+					Thread.new(w) do |w|
+						puts 'press enter to reshow window...'
+						$stdin.gets
+						w.show
+					end
 				when Gdk::Keyval::GDK_space
 					display_next
 				when Gdk::Keyval::GDK_BackSpace
