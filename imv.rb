@@ -3,11 +3,30 @@
 APP_NAME = "imv"
 
 module IMV
+	require "gtk2"
+
 	@@mode = nil
 	@@path_tag = false
 	@@random = false
 	@@score = nil
 	@@verbosity = 0
+
+	module Logo
+		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/imv_logo.xpm')
+		@@sizes = Hash[
+			*([8,16,32,64].collect do |size|
+				[size, @@base.scale(size, size)]
+			end.flatten)
+		]
+
+		def self.icons
+			@@sizes.values
+		end
+
+		def self.icon size
+			@@sizes[size]
+		end
+	end
 
 	class DummyIO
 		def method_missing name, *arg
@@ -25,7 +44,6 @@ module IMV
 			DummyIO.new
 		end
 	end
-	require "gtk2"
 
 	class DB
 		include IMV
@@ -242,6 +260,9 @@ SQL
 			@db          = db
 			@hash_list   = hash_list
 			@random_hist = []
+
+			self.icon_list = Logo.icons
+			self.icon      = Logo.icon(32)
 
 			signal_connect("delete_event") do
 				Gtk.main_quit
