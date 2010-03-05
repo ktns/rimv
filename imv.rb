@@ -315,11 +315,18 @@ SQL
 			verbose(1).puts "displaying image with hash #{hash}"
 			@cur_img = @db.getimage(hash)
 
-			size_orig = Size[@cur_img.pixbuf]
+			raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'" unless @cur_img.pixbuf || @cur_img.pixbuf_animation
+			size_orig = Size[@cur_img.pixbuf || @cur_img.pixbuf_animation]
 			size_view = size_orig.fit(@max_size)
 			verbose(2).puts "scaling img with size #{size_orig} to #{size_view}"
 
-			@cur_img.pixbuf = @cur_img.pixbuf.scale(*size_view)
+			if @cur_img.pixbuf_animation
+				@cur_img.pixbuf_animation
+			elsif @cur_img.pixbuf
+				@cur_img.pixbuf = @cur_img.pixbuf.scale(*size_view)
+			else
+				raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'"
+			end
 			add(@cur_img)
 			resize(*size_view)
 			set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
