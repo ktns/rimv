@@ -258,6 +258,33 @@ SQL
 						end
 					end
 				end
+
+				def first
+					@cur_child = nil
+					@hashes[@cur_index = 0] or (
+						@cur_index = nil
+						@cur_child = @children.first
+						@cur_child.first
+					)
+				end
+
+				def next
+					unless @cur_child
+						@cur_index = -1 unless @cur_index
+						if @hashes[@cur_index += 1]
+							@hashes[@cur_index]
+						else
+							@cur_index = nil
+						end
+					else
+						@cur_child.next or (
+							begin
+								@cur_child = @children[@children.index(@cur_child) + 1]
+								return nil unless @cur_child
+							end until @cur_child.first
+						)
+					end
+				end
 			end
 
 			def sync
@@ -296,6 +323,18 @@ SQL
 			def consistent?
 				sync do
 					@root.consistent?
+				end
+			end
+
+			def first
+				sync do
+					@root.first
+				end
+			end
+
+			def next
+				sync do
+					@root.next
 				end
 			end
 		end
