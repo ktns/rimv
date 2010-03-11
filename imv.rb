@@ -182,6 +182,123 @@ GROUP BY img.hash
 ORDER BY min(name.name)
 SQL
 		end
+
+		class TagTree
+			include IMV
+
+			class Node
+				include IMV
+				attr_reader :parent, :tag, :children, :hashes
+
+				def <=> other
+					raise TypeError unless other.kind_of?(self.class)
+					raise ArgumentError,
+						'Comparing TagTree::Nodes having different parent!' unless @parent == other.parent
+					raise 'Comparing root nodes does not make sense!' unless @parent
+					tag <=> other.tag
+				end
+
+				def path
+					path = []
+					node = self
+					while node
+						path.push node
+						node = node.parent
+					end
+					return path
+				end
+
+				def to_s
+					path.collect{|node| node.tag}.join('->')
+				end
+
+				def initialize parent, tag
+					verbose(3).puts 'Initializing new TagTree Node; ' +
+						"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
+					[
+						[parent,self.class],
+						[tag,String]
+					].each do |v,c|
+						unless v == nil || v.kind_of?(c)
+							raise TypeError "`#{c}' expected, but `#{v.class}'"
+						end
+					end
+					@parent, @tag = parent, tag
+					@children     = []
+					@hashes       = []
+					@cur_index    = nil
+					@cur_child    = nil
+				end
+
+				def consistent? depth = 0
+					verbose(1).puts "Consistency Check for tag #{@tag}, depth #{depth}"
+					@children.each do |c|
+						unless c.parent == self
+							raise "TagTree consistency Error! tag = #{@tag}, depth = #{depth}"
+							return false
+						end
+						raise unless c.consistent?(depth+1) == true
+					end
+					true
+				end
+
+				def add hash, tags
+					verbose(3).puts "adding hash `#{hash}' into TagTree; " +
+						"tagstack [#{tags.join(', ')}]"
+					if tags.empty?
+						@hashes.push hash
+					else
+						tags.each do |tag|
+							unless child = @children.find{|c|c.tag == tag}
+								@children.push(child = self.class.new(self, tag))
+								@children.sort!
+							end
+							raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
+							child.add(hash, tags.reject{|t| t == tag})
+						end
+					end
+				end
+			end
+
+			def sync
+				@mutex.lock
+				begin
+					return yield
+				ensure
+					@mutex.unlock
+				end
+			end
+
+			def initialize db
+				verbose(3).puts 'Initializing TagTree...'
+				raise unless db.kind_of?(IMV::DB)
+				@mutex  = Mutex.new
+				@root   = Node.new(nil, nil)
+				@empty  = true
+				@thread = Thread.new do
+					Thread.current.abort_on_exception = true
+					db.each_hash_tags do |hash, tags|
+						sync do
+							@root.add hash, tags
+							@empty = false
+						end
+					end
+				end
+				verbose(4).puts 'Waiting for first leaf to be added...'
+				Thread.pass while sync {@empty}
+				verbose(4).puts 'First leaf has now been added.'
+			end
+
+			def running?
+				@thread.alive?
+			end
+
+			def consistent?
+				sync do
+					@root.consistent?
+				end
+			end
+		end
 	end
 
 	class Size
