@@ -172,6 +172,16 @@ FROM img
 #{where}
 SQL
 		end
+
+		def each_hash_tags
+			@db.execute(<<SQL) {|hash, tags| yield hash, (tags||'').split('|')}
+SELECT img.hash, group_concat(tag,'|')
+FROM (img LEFT JOIN tag ON img.hash = tag.hash)
+	LEFT JOIN name ON img.hash = name.hash
+GROUP BY img.hash
+ORDER BY min(name.name)
+SQL
+		end
 	end
 
 	class Size
