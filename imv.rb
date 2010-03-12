@@ -61,7 +61,11 @@ module IMV
 			begin
 				yield db
 			ensure
-				db.close
+				begin
+					db.close
+				rescue SQLite3::BusyException
+					$stderr.puts 'Aborting running query!'
+				end
 			end
 		end
 
