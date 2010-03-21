@@ -635,6 +635,23 @@ if $0 == __FILE__
 	rescue Interrupt
 	end
 elsif File.basename($0) == 'spec'
+	describe IMV::DB::TagTree::Node::Leaf do
+		describe 'leaves with same hashes and different nodes' do
+			before :all do
+				@leaf1,@leaf2 = [1,2].collect do |i|
+					IMV::DB::TagTree::Node::Leaf.new('hoge', [i.to_s])
+				end
+			end
+
+			it 'should not be equal' do
+				@leaf1.should_not equal @leaf2
+				@leaf1.should_not eql @leaf2
+				@leaf1.should_not == @leaf2
+				@leaf1.should_not === @leaf2
+			end
+		end
+	end
+
 	describe IMV::DB::TagTree, 'complete tree' do
 		before :all do
 			IMV::DB.open do |db|
