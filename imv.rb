@@ -637,5 +637,13 @@ elsif File.basename($0) == 'spec'
 		it 'should not be running' do
 			@tree.should_not be_running
 		end
+
+		describe 'leaves' do
+			it 'should all be Leaf class' do
+				@tree.each do |leaf|
+					leaf.should be_kind_of(@tree.class::Node::Leaf)
+				end
+			end
+		end
 	end
 end
