@@ -653,6 +653,15 @@ elsif File.basename($0) == 'spec'
 					leaf.should be_kind_of(@tree.class::Node::Leaf)
 				end
 			end
+
+			it 'next of last should return to first' do
+				_first = @tree.first
+				_next = nil
+				@tree.count.times do
+					_next = @tree.next
+				end
+				_first.should be_eql _next
+			end
 		end
 	end
 end
