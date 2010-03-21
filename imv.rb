@@ -216,6 +216,10 @@ SQL
 					path.collect{|node| node.tag}.join('->')
 				end
 
+				def inspect
+					"#<#{self.class.name};#{to_s}>"
+				end
+
 				def initialize parent, tag
 					verbose(3).puts 'Initializing new TagTree Node; ' +
 						"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
