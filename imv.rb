@@ -608,7 +608,7 @@ if $0 == __FILE__
 	end
 elsif File.basename($0) == 'spec'
 	describe IMV::DB::TagTree, 'complete tree' do
-		before do
+		before :all do
 			IMV::DB.open do |db|
 				@tree = IMV::DB::TagTree.new db
 				nil while @tree.running?
@@ -617,6 +617,10 @@ elsif File.basename($0) == 'spec'
 
 		it 'should be consistent' do
 			@tree.should be_consistent
+		end
+
+		it 'should not be running' do
+			@tree.should_not be_running
 		end
 	end
 end
