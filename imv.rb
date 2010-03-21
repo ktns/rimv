@@ -289,6 +289,15 @@ SQL
 						)
 					end
 				end
+
+				include Enumerable
+
+				def each &block
+					hashes.each &block
+					@children.each do |child|
+						child.each &block
+					end
+				end
 			end
 
 			def sync
@@ -340,6 +349,12 @@ SQL
 				sync do
 					@root.next
 				end
+			end
+
+			include Enumerable
+
+			def each &block
+				@root.each &block
 			end
 		end
 	end
