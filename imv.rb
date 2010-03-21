@@ -246,11 +246,20 @@ SQL
 					true
 				end
 
+				class Leaf < String
+					attr_reader :node
+
+					def initialize hash, node
+						super hash
+						@node = node
+					end
+				end
+
 				def add hash, tags
 					verbose(3).puts "adding hash `#{hash}' into TagTree; " +
 						"tagstack [#{tags.join(', ')}]"
 					if tags.empty?
-						@hashes.push hash
+						@hashes.push Leaf.new(hash, self)
 					else
 						tags.each do |tag|
 							unless child = @children.find{|c|c.tag == tag}
