@@ -257,6 +257,18 @@ SQL
 						super hash
 						@node = node
 					end
+
+					def == other
+						super and node == other.node
+					end
+
+					def eql? other
+						super and node.eql? other.node
+					end
+
+					def hash
+						[super, node].hash
+					end
 				end
 
 				def add hash, tags
