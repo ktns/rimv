@@ -530,26 +530,37 @@ SQL
 		end
 
 		def display hash
-			remove(@cur_img) if @cur_img
 			verbose(1).puts "displaying image with hash #{hash}"
-			@cur_img = @db.getimage(hash)
+			window.cursor = Gdk::Cursor.new(Gdk::Cursor::WATCH)
+			begin
+				if @cur_img
+					Gtk.main_iteration while Gtk.events_pending?
+					add_img = false
+					@cur_img.pixbuf = @db.getimage(hash).pixbuf
+				else
+					add_img = true
+					@cur_img = @db.getimage(hash)
+				end
 
-			raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'" unless @cur_img.pixbuf || @cur_img.pixbuf_animation
-			size_orig = Size[@cur_img.pixbuf || @cur_img.pixbuf_animation]
-			size_view = size_orig.fit(@max_size)
-			verbose(2).puts "scaling img with size #{size_orig} to #{size_view}"
+				raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'" unless @cur_img.pixbuf || @cur_img.pixbuf_animation
+				size_orig = Size[@cur_img.pixbuf || @cur_img.pixbuf_animation]
+				size_view = size_orig.fit(@max_size)
+				verbose(2).puts "scaling img with size #{size_orig} to #{size_view}"
 
-			if @cur_img.pixbuf_animation
-				@cur_img.pixbuf_animation
-			elsif @cur_img.pixbuf
-				@cur_img.pixbuf = @cur_img.pixbuf.scale(*size_view)
-			else
-				raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'"
+				if @cur_img.pixbuf_animation
+					@cur_img.pixbuf_animation
+				elsif @cur_img.pixbuf
+					@cur_img.pixbuf = @cur_img.pixbuf.scale(*size_view)
+				else
+					raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'"
+				end
+				add(@cur_img) if add_img
+				resize(*size_view)
+				set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
+				show_all
+			ensure
+				window.cursor = nil
 			end
-			add(@cur_img)
-			resize(*size_view)
-			set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
-			show_all
 		end
 
 		def display_next
