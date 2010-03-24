@@ -378,8 +378,8 @@ SQL
 
 			include Enumerable
 
-			def each &block
-				@root.each &block
+			def each *args, &block
+				@root.each *args, &block
 			end
 		end
 	end
@@ -678,6 +678,14 @@ elsif File.basename($0) == 'spec'
 
 		it 'should not be running' do
 			@tree.should_not be_running
+		end
+
+		describe 'nodes' do
+			it 'should be enumerated by each(:nodes)' do
+				@tree.each(:nodes).all? do |n|
+					n.should be_instance_of @tree.class::Node
+				end
+			end
 		end
 
 		describe 'leaves' do
