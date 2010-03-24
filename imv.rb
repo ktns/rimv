@@ -317,10 +317,19 @@ SQL
 
 				include Enumerable
 
-				def each &block
-					hashes.each &block
-					@children.each do |child|
-						child.each &block
+				def each *args, &block
+					if args.include?(:nodes)
+						[self].concat(
+							@children.collect do |child|
+								child.each(*args).to_a
+							end
+						).flatten.each &block
+					else
+						[hashes].concat(
+							@children.collect do |child|
+								child.each(*args).to_a
+							end
+						).flatten.each &block
 					end
 				end
 			end
