@@ -690,9 +690,14 @@ elsif File.basename($0) == 'spec'
 		end
 
 		describe 'nodes' do
-			it 'should be enumerated by each(:nodes)' do
-				@tree.each(:nodes).all? do |n|
+			it 'should all be enumerated by each(:nodes)' do
+				enumerator = @tree.each(:nodes)
+				enumerator.all? do |n|
 					n.should be_instance_of @tree.class::Node
+				end
+
+				ObjectSpace.each_object(@tree.class::Node) do |n|
+					enumerator.should be_include n
 				end
 			end
 		end
