@@ -343,6 +343,8 @@ SQL
 				end
 			end
 
+			attr_reader :root
+
 			def initialize db
 				verbose(3).puts 'Initializing TagTree...'
 				raise unless db.kind_of?(IMV::DB)
