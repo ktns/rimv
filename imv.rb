@@ -318,19 +318,19 @@ SQL
 				include Enumerable
 
 				def each *args, &block
-					if args.include?(:nodes)
-						[self].concat(
-							@children.collect do |child|
-								child.each(*args).to_a
-							end
-						).flatten.each &block
-					else
-						[hashes].concat(
-							@children.collect do |child|
-								child.each(*args).to_a
-							end
-						).flatten.each &block
-					end
+					[
+						if args.include?(:nodes)
+							raise ArgumentError, "[:nodes] expected, but #{args}" unless args == [:nodes]
+							self
+						else
+							raise ArgumentError, "[] expected, but #{args}" unless args.empty?
+							hashes
+						end
+					].concat(
+						@children.collect do |child|
+							child.each(*args).to_a
+						end
+					).flatten.each &block
 				end
 			end
 
