@@ -689,6 +689,8 @@ elsif File.basename($0) == 'spec'
 	describe IMV::DB::TagTree, 'complete tree' do
 		before :all do
 			IMV::DB.open do |db|
+				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+				$complete_tag_tree_was_built = true
 				@tree = IMV::DB::TagTree.new db
 				nil while @tree.running?
 			end
