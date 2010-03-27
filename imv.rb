@@ -687,31 +687,31 @@ elsif File.basename($0) == 'spec'
 	end
 
 	describe IMV::DB::TagTree, 'complete tree' do
-		before :all do
+		before :suite do
 			IMV::DB.open do |db|
 				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 				$complete_tag_tree_was_built = true
-				@tree = IMV::DB::TagTree.new db
-				nil while @tree.running?
+				@@tree = IMV::DB::TagTree.new db
+				nil while @@tree.running?
 			end
 		end
 
 		it 'should be consistent' do
-			@tree.should be_consistent
+			@@tree.should be_consistent
 		end
 
 		it 'should not be running' do
-			@tree.should_not be_running
+			@@tree.should_not be_running
 		end
 
 		describe 'nodes' do
 			it 'should all be enumerated by each(:nodes)' do
-				enumerator = @tree.each(:nodes)
+				enumerator = @@tree.each(:nodes)
 				enumerator.all? do |n|
-					n.should be_instance_of @tree.class::Node
+					n.should be_instance_of @@tree.class::Node
 				end
 
-				ObjectSpace.each_object(@tree.class::Node) do |n|
+				ObjectSpace.each_object(@@tree.class::Node) do |n|
 					enumerator.should be_include n
 				end
 			end
@@ -719,16 +719,16 @@ elsif File.basename($0) == 'spec'
 
 		describe 'leaves' do
 			it 'should all be Leaf class' do
-				@tree.each do |leaf|
-					leaf.should be_kind_of(@tree.class::Node::Leaf)
+				@@tree.each do |leaf|
+					leaf.should be_kind_of(@@tree.class::Node::Leaf)
 				end
 			end
 
 			it 'next of last should return to first' do
-				_first = @tree.first
+				_first = @@tree.first
 				_next = nil
-				@tree.count.times do
-					_next = @tree.next
+				@@tree.count.times do
+					_next = @@tree.next
 				end
 				_first.should be_eql _next
 			end
