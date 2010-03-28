@@ -206,7 +206,7 @@ SQL
 					path = []
 					node = self
 					while node
-						path.push node
+						path.unshift node
 						node = node.parent
 					end
 					return path
