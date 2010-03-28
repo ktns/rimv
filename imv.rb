@@ -670,12 +670,14 @@ elsif File.basename($0) == 'spec'
 		end
 
 		describe 'complete tree' do
-			before :suite do
-				IMV::DB.open do |db|
-					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
-					$complete_tag_tree_was_built = true
-					@@tree = IMV::DB::TagTree.new db
-					@@tree.wait_until_loading
+			before :all do
+				unless self.class.class_variable_defined? :@@tree
+					IMV::DB.open do |db|
+						raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+						$complete_tag_tree_was_built = true
+						@@tree = IMV::DB::TagTree.new db
+						@@tree.wait_until_loading
+					end
 				end
 			end
 
