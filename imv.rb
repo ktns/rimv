@@ -294,22 +294,28 @@ SQL
 					@hashes.first or @children.first.first
 				end
 
-				include Enumerable
+				def each_leaves &block
+					raise ArgumentError, 'each_leaves called without block!' unless block.kind_of?(Proc)
+					@hashes.each &block
+					@children.each do |c|
+						c.each_leaves &block
+					end
+				end
 
-				def each *args, &block
-					[
-						if args.include?(:nodes)
-							raise ArgumentError, "[:nodes] expected, but #{args}" unless args == [:nodes]
-							self
-						else
-							raise ArgumentError, "[] expected, but #{args}" unless args.empty?
-							hashes
-						end
-					].concat(
-						@children.collect do |child|
-							child.each(*args).to_a
-						end
-					).flatten.each &block
+				def leaves
+					Enumerable::Enumerator.new(self, :each_leaves)
+				end
+
+				def each_nodes &block
+					raise ArgumentError, 'each_nodes called without block!' unless block.kind_of?(Proc)
+					yield self
+					@children.each do |c|
+						c.each_nodes &block
+					end
+				end
+
+				def nodes
+					Enumerable::Enumerator.new(self, :each_nodes)
 				end
 			end
 
@@ -336,7 +342,7 @@ SQL
 					end
 				end
 				verbose(4).puts 'Waiting for first leaf to be added...'
-				Thread.pass until sync {count > 0}
+				Thread.pass until sync {leaves.count > 0}
 				@current = first
 				verbose(4).puts 'First leaf has now been added.'
 			end
@@ -367,10 +373,20 @@ SQL
 				end
 			end
 
-			include Enumerable
+			def each_leaves &block
+				@root.each_leaves &block
+			end
 
-			def each *args, &block
-				@root.each *args, &block
+			def leaves
+				@root.leaves
+			end
+
+			def each_nodes &block
+				@root.each_nodes &block
+			end
+
+			def nodes
+				@root.nodes
 			end
 		end
 	end
@@ -694,8 +710,8 @@ elsif File.basename($0) == 'spec'
 			end
 
 			describe 'nodes' do
-				it 'should all be enumerated by each(:nodes)' do
-					enumerator = @@tree.each(:nodes)
+				it 'should all be enumerated by each_nodes' do
+					enumerator = @@tree.nodes
 					enumerator.all? do |n|
 						n.should be_instance_of @@tree.class::Node
 					end
@@ -706,7 +722,7 @@ elsif File.basename($0) == 'spec'
 				end
 
 				it 'should have consistent paths' do
-					@@tree.each :nodes do |n|
+					@@tree.each_nodes do |n|
 						path = n.path
 						path.first.should equal @@tree.root
 						path.last.should equal n
@@ -717,11 +733,11 @@ elsif File.basename($0) == 'spec'
 
 			describe 'leaves' do
 				it 'should exist' do
-					@@tree.count.should > 0
+					@@tree.leaves.count.should > 0
 				end
 
 				it 'should all be Leaf class' do
-					@@tree.each do |leaf|
+					@@tree.each_leaves do |leaf|
 						leaf.should be_kind_of(@@tree.class::Node::Leaf)
 					end
 				end
@@ -729,7 +745,7 @@ elsif File.basename($0) == 'spec'
 				it 'next of last should return to first' do
 					_first = @@tree.first
 					_next = nil
-					@@tree.count.times do
+					@@tree.leaves.count.times do
 						_next = @@tree.next
 					end
 					_next.should_not be_nil
