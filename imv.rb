@@ -234,8 +234,6 @@ SQL
 					@parent, @tag = parent, tag
 					@children     = []
 					@hashes       = []
-					@cur_index    = nil
-					@cur_child    = nil
 				end
 
 				def consistent? depth = 0
@@ -289,30 +287,7 @@ SQL
 				end
 
 				def first
-					@cur_child = nil
-					@hashes[@cur_index = 0] or (
-						@cur_index = nil
-						@cur_child = @children.first
-						@cur_child.first
-					)
-				end
-
-				def next
-					unless @cur_child
-						@cur_index = -1 unless @cur_index
-						if @hashes[@cur_index += 1]
-							@hashes[@cur_index]
-						else
-							@cur_index = nil
-						end
-					else
-						@cur_child.next or (
-							begin
-								@cur_child = @children[@children.index(@cur_child) + 1]
-								return nil unless @cur_child
-							end until @cur_child.first
-						)
-					end
+					@hashes.first or @children.first.first
 				end
 
 				include Enumerable
@@ -358,6 +333,7 @@ SQL
 				end
 				verbose(4).puts 'Waiting for first leaf to be added...'
 				Thread.pass until sync {count > 0}
+				@current = first
 				verbose(4).puts 'First leaf has now been added.'
 			end
 
@@ -377,13 +353,13 @@ SQL
 
 			def first
 				sync do
-					@root.first
+					@current = @root.first
 				end
 			end
 
 			def next
 				sync do
-					@root.next
+					@current = @current.next
 				end
 			end
 
