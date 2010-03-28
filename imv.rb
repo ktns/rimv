@@ -365,8 +365,12 @@ SQL
 				verbose(4).puts 'First leaf has now been added.'
 			end
 
-			def running?
+			def loading?
 				@thread.alive?
+			end
+
+			def wait_until_loading
+				@thread.join
 			end
 
 			def consistent?
@@ -692,7 +696,7 @@ elsif File.basename($0) == 'spec'
 				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 				$complete_tag_tree_was_built = true
 				@@tree = IMV::DB::TagTree.new db
-				nil while @@tree.running?
+				@@tree.wait_until_loading
 			end
 		end
 
@@ -700,8 +704,8 @@ elsif File.basename($0) == 'spec'
 			@@tree.should be_consistent
 		end
 
-		it 'should not be running' do
-			@@tree.should_not be_running
+		it 'should not be loading' do
+			@@tree.should_not be_loading
 		end
 
 		describe 'nodes' do
