@@ -343,8 +343,6 @@ SQL
 				end
 			end
 
-			attr_reader :root
-
 			def initialize db
 				verbose(3).puts 'Initializing TagTree...'
 				raise unless db.kind_of?(IMV::DB)
@@ -688,64 +686,72 @@ elsif File.basename($0) == 'spec'
 		end
 	end
 
-	describe IMV::DB::TagTree, 'complete tree' do
+	describe IMV::DB::TagTree do
 		before :suite do
-			IMV::DB.open do |db|
-				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
-				$complete_tag_tree_was_built = true
-				@@tree = IMV::DB::TagTree.new db
-				@@tree.wait_until_loading
+			class IMV::DB::TagTree
+				attr_reader :root
 			end
 		end
 
-		it 'should be consistent' do
-			@@tree.should be_consistent
-		end
-
-		it 'should not be loading' do
-			@@tree.should_not be_loading
-		end
-
-		describe 'nodes' do
-			it 'should all be enumerated by each(:nodes)' do
-				enumerator = @@tree.each(:nodes)
-				enumerator.all? do |n|
-					n.should be_instance_of @@tree.class::Node
-				end
-
-				ObjectSpace.each_object(@@tree.class::Node) do |n|
-					enumerator.should be_include n
+		describe 'complete tree' do
+			before :suite do
+				IMV::DB.open do |db|
+					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+					$complete_tag_tree_was_built = true
+					@@tree = IMV::DB::TagTree.new db
+					@@tree.wait_until_loading
 				end
 			end
 
-			it 'should have consistent paths' do
-				@@tree.each :nodes do |n|
-					path = n.path
-					path.first.should be_equal @@tree.root
-					path.last.should be_equal n
-					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
-				end
-			end
-		end
-
-		describe 'leaves' do
-			it 'should exist' do
-				@@tree.count.should > 0
+			it 'should be consistent' do
+				@@tree.should be_consistent
 			end
 
-			it 'should all be Leaf class' do
-				@@tree.each do |leaf|
-					leaf.should be_kind_of(@@tree.class::Node::Leaf)
+			it 'should not be loading' do
+				@@tree.should_not be_loading
+			end
+
+			describe 'nodes' do
+				it 'should all be enumerated by each(:nodes)' do
+					enumerator = @@tree.each(:nodes)
+					enumerator.all? do |n|
+						n.should be_instance_of @@tree.class::Node
+					end
+
+					ObjectSpace.each_object(@@tree.class::Node) do |n|
+						enumerator.should be_include n
+					end
+				end
+
+				it 'should have consistent paths' do
+					@@tree.each :nodes do |n|
+						path = n.path
+						path.first.should be_equal @@tree.root
+						path.last.should be_equal n
+						n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
+					end
 				end
 			end
 
-			it 'next of last should return to first' do
-				_first = @@tree.first
-				_next = nil
-				@@tree.count.times do
-					_next = @@tree.next
+			describe 'leaves' do
+				it 'should exist' do
+					@@tree.count.should > 0
 				end
-				_first.should be_equal _next
+
+				it 'should all be Leaf class' do
+					@@tree.each do |leaf|
+						leaf.should be_kind_of(@@tree.class::Node::Leaf)
+					end
+				end
+
+				it 'next of last should return to first' do
+					_first = @@tree.first
+					_next = nil
+					@@tree.count.times do
+						_next = @@tree.next
+					end
+					_first.should be_equal _next
+				end
 			end
 		end
 	end
