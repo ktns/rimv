@@ -731,6 +731,22 @@ elsif File.basename($0) == 'spec'
 					_first.should be_equal _next
 				end
 			end
+
+			describe 'current leaf' do
+				before :suite do
+					class IMV::DB::TagTree
+						attr_reader :current
+					end
+				end
+
+				before :all do
+					@current = @@tree.current
+				end
+
+				it 'should be instance of IMV::DB::TagTree::Node::Leaf'do
+					@current.should be_instance_of IMV::DB::TagTree::Node::Leaf
+				end
+			end
 		end
 	end
 end
