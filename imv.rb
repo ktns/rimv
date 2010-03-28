@@ -213,7 +213,7 @@ SQL
 				end
 
 				def to_s
-					path.collect{|node| node.tag}.join('->')
+					path.collect{|node| node.tag or 'ROOT'}.join('->')
 				end
 
 				def inspect
