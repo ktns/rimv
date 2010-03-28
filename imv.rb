@@ -715,6 +715,15 @@ elsif File.basename($0) == 'spec'
 					enumerator.should be_include n
 				end
 			end
+
+			it 'should have consistent paths' do
+				@@tree.each :nodes do |n|
+					path = n.path
+					path.first.should be_eql @@tree.root
+					path.last.should be_eql n
+					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
+				end
+			end
 		end
 
 		describe 'leaves' do
