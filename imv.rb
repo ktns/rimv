@@ -728,6 +728,7 @@ elsif File.basename($0) == 'spec'
 					@@tree.count.times do
 						_next = @@tree.next
 					end
+					_next.should_not be_nil
 					_first.should be_equal _next
 				end
 			end
