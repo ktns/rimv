@@ -727,6 +727,10 @@ elsif File.basename($0) == 'spec'
 		end
 
 		describe 'leaves' do
+			it 'should exist' do
+				@@tree.count.should > 0
+			end
+
 			it 'should all be Leaf class' do
 				@@tree.each do |leaf|
 					leaf.should be_kind_of(@@tree.class::Node::Leaf)
