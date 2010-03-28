@@ -350,18 +350,16 @@ SQL
 				raise unless db.kind_of?(IMV::DB)
 				@mutex  = Mutex.new
 				@root   = Node.new(nil, nil)
-				@empty  = true
 				@thread = Thread.new do
 					Thread.current.abort_on_exception = true
 					db.each_hash_tags do |hash, tags|
 						sync do
 							@root.add hash, tags
-							@empty = false
 						end
 					end
 				end
 				verbose(4).puts 'Waiting for first leaf to be added...'
-				Thread.pass while sync {@empty}
+				Thread.pass until sync {count > 0}
 				verbose(4).puts 'First leaf has now been added.'
 			end
 
