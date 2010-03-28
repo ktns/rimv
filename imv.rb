@@ -719,8 +719,8 @@ elsif File.basename($0) == 'spec'
 			it 'should have consistent paths' do
 				@@tree.each :nodes do |n|
 					path = n.path
-					path.first.should be_eql @@tree.root
-					path.last.should be_eql n
+					path.first.should be_equal @@tree.root
+					path.last.should be_equal n
 					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
 				end
 			end
@@ -743,7 +743,7 @@ elsif File.basename($0) == 'spec'
 				@@tree.count.times do
 					_next = @@tree.next
 				end
-				_first.should be_eql _next
+				_first.should be_equal _next
 			end
 		end
 	end
