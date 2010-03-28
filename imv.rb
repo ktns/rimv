@@ -267,6 +267,10 @@ SQL
 					def hash
 						[super, node].hash
 					end
+
+					def inspect
+						"#<#{self.class.name};#{@node.to_s}->#{self}>"
+					end
 				end
 
 				def add hash, tags
