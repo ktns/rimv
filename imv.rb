@@ -763,6 +763,12 @@ elsif File.basename($0) == 'spec'
 				it 'should be instance of IMV::DB::TagTree::Node::Leaf'do
 					@@tree.current.should be_instance_of IMV::DB::TagTree::Node::Leaf
 				end
+
+				it 'should change after #next' do
+					lambda do
+						@@tree.next
+					end.should change(@@tree,:current)
+				end
 			end
 		end
 	end
