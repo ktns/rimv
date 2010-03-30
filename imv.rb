@@ -760,12 +760,8 @@ elsif File.basename($0) == 'spec'
 					end
 				end
 
-				before :all do
-					@current = @@tree.current
-				end
-
 				it 'should be instance of IMV::DB::TagTree::Node::Leaf'do
-					@current.should be_instance_of IMV::DB::TagTree::Node::Leaf
+					@@tree.current.should be_instance_of IMV::DB::TagTree::Node::Leaf
 				end
 			end
 		end
