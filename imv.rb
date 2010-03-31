@@ -751,6 +751,19 @@ elsif File.basename($0) == 'spec'
 					_next.should_not be_nil
 					_first.should equal _next
 				end
+
+				it 'should all be enuemrated by #next' do
+					leaves = @@tree.leaves.entries
+					lambda do
+						leaves.delete @@tree.first
+					end.should change(leaves, :size).by(-1)
+					leaves.size.times do
+						lambda do
+							leaves.delete @@tree.next
+						end.should change(leaves, :size).by(-1)
+					end
+					leaves.should be_empty
+				end
 			end
 
 			describe 'current leaf' do
