@@ -742,6 +742,13 @@ elsif File.basename($0) == 'spec'
 					end
 				end
 
+				it 'should have sane node' do
+					@@tree.each_leaves do |leaf|
+						leaf.node.should_not be_nil
+						@@tree.nodes.should include leaf.node
+					end
+				end
+
 				it 'next of last should return to first' do
 					_first = @@tree.first
 					_next = nil
