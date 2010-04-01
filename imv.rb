@@ -252,6 +252,8 @@ SQL
 					attr_reader :node
 
 					def initialize hash, node
+						raise TypeError, "String expected, but `#{hash.class}'" unless hash.instance_of?(String)
+						raise TypeError, "IMV::DB::TagTree::Node expected, but `#{node.class}'" unless node.instance_of?(IMV::DB::TagTree::Node)
 						super hash
 						@node = node
 					end
@@ -668,9 +670,19 @@ elsif File.basename($0) == 'spec'
 	describe IMV::DB::TagTree::Node::Leaf do
 		describe 'leaves with same hashes and different nodes' do
 			before :all do
-				@leaf1,@leaf2 = [1,2].collect do |i|
-					IMV::DB::TagTree::Node::Leaf.new('hoge', [i.to_s])
+				@root_node = IMV::DB::TagTree::Node.new(nil,nil)
+				@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
+					IMV::DB::TagTree::Node::Leaf.new(s,
+						IMV::DB::TagTree::Node.new(@root_node, s)
+					)
 				end
+			end
+
+			it 'should have different node' do
+				@leaf1.node.should_not equal @leaf2.node
+				@leaf1.node.should_not eql @leaf2.node
+				@leaf1.node.should_not == @leaf2.node
+				@leaf1.node.should_not === @leaf2.node
 			end
 
 			it 'should not be equal' do
@@ -716,7 +728,9 @@ elsif File.basename($0) == 'spec'
 						n.should be_instance_of @@tree.class::Node
 					end
 
-					ObjectSpace.each_object(@@tree.class::Node) do |n|
+					ObjectSpace.each_object(@@tree.class::Node).select do |n|
+						n.path.first == @@tree.root
+					end.each do |n|
 						enumerator.should be_include n
 					end
 				end
