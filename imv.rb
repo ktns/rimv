@@ -273,6 +273,10 @@ SQL
 					def inspect
 						"#<#{self.class.name};#{@node.to_s}->#{self}>"
 					end
+
+					def next
+						@node.next_hash_of self
+					end
 				end
 
 				def add hash, tags
@@ -294,6 +298,24 @@ SQL
 
 				def first
 					@hashes.first or @children.first.first
+				end
+
+				def next_hash_of hash
+					@hashes[@hashes.index(hash)+1] or
+					if @children.empty?
+						@parent.next_node_of(self).first
+					else
+						@children.first.first
+					end
+				end
+
+				def next_node_of node
+					@children[@children.index(node)+1] or
+					if @parent
+						@parent.next_node_of(self)
+					else
+						first
+					end
 				end
 
 				def each_leaves &block
