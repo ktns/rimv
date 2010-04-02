@@ -299,7 +299,8 @@ SQL
 				end
 
 				def first
-					@hashes.first or @children.first.first
+					@hashes.first or @children.first.first or
+					raise "#{inspect}.first returned nil"
 				end
 
 				def next_hash_of hash
