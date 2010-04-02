@@ -178,7 +178,7 @@ SQL
 		end
 
 		def each_hash_tags
-			@db.execute(<<SQL) {|hash, tags| yield hash, (tags||'').split('|')}
+			@db.execute(<<SQL) {|hash, tags| yield hash, (tags||'').split('|').uniq}
 SELECT img.hash, group_concat(tag,'|')
 FROM (img LEFT JOIN tag ON img.hash = tag.hash)
 	LEFT JOIN name ON img.hash = name.hash
@@ -285,7 +285,9 @@ SQL
 					verbose(3).puts "adding hash `#{hash}' into TagTree; " +
 						"tagstack [#{tags.join(', ')}]"
 					if tags.empty?
-						@hashes.push Leaf.new(hash, self)
+						new_leaf = Leaf.new(hash, self)
+						raise "Duplicate leaf #{new_leaf} added to #{self}" if @hashes.include? new_leaf
+						@hashes.push new_leaf
 					else
 						tags.each do |tag|
 							unless child = @children.find{|c|c.tag == tag}
