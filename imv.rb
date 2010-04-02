@@ -258,6 +258,8 @@ SQL
 						@node = node
 					end
 
+					alias === ==
+
 					def == other
 						super and node == other.node
 					end
@@ -694,10 +696,16 @@ elsif File.basename($0) == 'spec'
 			before :all do
 				@root_node = IMV::DB::TagTree::Node.new(nil,nil)
 				@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
-					IMV::DB::TagTree::Node::Leaf.new(s,
+					IMV::DB::TagTree::Node::Leaf.new('piyo',
 						IMV::DB::TagTree::Node.new(@root_node, s)
 					)
 				end
+			end
+
+			it 'should equal as String' do
+				str1,str2 = String.new(@leaf1), String.new(@leaf2)
+				str1.should == str2
+				str1.should === str2
 			end
 
 			it 'should have different node' do
@@ -711,7 +719,10 @@ elsif File.basename($0) == 'spec'
 				@leaf1.should_not equal @leaf2
 				@leaf1.should_not eql @leaf2
 				@leaf1.should_not == @leaf2
-				@leaf1.should_not === @leaf2
+			end
+
+			it 'should be equal with ===' do
+				@leaf1.should === @leaf2
 			end
 		end
 	end
