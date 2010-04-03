@@ -248,32 +248,38 @@ SQL
 					true
 				end
 
-				class Leaf < String
+				class Leaf
 					attr_reader :node
 
 					def initialize hash, node
 						raise TypeError, "String expected, but `#{hash.class}'" unless hash.instance_of?(String)
 						raise TypeError, "IMV::DB::TagTree::Node expected, but `#{node.class}'" unless node.instance_of?(IMV::DB::TagTree::Node)
-						super hash
+						@hash = hash
 						@node = node
 					end
 
-					alias === ==
+					def to_s
+						@hash
+					end
+
+					def === other
+						@hash == other.to_s
+					end
 
 					def == other
-						super and node == other.node
+						@hash == other.to_s and node == other.node
 					end
 
 					def eql? other
-						super and node.eql? other.node
+						@hash.eql? other.to_s and node.eql? other.node
 					end
 
 					def hash
-						[super, node].hash
+						[@hash, @node].hash
 					end
 
 					def inspect
-						"#<#{self.class.name};#{@node.to_s}->#{self}>"
+						"#<#{self.class.name};#{@node.to_s}->#{to_s}>"
 					end
 
 					def next
@@ -705,10 +711,10 @@ elsif File.basename($0) == 'spec'
 				end
 			end
 
-			it 'should equal as String' do
-				str1,str2 = String.new(@leaf1), String.new(@leaf2)
-				str1.should == str2
-				str1.should === str2
+			it 'should have equal hash' do
+				hash1, hash2 = @leaf1.to_s, @leaf2.to_s
+				hash1.should == hash2
+				hash1.should === hash2
 			end
 
 			it 'should have different node' do
