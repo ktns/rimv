@@ -295,6 +295,10 @@ SQL
 					def next
 						@node.next_hash_of self
 					end
+
+					def prev
+						@node.prev_hash_of self
+					end
 				end
 
 				def add hash, tags
@@ -334,6 +338,42 @@ SQL
 					@children[@children.index(node)+1] or
 					if @parent
 						@parent.next_node_of(self)
+					else
+						self
+					end
+				end
+
+				def last_hash
+					@hashes.last
+				end
+
+				def last_node
+					if @children.empty?
+						self
+					else
+						@children.last.last_node
+					end
+				end
+
+				def prev_hash_of hash
+					if (index = @hashes.index(hash)-1) >= 0
+						@hashes[index]
+					else
+						if @parent
+							node = self
+							begin
+								node = node.parent.prev_node_of(node)
+							end until node.last_hash
+							node.last_hash
+						else
+							last_node.last_hash
+						end
+					end
+				end
+
+				def prev_node_of node
+					if ( index = @children.index(node)-1 ) >= 0
+						@children[index].last_node
 					else
 						self
 					end
@@ -415,6 +455,18 @@ SQL
 			def next
 				sync do
 					@current = @current.next
+				end
+			end
+
+			def prev
+				sync do
+					@current = @current.prev
+				end
+			end
+
+			def last
+				sync do
+					@root.last
 				end
 			end
 
