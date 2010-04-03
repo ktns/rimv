@@ -569,7 +569,9 @@ SQL
 				if @cur_img
 					Gtk.main_iteration while Gtk.events_pending?
 					add_img = false
-					@cur_img.pixbuf = @db.getimage(hash).pixbuf
+					new_img = @db.getimage(hash)
+					@cur_img.pixbuf = new_img.pixbuf if new_img.pixbuf
+					@cur_img.pixbuf_animation = new_img.pixbuf_animation if new_img.pixbuf_animation
 				else
 					add_img = true
 					@cur_img = @db.getimage(hash)
