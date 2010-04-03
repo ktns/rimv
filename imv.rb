@@ -69,8 +69,18 @@ module IMV
 			end
 		end
 
+		@@db_file = "#{ENV['HOME']}/.imv.sqlite3"
+
+		def self.db_file
+			@@db_file
+		end
+
+		def self.db_file= db_file
+			@@db_file = db_file
+		end
+
 		def initialize
-			@db = Database.new("#{ENV['HOME']}/.imv.sqlite3")
+			@db = Database.new(self.class.db_file)
 		end
 
 		def close
@@ -751,6 +761,7 @@ elsif File.basename($0) == 'spec'
 		describe 'complete tree' do
 			before :all do
 				unless self.class.class_variable_defined? :@@tree
+					IMV::DB.db_file = "#{ENV['HOME']}/.imv.sqlite3.test"
 					IMV::DB.open do |db|
 						raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 						$complete_tag_tree_was_built = true
