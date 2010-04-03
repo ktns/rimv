@@ -325,7 +325,7 @@ SQL
 					if @parent
 						@parent.next_node_of(self)
 					else
-						first
+						self
 					end
 				end
 
