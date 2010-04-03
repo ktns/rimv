@@ -861,6 +861,16 @@ elsif File.basename($0) == 'spec'
 						@@tree.next
 					end.should change(@@tree,:current)
 				end
+
+				it 'should not change after next and prev' do
+					@@tree.leaves.count.times do
+						lambda do
+							@@tree.next
+							@@tree.prev
+						end.should_not change(@@tree, :current)
+						@@tree.next
+					end
+				end
 			end
 		end
 	end
