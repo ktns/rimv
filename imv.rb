@@ -556,6 +556,9 @@ SQL
 			show_all
 			maximize
 			@cur_img = nil
+			verbose(2).puts 'waiting max image size to be retrieved...'
+			Gtk.main_iteration until @max_size
+			verbose(2).puts 'max image size was retrieved.'
 		end
 
 		def cur_hash
