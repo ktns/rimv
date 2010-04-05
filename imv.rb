@@ -481,7 +481,9 @@ SQL
 			end
 
 			def each_leaves &block
-				@root.each_leaves &block
+				sync do
+					@root.each_leaves &block
+				end
 			end
 
 			def leaves
@@ -489,7 +491,9 @@ SQL
 			end
 
 			def each_nodes &block
-				@root.each_nodes &block
+				sync do
+					@root.each_nodes &block
+				end
 			end
 
 			def nodes
