@@ -474,6 +474,12 @@ SQL
 				end
 			end
 
+			def random
+				sync do
+					@current = leaves.entries[rand(leaves.count)]
+				end
+			end
+
 			def each_leaves &block
 				@root.each_leaves &block
 			end
