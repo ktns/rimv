@@ -5,10 +5,11 @@ APP_NAME = "imv"
 module IMV
 	require "gtk2"
 
-	@@mode = nil
-	@@path_tag = false
-	@@random = false
-	@@score = nil
+	@@mode      = nil
+	@@path_tag  = false
+	@@tag       = nil
+	@@random    = false
+	@@score     = nil
 	@@verbosity = 0
 
 	module Logo
@@ -125,6 +126,9 @@ SQL
 								unless tag == '.'
 									addtag hash, tag
 								end
+							elsif @@tag
+								verbose(3).puts "tagging `#{path}'(#{hash}) as `#{@@tag}'"
+								addtag hash, @@tag
 							end
 						end
 					else
@@ -743,7 +747,12 @@ if $0 == __FILE__
 			opt.on('-p', '--path-tag',
 						 'tag image with directory name'){@@path_tag = true}
 
+			opt.on('-t TAG', '--tag=TAG',
+						 'specify tag of images to be added'){|tag| @@tag = tag}
+
 			opt.parse!
+
+			abort 'path_tag and tag option is mutually exclusive!' if @@path_tag && @@tag
 		end
 
 		case @@mode
