@@ -417,6 +417,8 @@ SQL
 				end
 			end
 
+			attr_reader :current
+
 			def initialize db
 				verbose(3).puts 'Initializing TagTree...'
 				raise unless db.kind_of?(IMV::DB)
@@ -917,12 +919,6 @@ elsif File.basename($0) == 'spec'
 			end
 
 			describe 'current leaf' do
-				before :suite do
-					class IMV::DB::TagTree
-						attr_reader :current
-					end
-				end
-
 				it 'should be instance of IMV::DB::TagTree::Node::Leaf'do
 					@@tree.current.should be_instance_of IMV::DB::TagTree::Node::Leaf
 				end
