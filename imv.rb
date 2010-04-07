@@ -653,7 +653,7 @@ SQL
 			window.cursor = Gdk::Cursor.new(Gdk::Cursor::WATCH)
 			begin
 				if @cur_img
-					Gtk.main_iteration while Gtk.events_pending?
+					10.times {Gtk.main_iteration if Gtk.events_pending?}
 					add_img = false
 					new_img = @db.getimage(hash)
 					@cur_img.pixbuf = new_img.pixbuf if new_img.pixbuf
