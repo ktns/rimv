@@ -420,10 +420,11 @@ SQL
 			attr_reader :current
 
 			def initialize db
-				verbose(3).puts 'Initializing TagTree...'
+				verbose(2).puts 'Initializing TagTree...'
 				raise unless db.kind_of?(IMV::DB)
-				@mutex  = Mutex.new
-				@root   = Node.new(nil, nil)
+				@mutex       = Mutex.new
+				@root        = Node.new(nil, nil)
+				@random_hist = []
 				@thread = Thread.new do
 					Thread.current.abort_on_exception = true
 					db.each_hash_tags do |hash, tags|
@@ -477,8 +478,15 @@ SQL
 			end
 
 			def random
+				@random_hist.push @current
 				sync do
 					@current = leaves.entries[rand(leaves.count)]
+				end
+			end
+
+			def random_prev
+				sync do
+					@current = @random_hist.pop || random
 				end
 			end
 
@@ -582,14 +590,12 @@ SQL
 	class MainWin < Gtk::Window
 		include IMV
 
-		def initialize db, hash_list
+		def initialize db
 			raise TypeError, "IMV::DB expected for `db', but #{db.class}" unless db.kind_of?(IMV::DB)
-			raise TypeError, "Array expected for `hash_list', but #{hash_list.class}" unless hash_list.kind_of?(Array)
 
 			super(APP_NAME)
 			@db          = db
-			@hash_list   = hash_list
-			@random_hist = []
+			@tree        = IMV::DB::TagTree.new(db)
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
@@ -626,8 +632,7 @@ SQL
 						signal_handler_disconnect tmp_handler_id
 						unmaximize
 						self.resizable = false
-						display @hash_list[@cur_index = (
-							@@random ? rand(@hash_list.size) : 0)]
+						display (@@random ? @tree.random : @tree.first)
 					end
 				end
 			end
@@ -640,7 +645,7 @@ SQL
 		end
 
 		def cur_hash
-			@hash_list[@cur_index]
+			@tree.current
 		end
 
 		def display hash
@@ -681,31 +686,18 @@ SQL
 
 		def display_next
 			unless @@random
-				display(@hash_list[@cur_index = ((@cur_index+1) % @hash_list.length)])
+				display(@tree.next)
 			else
-				display_random
+				display(@tree.random)
 			end
 		end
 
 		def display_prev
 			unless @@random
-				display(@hash_list[@cur_index = ((@cur_index-1) % @hash_list.length)])
+				display(@tree.prev)
 			else
-				hist = @random_hist.pop
-				if hist
-					display hist
-				else
-					display_random
-				end
+				display(@tree.random_prev)
 			end
-		end
-
-		def display_random
-			@random_hist.push cur_hash
-			begin
-				next_index = rand(@hash_list.size)
-			end until next_index != @cur_index
-			display(@hash_list[@cur_index = next_index])
 		end
 	end
 end
@@ -779,7 +771,7 @@ if $0 == __FILE__
 		when 'view',nil
 			DB.open do |db|
 				abort 'No Image!' if (hashlist = db.getallhash).empty?
-				main_win = MainWin.new(db, hashlist)
+				main_win = MainWin.new(db)
 				Gtk.main
 			end
 		else
