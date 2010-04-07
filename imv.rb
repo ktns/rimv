@@ -235,7 +235,7 @@ SQL
 				end
 
 				def initialize parent, tag
-					verbose(3).puts 'Initializing new TagTree Node; ' +
+					verbose(4).puts 'Initializing new TagTree Node; ' +
 						"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
 					[
 						[parent,self.class],
@@ -433,10 +433,10 @@ SQL
 						end
 					end
 				end
-				verbose(4).puts 'Waiting for first leaf to be added...'
+				verbose(3).puts 'Waiting for first leaf to be added...'
 				Thread.pass until sync {leaves.count > 0}
 				@current = first
-				verbose(4).puts 'First leaf has now been added.'
+				verbose(3).puts 'First leaf has now been added.'
 			end
 
 			def loading?
