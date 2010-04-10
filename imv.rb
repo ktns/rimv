@@ -133,6 +133,9 @@ SQL
 						end
 					else
 						$stderr.puts "`#{path}' is not a image supported by gtk!"
+						verbose(2).puts "image            = #{img.inspect}"
+						verbose(2).puts "pixbuf           = #{img.pixbuf.inspect}"
+						verbose(2).puts "pixbuf_animation = #{img.pixbuf_animation.inspect}"
 					end
 				else
 					$stderr.puts "file `#{path}' does not exist!"
