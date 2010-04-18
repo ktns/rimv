@@ -489,8 +489,8 @@ SQL
 
 			def random_prev
 				sync do
-					@current = @random_hist.pop || random
-				end
+					@current = @random_hist.pop
+				end || random
 			end
 
 			def each_leaves &block
