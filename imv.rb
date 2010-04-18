@@ -481,8 +481,8 @@ SQL
 			end
 
 			def random
-				@random_hist.push @current
 				sync do
+					@random_hist.push @current
 					@current = leaves.entries[rand(leaves.count)]
 				end
 			end
