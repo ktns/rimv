@@ -299,6 +299,10 @@ SQL
 						"#<#{self.class.name};#{@node.to_s}->#{to_s}>"
 					end
 
+					def path
+						@node.path
+					end
+
 					def next
 						@node.next_hash_of self
 					end
