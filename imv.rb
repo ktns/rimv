@@ -313,7 +313,7 @@ SQL
 				end
 
 				def add hash, tags
-					verbose(3).puts "adding hash `#{hash}' into TagTree; " +
+					verbose(4).puts "adding hash `#{hash}' into TagTree; " +
 						"tagstack [#{tags.join(', ')}]"
 					if tags.empty?
 						new_leaf = Leaf.new(hash, self)
