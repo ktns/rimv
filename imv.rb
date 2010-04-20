@@ -307,6 +307,10 @@ SQL
 						@node.path
 					end
 
+					def tags
+						@node.tags
+					end
+
 					def next
 						@node.next_hash_of self
 					end
