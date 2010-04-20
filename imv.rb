@@ -421,6 +421,16 @@ SQL
 				def nodes
 					Enumerable::Enumerator.new(self, :each_nodes)
 				end
+
+				def shuffle tags
+					if tags.empty?
+						self
+					else
+						tags.collect do |tag|
+							@children.find{|c| c.tag == tag}.shuffle tags - [tag]
+						end.flatten
+					end
+				end
 			end
 
 			def sync
@@ -523,6 +533,23 @@ SQL
 
 			def nodes
 				@root.nodes
+			end
+
+			def isotopes item
+				node = item.instance_of?(Node::Leaf) ? item.node : item
+				raise ArgumentError, "#{Node} expected, but #{node.class}" unless
+					node.instance_of?(Node)
+				isotopes = @root.shuffle item.path.collect{|node| node.tag}.compact
+				case item
+				when Node
+					isotopes
+				when Node::Leaf
+					isotopes.collect do |i|
+						i.hashes.find{|h| h.to_s == item.to_s}
+					end
+				else
+					raise
+				end
 			end
 		end
 	end
