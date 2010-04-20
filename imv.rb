@@ -229,6 +229,10 @@ SQL
 					return path
 				end
 
+				def tags
+					path.collect{|n| n.tag}.compact
+				end
+
 				def to_s
 					path.collect{|node| node.tag or 'ROOT'}.join('->')
 				end
