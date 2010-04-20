@@ -756,6 +756,7 @@ SQL
 						signal_connect("configure_event") do |w, e|
 							verbose(2).puts('mainwin#configure_event')
 							@tagpopup.move(e.x+e.width, e.y)
+							print ''
 						end
 					end
 				end
