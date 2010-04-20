@@ -978,6 +978,53 @@ elsif File.basename($0) == 'spec'
 					end
 				end
 			end
+
+			describe 'isotopes' do
+				describe 'of any', :shared => true do
+					before :all do
+						@orig = @@tree.send(enum).max_by{|item| item.path.count}
+						@orig.path.size.should > 2
+						@isotopes = @@tree.isotopes @orig
+						@factorial = (1..@orig.path.size - 1).inject(1){|i,j| i*j}
+					end
+
+					it 'should all be unique' do
+						@isotopes.uniq.should == @isotopes
+					end
+
+					it 'should include factorial of count of tags nodes' do
+						@isotopes.size.should == @factorial
+					end
+
+					it 'should all have same tags if sorted' do
+						@isotopes.each do |i|
+							i.tags.sort.should == @orig.tags.sort
+						end
+					end
+
+					it 'should all be same class as original' do
+						@isotopes.each do |i|
+							i.should be_instance_of(@orig.class)
+						end
+					end
+				end
+
+				describe 'of a node' do
+					def enum
+						:nodes
+					end
+
+					it_should_behave_like 'of any'
+				end
+
+				describe 'of a leaf' do
+					def enum
+						:leaves
+					end
+
+					it_should_behave_like 'of any'
+				end
+			end
 		end
 	end
 end
