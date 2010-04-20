@@ -661,6 +661,10 @@ SQL
 				}, [GDK_r] => lambda {|w|
 					verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
 					@@random = ! @@random
+				}, [GDK_t,GDK_s] => lambda {|w|
+					verbose(1).puts 'toggle tag popup window'
+					w.tagpopup.toggle
+					verbose(2).puts "tag popup is now #{w.tagpopup ? 'on' : 'off'}"
 				}
 			}
 
@@ -682,13 +686,53 @@ SQL
 			end
 		end
 
+		class TagPopup < Gtk::Window
+			def on?
+				@on
+			end
+
+			def toggle
+				@on = ! @on
+				if @on
+					show_all
+				else
+					hide
+				end
+			end
+
+			def initialize
+				@on = false
+
+				super Gtk::Window::POPUP
+
+				add(@label = Gtk::Label.new)
+				set_allow_shrink false
+			end
+
+			def display leaf
+				raise unless leaf.instance_of?(IMV::DB::TagTree::Node::Leaf)
+				verbose(2).puts "tagpopup#display; path=#{leaf.path}"
+				tags = leaf.path.collect{|n|n.tag}
+				tags.shift
+				tags << 'None' if tags.empty?
+				@label.text = tags.join("\n")
+
+				resize 1,1
+				show_all if @on
+			end
+
+		end
+
+		attr_reader :tagpopup
+
 		def initialize db
 			raise TypeError, "IMV::DB expected for `db', but #{db.class}" unless db.kind_of?(IMV::DB)
 
 			super(APP_NAME)
-			@db      = db
-			@tree    = IMV::DB::TagTree.new(db)
-			@kparser = KeyParser.new
+			@db       = db
+			@tree     = IMV::DB::TagTree.new(db)
+			@kparser  = KeyParser.new
+			@tagpopup = TagPopup.new
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
@@ -709,6 +753,10 @@ SQL
 						unmaximize
 						self.resizable = false
 						display (@@random ? @tree.random : @tree.first)
+						signal_connect("configure_event") do |w, e|
+							verbose(2).puts('mainwin#configure_event')
+							@tagpopup.move(e.x+e.width, e.y)
+						end
 					end
 				end
 			end
@@ -755,6 +803,7 @@ SQL
 				resize(*size_view)
 				set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
 				show_all
+				@tagpopup.display hash
 			ensure
 				window.cursor = nil
 			end
