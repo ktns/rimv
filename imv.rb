@@ -597,12 +597,61 @@ SQL
 	class MainWin < Gtk::Window
 		include IMV
 
+		class KeyParser
+			include IMV
+			include Gdk::Keyval
+
+			def initialize
+				@stack = []
+			end
+
+			@@map = {
+				[GDK_q] =>
+				lambda {|w|
+					Gtk.main_quit
+				}, [GDK_h] =>
+				lambda {|w|
+					w.hide
+					Thread.new(w) do |w|
+						puts 'press enter to reshow window...'
+						$stdin.gets
+						w.show
+					end
+				}, [GDK_space] => lambda {|w|
+					w.display_next
+				}, [GDK_BackSpace] => lambda {|w|
+					w.display_prev
+				}, [GDK_r] => lambda {|w|
+					verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
+					@@random = ! @@random
+				}
+			}
+
+			def have_chance?
+				@@map.each_key.any? do |key|
+					key[0...@stack.size] == @stack
+				end
+			end
+
+			def send w, e
+				@stack << e.keyval
+				if handler = @@map[@stack]
+					handler.call w
+				elsif have_chance?
+					verbose(2).puts "KeyParser pending; stack = #{@stack.pack('c*')}"
+					return @stack
+				end
+				@stack = []
+			end
+		end
+
 		def initialize db
 			raise TypeError, "IMV::DB expected for `db', but #{db.class}" unless db.kind_of?(IMV::DB)
 
 			super(APP_NAME)
-			@db          = db
-			@tree        = IMV::DB::TagTree.new(db)
+			@db      = db
+			@tree    = IMV::DB::TagTree.new(db)
+			@kparser = KeyParser.new
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
@@ -611,24 +660,7 @@ SQL
 				Gtk.main_quit
 			end
 			signal_connect("key-press-event") do |w, e|
-				case e.keyval
-				when Gdk::Keyval::GDK_q
-					Gtk.main_quit
-				when Gdk::Keyval::GDK_h
-					hide
-					Thread.new(w) do |w|
-						puts 'press enter to reshow window...'
-						$stdin.gets
-						w.show
-					end
-				when Gdk::Keyval::GDK_space
-					display_next
-				when Gdk::Keyval::GDK_BackSpace
-					display_prev
-				when Gdk::Keyval::GDK_r
-					verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
-					@@random = ! @@random
-				end
+				@kparser.send(w,e)
 			end
 			tmp_handler_id = signal_connect("window_state_event") do |w, e|
 				if e.changed_mask == Gdk::EventWindowState::MAXIMIZED
