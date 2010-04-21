@@ -567,6 +567,8 @@ SQL
 				arg = arg.first
 				if arg.kind_of?(Array)
 					self.new(*arg)
+				elsif arg.respond_to?(:size)
+					self.new(*arg.size)
 				else
 					self.new(arg.width, arg.height)
 				end
