@@ -700,13 +700,18 @@ SQL
 				end
 			end
 
-			def initialize
-				@on = false
+			def initialize main_win
+				@on       = false
+				@main_win = main_win
 
 				super Gtk::Window::POPUP
 
 				add(@label = Gtk::Label.new)
 				set_allow_shrink false
+
+				signal_connect('configure_event') do |w,e|
+					move
+				end
 			end
 
 			def display leaf
@@ -721,6 +726,9 @@ SQL
 				show_all if @on
 			end
 
+			def move
+				super(*(Size[@main_win.position]+Size[@main_win]-Size[size]))
+			end
 		end
 
 		attr_reader :tagpopup
@@ -732,7 +740,7 @@ SQL
 			@db       = db
 			@tree     = IMV::DB::TagTree.new(db)
 			@kparser  = KeyParser.new
-			@tagpopup = TagPopup.new
+			@tagpopup = TagPopup.new self
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
@@ -755,7 +763,7 @@ SQL
 						display (@@random ? @tree.random : @tree.first)
 						signal_connect("configure_event") do |w, e|
 							verbose(2).puts('mainwin#configure_event')
-							@tagpopup.move(e.x+e.width, e.y)
+							@tagpopup.move
 							print ''
 						end
 					end
