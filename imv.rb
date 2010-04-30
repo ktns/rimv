@@ -920,6 +920,17 @@ elsif File.basename($0) == 'spec'
 				@@tree.should_not be_loading
 			end
 
+			shared_examples_for 'nodes and leaves' do
+				describe '#tree' do
+					it 'should return parent tree' do
+						@@tree.leaves.each do |leaf|
+							leaf.should respond_to :tree
+							leaf.tree.should equal @@tree
+						end
+					end
+				end
+			end
+
 			describe 'nodes' do
 				it 'should all be enumerated by each_nodes' do
 					enumerator = @@tree.nodes
@@ -942,6 +953,8 @@ elsif File.basename($0) == 'spec'
 						n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
 					end
 				end
+
+				it_should_behave_like 'nodes and leaves'
 			end
 
 			describe 'leaves' do
@@ -984,6 +997,8 @@ elsif File.basename($0) == 'spec'
 					end
 					leaves.should be_empty
 				end
+
+				it_should_behave_like 'nodes and leaves'
 			end
 
 			describe 'current leaf' do
