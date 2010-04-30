@@ -984,6 +984,30 @@ elsif File.basename($0) == 'spec'
 					end
 					leaves.should be_empty
 				end
+
+				describe 'tagged with slash' do
+					before :all do
+						IMV::DB.open do |db|
+							def db.tag_with_slash_and_hash
+								@db.execute(<<SQL).first
+SELECT tag, hash FROM tag
+WHERE tag like '%/%'
+LIMIT 1;
+SQL
+							end
+							@tag, @hash = db.tag_with_slash_and_hash
+						end
+					end
+
+					it 'should have tag nodes splitted by slash' do
+						tags = @@tree.leaves.find do |l|
+							l.to_s == @hash
+						end.tags
+						@tag.split('/').each do |tag|
+							tags.should include tag
+						end
+					end
+				end
 			end
 
 			describe 'current leaf' do
