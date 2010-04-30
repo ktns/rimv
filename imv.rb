@@ -328,13 +328,18 @@ SQL
 						raise "Duplicate leaf #{new_leaf} added to #{self}" if @hashes.include? new_leaf
 						@hashes.push new_leaf
 					else
-						tags.each do |tag|
-							unless child = @children.find{|c|c.tag == tag}
-								@children.push(child = self.class.new(self, tag))
-								@children.sort!
+						tags.each do |tag_with_slash|
+							tags_splitted = tag_with_slash.split('/')
+							tags_splitted.each do |tag|
+								unless child = @children.find{|c|c.tag == tag}
+									@children.push(child = self.class.new(self, tag))
+									@children.sort!
+								end
+								raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
+								child.add(hash, [tags, tags_splitted].flatten.uniq.reject do |t|
+									[tag,tag_with_slash].include? t
+								end)
 							end
-							raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-							child.add(hash, tags.reject{|t| t == tag})
 						end
 					end
 				end
