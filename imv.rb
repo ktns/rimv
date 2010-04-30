@@ -230,7 +230,7 @@ SQL
 				def path
 					path = []
 					node = self
-					while node
+					until node.instance_of?(IMV::DB::TagTree)
 						path.unshift node
 						node = node.parent
 					end
@@ -242,7 +242,13 @@ SQL
 				end
 
 				def to_s
-					path.collect{|node| node.tag or 'ROOT'}.join('->')
+					path.collect do |node|
+						if node.parent.instance_of?(IMV::DB::TagTree)
+							'ROOT'
+						else
+							tag
+						end
+					end.join('->')
 				end
 
 				def inspect
@@ -365,7 +371,7 @@ SQL
 
 				def next_node_of node
 					@children[@children.index(node)+1] or
-					if @parent
+					unless @parent.instance_of?(TagTree)
 						@parent.next_node_of(self)
 					else
 						self
@@ -388,7 +394,7 @@ SQL
 					if (index = @hashes.index(hash)-1) >= 0
 						@hashes[index]
 					else
-						if @parent
+						unless @parent.instance_of?(TagTree)
 							node = self
 							begin
 								node = node.parent.prev_node_of(node)
