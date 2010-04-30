@@ -155,7 +155,7 @@ SQL
 		end
 
 		def getimage_bin hash
-					@db.execute(<<SQL,hash).collect.first.first
+					@db.get_first_value(<<SQL,hash)
 SELECT img
 FROM img
 WHERE hash = ?
@@ -187,7 +187,7 @@ SQL
 				else
 					raise ScriptError
 				end
-			@db.execute(<<"SQL", *arg).collect {|set| set.first}
+			@db.execute(<<"SQL", *arg).flatten
 SELECT hash
 FROM img
 #{where}
