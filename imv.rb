@@ -219,6 +219,14 @@ SQL
 					tag <=> other.tag
 				end
 
+				def tree
+					if @parent.instance_of?(TagTree)
+						@parent
+					else
+						@parent.tree
+					end
+				end
+
 				def path
 					path = []
 					node = self
@@ -297,6 +305,10 @@ SQL
 
 					def hash
 						[@hash, @node].hash
+					end
+
+					def tree
+						@node.tree
 					end
 
 					def inspect
@@ -448,7 +460,7 @@ SQL
 				verbose(2).puts 'Initializing TagTree...'
 				raise unless db.kind_of?(IMV::DB)
 				@mutex       = Mutex.new
-				@root        = Node.new(nil, nil)
+				@root        = Node.new(self, nil)
 				@random_hist = []
 				@thread = Thread.new do
 					Thread.current.abort_on_exception = true
