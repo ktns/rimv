@@ -249,7 +249,7 @@ SQL
 						[tag,String]
 					].each do |v,c|
 						unless v == nil || v.kind_of?(c)
-							raise TypeError "`#{c}' expected, but `#{v.class}'"
+							raise TypeError, "`#{c}' expected, but `#{v.class}'"
 						end
 					end
 					@parent, @tag = parent, tag
