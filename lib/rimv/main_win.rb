@@ -17,7 +17,9 @@ module Rimv
 			@tree     = Rimv::DB::TagTree.new(adaptor.hashtags)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
+			@da      = Gtk::DrawingArea.new
 
+			add(@da)
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
 
