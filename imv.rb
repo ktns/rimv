@@ -252,13 +252,11 @@ SQL
 				def initialize parent, tag
 					verbose(4).puts 'Initializing new TagTree Node; ' +
 						"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
-					[
-						[parent,self.class],
-						[tag,String]
-					].each do |v,c|
-						unless v == nil || v.kind_of?(c)
-							raise TypeError, "`#{c}' expected, but `#{v.class}'"
-						end
+					unless [self.class, TagTree].any?{|c| parent.instance_of?(c)}
+						raise TypeError, "`#{self.class}' or `#{TagTree}' expected, but `#{parent.class}'"
+					end
+					unless tag.nil? || tag.instance_of?(String)
+						raise TypeError, "`#{String}' or nil expected, but `#{tag.class}'"
 					end
 					@parent, @tag = parent, tag
 					@children     = []
@@ -871,11 +869,19 @@ elsif File.basename($0) == 'spec'
 	describe IMV::DB::TagTree::Node::Leaf do
 		describe 'leaves with same hashes and different nodes' do
 			before :all do
-				@root_node = IMV::DB::TagTree::Node.new(nil,nil)
+				class IMV::DB::TagTree
+					alias initialize_ initialize
+					def initialize
+					end
+				end
+				@root_node = IMV::DB::TagTree::Node.new(IMV::DB::TagTree.new, nil)
 				@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
 					IMV::DB::TagTree::Node::Leaf.new('piyo',
 						IMV::DB::TagTree::Node.new(@root_node, s)
 					)
+				end
+				class IMV::DB::TagTree
+					alias initialize initialize_
 				end
 			end
 
