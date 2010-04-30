@@ -86,7 +86,9 @@ module Rimv
 			@db      = db
 			@tree    = Rimv::DB::TagTree.new(db)
 			@kparser = KeyParser.new
+			@da      = Gtk::DrawingArea.new
 
+			add(@da)
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
 
