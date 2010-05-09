@@ -677,6 +677,12 @@ SQL
 				}, [GDK_r] => lambda {|w|
 					verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
 					@@random = ! @@random
+				},
+					[GDK_s, GDK_plus] => lambda {|w|
+					w.score_up
+				},
+					[GDK_s, GDK_minus] => lambda {|w|
+					w.score_down
 				}
 			}
 
