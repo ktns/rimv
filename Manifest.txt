@@ -3,6 +3,7 @@ Manifest.txt
 PostInstall.txt
 README.rdoc
 Rakefile
+asset/logo.xpm
 bin/rimv
 lib/rimv.rb
 script/console
