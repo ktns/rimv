@@ -5,11 +5,9 @@ README.rdoc
 Rakefile
 bin/rimv
 lib/rimv.rb
-lib/rimv/cli.rb
 script/console
 script/destroy
 script/generate
-spec/rimv_cli_spec.rb
 spec/rimv_spec.rb
 spec/spec.opts
 spec/spec_helper.rb
