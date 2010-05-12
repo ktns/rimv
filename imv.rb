@@ -1085,5 +1085,9 @@ elsif File.basename($0) == 'spec'
 			@root_node.should      have_child 'a'
 			@root_node['a'].should have_child 'b'
 		end
+
+		it 'should not have inverted relationship' do
+			@root_node.should_not have_child 'b'
+		end
 	end
 end
