@@ -331,14 +331,14 @@ SQL
 						tags.each do |tag_with_slash|
 							tags_splitted = tag_with_slash.split('/')
 							tag = tags_splitted.shift
+							next if self.tags.include? tag
 							unless child = @children.find{|c|c.tag == tag}
 								@children.push(child = self.class.new(self, tag))
 								@children.sort!
 							end
 							raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-							child.add(hash, [tags, tags_splitted].flatten.uniq.reject do |t|
-								[tag,tag_with_slash].include? t
-							end)
+							child.add hash, [tags, tags_splitted].flatten -
+								[tag_with_slash, child.tags].flatten
 						end
 					end
 				end
@@ -1089,7 +1089,7 @@ elsif File.basename($0) == 'spec'
 			@root_node.should_not have_child 'b'
 		end
 
-		describe 'and with duplicate parent' do
+		describe 'and with duplicate parent tags' do
 			before :all do
 				@root_node.add('fuga', %w<c/d c/e>)
 			end
