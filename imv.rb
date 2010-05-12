@@ -1088,5 +1088,22 @@ elsif File.basename($0) == 'spec'
 		it 'should not have inverted relationship' do
 			@root_node.should_not have_child 'b'
 		end
+
+		describe 'and with duplicate parent' do
+			before :all do
+				@root_node.add('fuga', %w<c/d c/e>)
+			end
+
+			it 'should have a common parent node' do
+				@root_node['c'].should have_child 'd'
+				@root_node['c'].should have_child 'e'
+			end
+
+			it 'should not have parent tag in children again' do
+				@root_node['c'].each_nodes do |child|
+					child.should_not have_child 'c'
+				end
+			end
+		end
 	end
 end
