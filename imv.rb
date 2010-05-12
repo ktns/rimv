@@ -436,6 +436,18 @@ SQL
 						end.flatten
 					end
 				end
+
+				def [] tag
+					@children.find do |child|
+						child.tag == tag
+					end
+				end
+
+				def has_child? tag
+					@children.any? do |child|
+						child.tag == tag
+					end
+				end
 			end
 
 			def sync
@@ -989,30 +1001,6 @@ elsif File.basename($0) == 'spec'
 					end
 					leaves.should be_empty
 				end
-
-				describe 'tagged with slash' do
-					before :all do
-						IMV::DB.open do |db|
-							def db.tag_with_slash_and_hash
-								@db.execute(<<SQL).first
-SELECT tag, hash FROM tag
-WHERE tag like '%/%'
-LIMIT 1;
-SQL
-							end
-							@tag, @hash = db.tag_with_slash_and_hash
-						end
-					end
-
-					it 'should have tag nodes splitted by slash' do
-						tags = @@tree.leaves.find do |l|
-							l.to_s == @hash
-						end.tags
-						@tag.split('/').each do |tag|
-							tags.should include tag
-						end
-					end
-				end
 			end
 
 			describe 'current leaf' do
@@ -1083,6 +1071,19 @@ SQL
 					it_should_behave_like 'of any'
 				end
 			end
+		end
+	end
+
+	describe 'node tagged with slash' do
+		before :all do
+			@root_node = IMV::DB::TagTree::Node.new(nil,nil)
+			@root_node.add('hoge', ['a/b'])
+		end
+
+		it 'should have tag nodes splitted by slash' do
+			@root_node.should_not  have_child 'a/b'
+			@root_node.should      have_child 'a'
+			@root_node['a'].should have_child 'b'
 		end
 	end
 end
