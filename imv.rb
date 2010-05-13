@@ -431,8 +431,9 @@ SQL
 						self
 					else
 						tags.collect do |tag|
+							next unless self.has_child? tag
 							self[tag].shuffle tags - [tag]
-						end.flatten
+						end.compact.flatten
 					end
 				end
 
