@@ -9,13 +9,13 @@ end
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'rimv'
 
-def tree_mock
-	tree_mock = mock(:tagtree)
-	tree_mock.stub!(:instance_of?).with(Rimv::DB::TagTree).and_return(true)
-	tree_mock.stub!(:instance_of?).with(Rimv::DB::TagTree::Node).and_return(true)
-	tree_mock
+def tree_stub
+	tree_stub = stub(:tagtree)
+	tree_stub.stub!(:instance_of?).with(Rimv::DB::TagTree).and_return(true)
+	tree_stub.stub!(:instance_of?).with(Rimv::DB::TagTree::Node).and_return(true)
+	tree_stub
 end
 
 def root_node
-	Rimv::DB::TagTree::Node.new(tree_mock, nil)
+	Rimv::DB::TagTree::Node.new(tree_stub, nil)
 end
