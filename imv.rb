@@ -1031,15 +1031,10 @@ elsif File.basename($0) == 'spec'
 						@orig = @@tree.send(enum).max_by{|item| item.path.count}
 						@orig.path.size.should > 2
 						@isotopes = @@tree.isotopes @orig
-						@factorial = (1..@orig.path.size - 1).inject(1){|i,j| i*j}
 					end
 
 					it 'should all be unique' do
 						@isotopes.uniq.should == @isotopes
-					end
-
-					it 'should include factorial of count of tags nodes' do
-						@isotopes.size.should == @factorial
 					end
 
 					it 'should all have same tags if sorted' do
