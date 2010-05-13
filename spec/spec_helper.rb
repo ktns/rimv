@@ -15,3 +15,7 @@ def tree_mock
 	tree_mock.stub!(:instance_of?).with(Rimv::DB::TagTree::Node).and_return(true)
 	tree_mock
 end
+
+def root_node
+	Rimv::DB::TagTree::Node.new(tree_mock, nil)
+end

@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/spec_helper.rb'
 describe Rimv::DB::TagTree::Node::Leaf do
 	describe 'leaves with same hashes and different nodes' do
 		before :all do
-			@root_node = Rimv::DB::TagTree::Node.new(tree_mock, nil)
+			@root_node = root_node
 			@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
 				Rimv::DB::TagTree::Node::Leaf.new('piyo',
 																					Rimv::DB::TagTree::Node.new(@root_node, s)
@@ -212,7 +212,7 @@ describe Rimv::DB::TagTree do
 
 	describe 'node tagged with slash' do
 		before :all do
-			@root_node = Rimv::DB::TagTree::Node.new(tree_mock, nil)
+			@root_node = root_node
 			@root_node.add('hoge', ['a/b'])
 		end
 
