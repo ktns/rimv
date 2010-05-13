@@ -158,15 +158,10 @@ describe Rimv::DB::TagTree do
 					@orig = @@tree.send(enum).max_by{|item| item.path.count}
 					@orig.path.size.should > 2
 					@isotopes = @@tree.isotopes @orig
-					@factorial = (1..@orig.path.size - 1).inject(1){|i,j| i*j}
 				end
 
 				it 'should all be unique' do
 					@isotopes.uniq.should == @isotopes
-				end
-
-				it 'should include factorial of count of tags nodes' do
-					@isotopes.size.should == @factorial
 				end
 
 				it 'should all have same tags if sorted' do
@@ -196,6 +191,40 @@ describe Rimv::DB::TagTree do
 				end
 
 				it_should_behave_like 'of any'
+			end
+		end
+	end
+
+	describe 'node tagged with slash' do
+		before :all do
+			@root_node = Rimv::DB::TagTree::Node.new(nil,nil)
+			@root_node.add('hoge', ['a/b'])
+		end
+
+		it 'should have tag nodes splitted by slash' do
+			@root_node.should_not  have_child 'a/b'
+			@root_node.should      have_child 'a'
+			@root_node['a'].should have_child 'b'
+		end
+
+		it 'should not have inverted relationship' do
+			@root_node.should_not have_child 'b'
+		end
+
+		describe 'and with duplicate parent tags' do
+			before :all do
+				@root_node.add('fuga', %w<c/d c/e>)
+			end
+
+			it 'should have a common parent node' do
+				@root_node['c'].should have_child 'd'
+				@root_node['c'].should have_child 'e'
+			end
+
+			it 'should not have parent tag in children again' do
+				@root_node['c'].each_nodes do |child|
+					child.should_not have_child 'c'
+				end
 			end
 		end
 	end

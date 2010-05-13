@@ -69,13 +69,17 @@ class Rimv::DB::TagTree
 				raise "Duplicate leaf #{new_leaf} added to #{self}" if @hashes.include? new_leaf
 				@hashes.push new_leaf
 			else
-				tags.each do |tag|
+						tags.each do |tag_with_slash|
+							tags_splitted = tag_with_slash.split('/')
+							tag = tags_splitted.shift
+							next if self.tags.include? tag
 					unless child = @children.find{|c|c.tag == tag}
 						@children.push(child = self.class.new(self, tag))
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-					child.add(hash, tags.reject{|t| t == tag})
+							child.add hash, [tags, tags_splitted].flatten -
+								[tag_with_slash, child.tags].flatten
 				end
 			end
 		end
@@ -168,8 +172,21 @@ class Rimv::DB::TagTree
 				self
 			else
 				tags.collect do |tag|
-					@children.find{|c| c.tag == tag}.shuffle tags - [tag]
-				end.flatten
+							next unless self.has_child? tag
+							self[tag].shuffle tags - [tag]
+						end.compact.flatten
+					end
+				end
+
+				def [] tag
+					@children.find do |child|
+						child.tag == tag
+					end
+				end
+
+				def has_child? tag
+					@children.any? do |child|
+						child.tag == tag
 			end
 		end
 	end
