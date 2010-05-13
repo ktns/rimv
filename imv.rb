@@ -431,7 +431,7 @@ SQL
 						self
 					else
 						tags.collect do |tag|
-							@children.find{|c| c.tag == tag}.shuffle tags - [tag]
+							self[tag].shuffle tags - [tag]
 						end.flatten
 					end
 				end
