@@ -1,0 +1,33 @@
+= rimv
+
+* http://ktns.ath.cx/
+
+== DESCRIPTION:
+
+Tag base image manager and viewer
+
+== FEATURES/PROBLEMS:
+
+* Manages images in SQLite3 database
+* Display images in order calculated by their tags
+
+== SYNOPSIS:
+
+* Add image into database
+	rimv -a [-t TAG] [-s SCORE] FILES
+
+* View images
+	rimv [-v] [-t TAG] [-s SCORE|SCORE_RANGE]
+
+== REQUIREMENTS:
+
+* sqlite3-ruby [>= 1.2.3]
+
+== LICENSE:
+
+Copyright (C) Katsuhiko Nishimra 2009-2010.
+
+This program is free software, and may be redistributed under the terms in
+GNU General Public Licence v3, published at URL bellow. 
+
+* http://www.gnu.org/licenses/gpl-3.0.html
