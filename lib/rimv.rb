@@ -39,6 +39,16 @@ module Rimv
 		end
 	end
 
+	class <<self
+		def verbosity
+			@@verbosity
+		end
+
+		def verbosity= new_verbosity
+			@@verbosity = new_verbosity
+		end
+	end
+
 	def verbose verbosity
 		raise ScriptError, "invalid verbosity `#{num}'!" unless verbosity > 0
 		if verbosity <= @@verbosity
