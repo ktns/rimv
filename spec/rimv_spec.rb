@@ -1,5 +1,18 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 
+describe Rimv::DB::TagTree::Node do
+	before :each do
+		@root_node = root_node
+		@root_node.add('hoge', %w<a b>)
+	end
+
+	describe "['a', 'b'] and ['a']['b']" do
+		it 'should be same' do
+			@root_node[*%w<a b>].should equal @root_node['a']['b']
+		end
+	end
+end
+
 describe Rimv::DB::TagTree::Node::Leaf do
 	describe 'leaves with same hashes and different nodes' do
 		before :all do

@@ -193,9 +193,13 @@ class Rimv::DB::TagTree
 			end
 		end
 
-		def [] tag
-			@children.find do |child|
-				child.tag == tag
+		def [] tag, *tags
+			unless tags.empty?
+				self[tag][*tags]
+			else
+				@children.find do |child|
+					child.tag == tag
+				end
 			end
 		end
 
