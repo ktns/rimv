@@ -96,7 +96,7 @@ describe Rimv::DB::TagTree do
 				end
 
 				ObjectSpace.each_object(@@tree.class::Node).select do |n|
-					n.path.first == @@tree.root
+					n.tree.equal? @@tree
 				end.each do |n|
 					enumerator.should be_include n
 				end
