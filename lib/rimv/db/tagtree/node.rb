@@ -97,6 +97,9 @@ class Rimv::DB::TagTree
 		end
 
 		def first
+			raise ScriptError, "#{self.inspect}#\@hashes was nil!" if @hashes.nil?
+			raise ScriptError, "#{self.inspect}#\@children was nil!" if @children.nil?
+			raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
 			@hashes.first or @children.first.first or
 			raise "#{inspect}.first returned nil"
 		end
