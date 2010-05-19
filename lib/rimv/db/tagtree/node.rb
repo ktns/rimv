@@ -38,7 +38,7 @@ class Rimv::DB::TagTree
 				if node.parent.instance_of?(Rimv::DB::TagTree)
 					'ROOT'
 				else
-					tag
+					node.tag
 				end
 			end.join('->')
 		end
