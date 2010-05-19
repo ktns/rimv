@@ -11,10 +11,10 @@ Hoe.plugin :newgem
 # Generate all the Rake tasks
 # Run 'rake -T' to see list of generated tasks (from gem root directory)
 $hoe = Hoe.spec 'rimv' do
-  self.developer 'Katsuhiko Nishimra', 'kat841@hotmail.com'
-  self.post_install_message = 'PostInstall.txt'
-  self.rubyforge_name       = self.name # TODO this is default value
-  self.extra_deps         = [['sqlite3-ruby','>= 1.2.3']]
+	self.developer 'Katsuhiko Nishimra', 'kat841@hotmail.com'
+	self.post_install_message = 'PostInstall.txt'
+	self.rubyforge_name       = self.name # TODO this is default value
+	self.extra_deps         = [['sqlite3-ruby','>= 1.2.3']]
 
 end
 
