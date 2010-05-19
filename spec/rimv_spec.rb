@@ -226,17 +226,20 @@ describe Rimv::DB::TagTree do
 	describe 'node tagged with slash' do
 		before :all do
 			@root_node = root_node
-			@root_node.add('hoge', ['a/b'])
+			@root_node.add('hoge', ['a/b/c'])
 		end
 
 		it 'should have tag nodes splitted by slash' do
-			@root_node.should_not  have_child 'a/b'
-			@root_node.should      have_child 'a'
-			@root_node['a'].should have_child 'b'
+			@root_node.should_not       have_child 'a/b'
+			@root_node.should           have_child 'a'
+			@root_node['a'].should      have_child 'b'
+			@root_node[*%w<a b>].should have_child 'c'
 		end
 
 		it 'should not have inverted relationship' do
-			@root_node.should_not have_child 'b'
+			@root_node.should_not      have_child 'b'
+			@root_node.should_not      have_child 'c'
+			@root_node['a'].should_not have_child 'c'
 		end
 
 		describe 'and with duplicate parent tags' do
