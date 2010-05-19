@@ -74,7 +74,7 @@ class Rimv::DB::TagTree
 		end
 
 		def add hash, tags
-			verbose(4).puts "adding hash `#{hash}' into TagTree; " +
+			verbose(4).puts "adding hash `#{hash}' onto #{self}; " +
 				"tagstack [#{tags.join(', ')}]"
 			if tags.empty?
 				new_leaf = Leaf.new(hash, self)
