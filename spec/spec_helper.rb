@@ -11,8 +11,17 @@ require 'rimv'
 
 def tree_stub
 	tree_stub = stub(:tagtree)
-	tree_stub.stub!(:instance_of?).with(Rimv::DB::TagTree).and_return(true)
-	tree_stub.stub!(:instance_of?).with(Rimv::DB::TagTree::Node).and_return(false)
+	class <<tree_stub
+		def instance_of? klass
+			if klass == Rimv::DB::TagTree
+				true
+			elsif klass == Rimv::DB::TagTree::Node
+				false
+			else
+				super
+			end
+		end
+	end
 	tree_stub
 end
 
