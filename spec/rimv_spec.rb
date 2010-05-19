@@ -260,6 +260,12 @@ describe Rimv::DB::TagTree do
 					node.first.to_s.should == 'fuga'
 				end
 			end
+
+			it 'should not have duplicate path' do
+				@root_node.each_nodes do |node|
+					node.tags.uniq!.should be_nil
+				end
+			end
 		end
 	end
 end
