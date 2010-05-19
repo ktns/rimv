@@ -254,6 +254,12 @@ describe Rimv::DB::TagTree do
 					child.should_not have_child 'c'
 				end
 			end
+
+			it 'should return sane first leaf' do
+				@root_node['c'].each_nodes do |node|
+					node.first.to_s.should == 'fuga'
+				end
+			end
 		end
 	end
 end
