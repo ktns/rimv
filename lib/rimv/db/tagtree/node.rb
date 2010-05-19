@@ -91,8 +91,7 @@ class Rimv::DB::TagTree
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-					child.add hash, [tags, tags_splitted].flatten -
-						[tag_with_slash, child.tags].flatten
+					child.add hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten
 				end
 			end
 		end
