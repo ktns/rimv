@@ -78,13 +78,14 @@ class Rimv::DB::TagTree
 				"tagstack [#{tags.join(', ')}]"
 			if tags.empty?
 				new_leaf = Leaf.new(hash, self)
-				raise "Duplicate leaf #{new_leaf} added to #{self}" if @hashes.include? new_leaf
-				@hashes.push new_leaf
+				@hashes.push new_leaf unless @hashes.include? new_leaf
 			else
 				tags.each do |tag_with_slash|
 					tags_splitted = tag_with_slash.split('/')
-					tag = tags_splitted.shift
-					next if self.tags.include? tag
+					begin
+						tag = tags_splitted.shift
+					end while self.tags.include? tag && tag
+					next unless tag
 					unless child = self[tag]
 						@children.push(child = self.class.new(self, tag))
 						@children.sort!
