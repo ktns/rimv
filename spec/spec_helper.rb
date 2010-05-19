@@ -15,8 +15,6 @@ def tree_stub
 		def instance_of? klass
 			if klass == Rimv::DB::TagTree
 				true
-			elsif klass == Rimv::DB::TagTree::Node
-				false
 			else
 				super
 			end
