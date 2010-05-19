@@ -85,7 +85,7 @@ class Rimv::DB::TagTree
 					tags_splitted = tag_with_slash.split('/')
 					tag = tags_splitted.shift
 					next if self.tags.include? tag
-					unless child = @children.find{|c|c.tag == tag}
+					unless child = self[tag]
 						@children.push(child = self.class.new(self, tag))
 						@children.sort!
 					end
