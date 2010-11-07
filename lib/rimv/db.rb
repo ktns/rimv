@@ -108,7 +108,7 @@ WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
 		end
 
 		def getimage_bin hash
-			@db.get_first_value(<<-SQL,hash)
+			@db.get_first_value(<<-SQL,hash.to_s)
 SELECT img
 FROM img
 WHERE hash = ?
