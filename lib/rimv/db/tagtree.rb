@@ -1,4 +1,4 @@
-class Rimv::DB
+module Rimv::DB
 	class TagTree
 		include Rimv
 
