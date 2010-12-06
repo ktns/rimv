@@ -1,3 +1,4 @@
+.rspec
 History.txt
 Manifest.txt
 PostInstall.txt
@@ -16,6 +17,5 @@ script/console
 script/destroy
 script/generate
 spec/rimv_spec.rb
-spec/spec.opts
 spec/spec_helper.rb
-tasks/rspec.rake
+tasks/rcov.rake

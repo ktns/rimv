@@ -181,7 +181,7 @@ describe Rimv::DB::TagTree do
 		end
 
 		describe 'isotopes' do
-			describe 'of any', :shared => true do
+			shared_examples_for 'of any' do
 				before :all do
 					@orig = @@tree.send(enum).max_by{|item| item.path.count}
 					@orig.path.size.should > 2
