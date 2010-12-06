@@ -13,8 +13,8 @@ module Rimv
 				private_class_method :new
 
 				public
-				def self.open
-					db = new
+				def self.open db_file=nil
+					db = new db_file
 					begin
 						yield db
 					ensure
@@ -26,18 +26,9 @@ module Rimv
 					end
 				end
 
-				@@db_file = "#{ENV['HOME']}/.imv.sqlite3"
-
-				def self.db_file
-					@@db_file
-				end
-
-				def self.db_file= db_file
-					@@db_file = db_file
-				end
-
-				def initialize
-					@db = Database.new(self.class.db_file)
+				def initialize db_file=nil
+					@db_file = db_file or "#{ENV['HOME']}/.imv.sqlite3"
+					@db = Database.new(@db_file)
 				end
 
 				def close
