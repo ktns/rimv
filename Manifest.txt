@@ -8,6 +8,7 @@ asset/logo.xpm
 bin/rimv
 lib/rimv.rb
 lib/rimv/db.rb
+lib/rimv/db/adaptor.rb
 lib/rimv/db/adaptor/sqlite3.rb
 lib/rimv/db/tagtree.rb
 lib/rimv/db/tagtree/node.rb

@@ -4,6 +4,7 @@ module Rimv
 			class SQLite3
 
 				include Rimv
+				include Adaptor
 
 				require 'sqlite3'
 				require 'digest/md5'

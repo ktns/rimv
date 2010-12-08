@@ -13,15 +13,15 @@ module Rimv::DB
 
 		attr_reader :current
 
-		def initialize db
+		def initialize adaptor
 			verbose(2).puts 'Initializing TagTree...'
-			raise unless db.kind_of?(Rimv::DB)
+			raise unless adaptor.kind_of?(Rimv::DB::Adaptor)
 			@mutex       = Mutex.new
 			@root        = Node.new(self, nil)
 			@random_hist = []
 			@thread = Thread.new do
 				Thread.current.abort_on_exception = true
-				db.each_hash_tags do |hash, tags|
+				adaptor.each_hash_tags do |hash, tags|
 					sync do
 						@root.add hash, tags
 					end

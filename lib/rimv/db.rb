@@ -1,4 +1,4 @@
-require 'rimv/db/adaptor/sqlite3.rb'
+require 'rimv/db/adaptor.rb'
 
 module Rimv
 	module DB
