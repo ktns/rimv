@@ -59,11 +59,10 @@ describe Rimv::DB::TagTree do
 	describe 'complete tree' do
 		before :all do
 			unless self.class.class_variable_defined? :@@tree
-				Rimv::DB.db_file = "#{ENV['HOME']}/.imv.sqlite3.test"
-				Rimv::DB.open do |db|
+				test_adaptor_open do |adaptor|
 					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 					$complete_tag_tree_was_built = true
-					@@tree = Rimv::DB::TagTree.new db
+					@@tree = Rimv::DB::TagTree.new adaptor
 					@@tree.wait_until_loading
 				end
 			end

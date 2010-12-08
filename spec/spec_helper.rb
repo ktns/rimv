@@ -26,3 +26,7 @@ end
 def root_node
 	Rimv::DB::TagTree::Node.new(tree_stub, nil)
 end
+
+def test_adaptor_open &block
+	Rimv::DB::Adaptor::SQLite3.open("#{ENV['HOME']}/.imv.sqlite3.test", &block) 
+end
