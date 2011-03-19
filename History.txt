@@ -1,3 +1,8 @@
+=== 0.0.5 2011-03-20
+
+* 1 major enhancement:
+  * Fixed bug in -s option parser
+
 === 0.0.4 2011-03-20
 
 * 1 major enhancement:
