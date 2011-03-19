@@ -1,3 +1,8 @@
+=== 0.0.2 2011-03-20
+
+* 1 major enhancement:
+  * Fixed Version constant name
+
 === 0.0.2 2011-03-19
 
 * 2 major enhancement:
