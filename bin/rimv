@@ -40,7 +40,7 @@ begin
 
 		opt.on('-s=VAL', '--score=VAL',
 					 'score of the image to be displayed or added') {|val|
-			if val =~ /\A(-?d+)([+-])\Z/
+			if val =~ /\A(-?\d+)([+-])\Z/
 				if $2 == '+'
 					@@score = (eval $1)..1.0/0
 				else
