@@ -14,9 +14,9 @@ $hoe = Hoe.spec 'rimv' do
 	self.developer 'Katsuhiko Nishimra', 'kat841@hotmail.com'
 	self.post_install_message = 'PostInstall.txt'
 	self.extra_rdoc_files << 'README.rdoc'
-	self.rubyforge_name       = self.name # TODO this is default value
-	self.extra_deps         = [['sqlite3-ruby','>= 1.2.3']]
-
+	self.extra_deps     = [['sqlite3-ruby','>= 1.2.3']]
+	self.rubyforge_name = Rimv::APP_NAME
+	self.version        = Rimv::Version
 end
 
 require 'newgem/tasks'
