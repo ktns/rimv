@@ -1,3 +1,9 @@
+=== 0.0.2 2011-03-19
+
+* 2 major enhancement:
+  * Invoke GC by SIGUSR1
+	* Use RSpec2
+
 === 0.0.1 2010-05-09
 
 * 1 major enhancement:
