@@ -1,4 +1,9 @@
-=== 0.0.2 2011-03-20
+=== 0.0.4 2011-03-20
+
+* 1 major enhancement:
+  * Modified hoe settings
+
+=== 0.0.3 2011-03-20
 
 * 1 major enhancement:
   * Fixed Version constant name
