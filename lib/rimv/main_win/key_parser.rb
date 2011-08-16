@@ -35,7 +35,7 @@ class Rimv::MainWin
 			}
 		}
 
-		def have_chance?
+		def has_chance?
 			@@map.each_key.any? do |key|
 				key[0...@stack.size] == @stack
 			end
@@ -45,7 +45,7 @@ class Rimv::MainWin
 			@stack << e.keyval
 			if handler = @@map[@stack]
 				handler.call w
-			elsif have_chance?
+			elsif has_chance?
 				verbose(2).puts "KeyParser pending; stack = #{@stack.pack('c*')}"
 				return @stack
 			end
