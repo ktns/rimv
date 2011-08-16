@@ -12,6 +12,8 @@ module Rimv
 			@tree    = Rimv::DB::TagTree.new(db)
 			@kparser = KeyParser.new
 
+			self.title = APP_NAME + Version
+
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
 
