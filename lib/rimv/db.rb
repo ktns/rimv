@@ -107,8 +107,9 @@ WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
 			SQL
 		end
 
+		# Read image binary data from db
 		def getimage_bin hash
-			@db.execute(<<-SQL,hash).collect.first.first
+			@db.get_first_value(<<-SQL,hash.to_s)
 SELECT img
 FROM img
 WHERE hash = ?
@@ -116,7 +117,9 @@ LIMIT 1
 			SQL
 		end
 
+		# Create instance of Gtk::Image
 		def getimage hash
+			# TODO: implementation without Tempfile
 			require 'tempfile'
 			tmp = Tempfile.new(APP_NAME)
 			begin
@@ -140,7 +143,7 @@ LIMIT 1
 				else
 					raise ScriptError
 				end
-			@db.execute(<<-"SQL", *arg).collect {|set| set.first}
+			@db.execute(<<-"SQL", *arg).flatten
 SELECT hash
 FROM img
 			#{where}

@@ -1,13 +1,26 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 
+describe Rimv::DB::TagTree::Node do
+	before :each do
+		@root_node = root_node
+		@root_node.add('hoge', %w<a b>)
+	end
+
+	describe "['a', 'b'] and ['a']['b']" do
+		it 'should be same' do
+			@root_node[*%w<a b>].should equal @root_node['a']['b']
+		end
+	end
+end
+
 describe Rimv::DB::TagTree::Node::Leaf do
 	describe 'leaves with same hashes and different nodes' do
 		before :all do
-			@root_node = Rimv::DB::TagTree::Node.new(nil,nil)
+			@root_node = root_node
 			@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
 				Rimv::DB::TagTree::Node::Leaf.new('piyo',
-																				 Rimv::DB::TagTree::Node.new(@root_node, s)
-																				)
+																					Rimv::DB::TagTree::Node.new(@root_node, s)
+																				 )
 			end
 		end
 
@@ -37,9 +50,11 @@ describe Rimv::DB::TagTree::Node::Leaf do
 end
 
 describe Rimv::DB::TagTree do
-	before :suite do
-		class Rimv::DB::TagTree
-			attr_reader :root
+	RSpec.configure do |config|
+		config.before(:suite) do
+			class Rimv::DB::TagTree
+				attr_reader :root
+			end
 		end
 	end
 
@@ -64,6 +79,17 @@ describe Rimv::DB::TagTree do
 			@@tree.should_not be_loading
 		end
 
+		shared_examples_for 'nodes and leaves' do
+			describe '#tree' do
+				it 'should return parent tree' do
+					@@tree.leaves.each do |leaf|
+						leaf.should respond_to :tree
+						leaf.tree.should equal @@tree
+					end
+				end
+			end
+		end
+
 		describe 'nodes' do
 			it 'should all be enumerated by each_nodes' do
 				enumerator = @@tree.nodes
@@ -72,7 +98,7 @@ describe Rimv::DB::TagTree do
 				end
 
 				ObjectSpace.each_object(@@tree.class::Node).select do |n|
-					n.path.first == @@tree.root
+					n.tree.equal? @@tree
 				end.each do |n|
 					enumerator.should be_include n
 				end
@@ -86,6 +112,8 @@ describe Rimv::DB::TagTree do
 					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
 				end
 			end
+
+			it_should_behave_like 'nodes and leaves'
 		end
 
 		describe 'leaves' do
@@ -128,6 +156,8 @@ describe Rimv::DB::TagTree do
 				end
 				leaves.should be_empty
 			end
+
+			it_should_behave_like 'nodes and leaves'
 		end
 
 		describe 'current leaf' do
@@ -153,7 +183,7 @@ describe Rimv::DB::TagTree do
 		end
 
 		describe 'isotopes' do
-			describe 'of any', :shared => true do
+			shared_examples_for 'of any' do
 				before :all do
 					@orig = @@tree.send(enum).max_by{|item| item.path.count}
 					@orig.path.size.should > 2
@@ -197,18 +227,21 @@ describe Rimv::DB::TagTree do
 
 	describe 'node tagged with slash' do
 		before :all do
-			@root_node = Rimv::DB::TagTree::Node.new(nil,nil)
-			@root_node.add('hoge', ['a/b'])
+			@root_node = root_node
+			@root_node.add('hoge', ['a/b/c'])
 		end
 
 		it 'should have tag nodes splitted by slash' do
-			@root_node.should_not  have_child 'a/b'
-			@root_node.should      have_child 'a'
-			@root_node['a'].should have_child 'b'
+			@root_node.should_not       have_child 'a/b'
+			@root_node.should           have_child 'a'
+			@root_node['a'].should      have_child 'b'
+			@root_node[*%w<a b>].should have_child 'c'
 		end
 
 		it 'should not have inverted relationship' do
-			@root_node.should_not have_child 'b'
+			@root_node.should_not      have_child 'b'
+			@root_node.should_not      have_child 'c'
+			@root_node['a'].should_not have_child 'c'
 		end
 
 		describe 'and with duplicate parent tags' do
@@ -224,6 +257,18 @@ describe Rimv::DB::TagTree do
 			it 'should not have parent tag in children again' do
 				@root_node['c'].each_nodes do |child|
 					child.should_not have_child 'c'
+				end
+			end
+
+			it 'should return sane first leaf' do
+				@root_node['c'].each_nodes do |node|
+					node.first.to_s.should == 'fuga'
+				end
+			end
+
+			it 'should not have duplicate path' do
+				@root_node.each_nodes do |node|
+					node.tags.uniq!.should be_nil
 				end
 			end
 		end

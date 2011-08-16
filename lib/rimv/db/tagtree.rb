@@ -17,7 +17,7 @@ class Rimv::DB
 			verbose(2).puts 'Initializing TagTree...'
 			raise unless db.kind_of?(Rimv::DB)
 			@mutex       = Mutex.new
-			@root        = Node.new(nil, nil)
+			@root        = Node.new(self, nil)
 			@random_hist = []
 			@thread = Thread.new do
 				Thread.current.abort_on_exception = true

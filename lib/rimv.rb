@@ -2,8 +2,8 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module Rimv
-	APP_NAME = "imv"
-  VERSION = '0.0.1'
+	APP_NAME = "rimv"
+	Version  = '0.0.6'
 
 	require "gtk2"
 
@@ -36,6 +36,16 @@ module Rimv
 			unless IO.method_defined?(name)
 				raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
 			end
+		end
+	end
+
+	class <<self
+		def verbosity
+			@@verbosity
+		end
+
+		def verbosity= new_verbosity
+			@@verbosity = new_verbosity
 		end
 	end
 

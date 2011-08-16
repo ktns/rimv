@@ -1,3 +1,29 @@
+=== 0.0.6 2011-06-11
+
+* 1 major enhancement:
+  * Fixed constant name
+
+=== 0.0.5 2011-03-20
+
+* 1 major enhancement:
+  * Fixed bug in -s option parser
+
+=== 0.0.4 2011-03-20
+
+* 1 major enhancement:
+  * Modified hoe settings
+
+=== 0.0.3 2011-03-20
+
+* 1 major enhancement:
+  * Fixed Version constant name
+
+=== 0.0.2 2011-03-19
+
+* 2 major enhancement:
+  * Invoke GC by SIGUSR1
+	* Use RSpec2
+
 === 0.0.1 2010-05-09
 
 * 1 major enhancement:

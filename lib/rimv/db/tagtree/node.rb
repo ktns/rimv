@@ -11,10 +11,18 @@ class Rimv::DB::TagTree
 			tag <=> other.tag
 		end
 
+		def tree
+			if @parent.instance_of?(Rimv::DB::TagTree)
+				@parent
+			else
+				@parent.tree
+			end
+		end
+
 		def path
 			path = []
 			node = self
-			while node
+			until node.instance_of?(Rimv::DB::TagTree)
 				path.unshift node
 				node = node.parent
 			end
@@ -26,7 +34,13 @@ class Rimv::DB::TagTree
 		end
 
 		def to_s
-			path.collect{|node| node.tag or 'ROOT'}.join('->')
+			path.collect do |node|
+				if node.parent.instance_of?(Rimv::DB::TagTree)
+					'ROOT'
+				else
+					node.tag
+				end
+			end.join('->')
 		end
 
 		def inspect
@@ -36,13 +50,11 @@ class Rimv::DB::TagTree
 		def initialize parent, tag
 			verbose(4).puts 'Initializing new TagTree Node; ' +
 				"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
-			[
-				[parent,self.class],
-				[tag,String]
-			].each do |v,c|
-				unless v == nil || v.kind_of?(c)
-					raise TypeError "`#{c}' expected, but `#{v.class}'"
-				end
+			unless [self.class, Rimv::DB::TagTree].any?{|c| parent.instance_of?(c)}
+				raise TypeError, "`#{self.class}' or `#{Rimv::DB::TagTree}' expected, but `#{parent.class}'"
+			end
+			unless tag.nil? || tag.instance_of?(String)
+				raise TypeError, "`#{String}' or nil expected, but `#{tag.class}'"
 			end
 			@parent, @tag = parent, tag
 			@children     = []
@@ -62,29 +74,32 @@ class Rimv::DB::TagTree
 		end
 
 		def add hash, tags
-			verbose(4).puts "adding hash `#{hash}' into TagTree; " +
+			verbose(4).puts "adding hash `#{hash}' onto #{self}; " +
 				"tagstack [#{tags.join(', ')}]"
 			if tags.empty?
 				new_leaf = Leaf.new(hash, self)
-				raise "Duplicate leaf #{new_leaf} added to #{self}" if @hashes.include? new_leaf
-				@hashes.push new_leaf
+				@hashes.push new_leaf unless @hashes.include? new_leaf
 			else
-						tags.each do |tag_with_slash|
-							tags_splitted = tag_with_slash.split('/')
-							tag = tags_splitted.shift
-							next if self.tags.include? tag
-					unless child = @children.find{|c|c.tag == tag}
+				tags.each do |tag_with_slash|
+					tags_splitted = tag_with_slash.split('/')
+					begin
+						tag = tags_splitted.shift
+					end while self.tags.include? tag && tag
+					next unless tag
+					unless child = self[tag]
 						@children.push(child = self.class.new(self, tag))
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-							child.add hash, [tags, tags_splitted].flatten -
-								[tag_with_slash, child.tags].flatten
+					child.add hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten
 				end
 			end
 		end
 
 		def first
+			raise ScriptError, "#{self.inspect}#\@hashes was nil!" if @hashes.nil?
+			raise ScriptError, "#{self.inspect}#\@children was nil!" if @children.nil?
+			raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
 			@hashes.first or @children.first.first or
 			raise "#{inspect}.first returned nil"
 		end
@@ -100,7 +115,7 @@ class Rimv::DB::TagTree
 
 		def next_node_of node
 			@children[@children.index(node)+1] or
-			if @parent
+			unless @parent.instance_of?(Rimv::DB::TagTree)
 				@parent.next_node_of(self)
 			else
 				self
@@ -123,7 +138,7 @@ class Rimv::DB::TagTree
 			if (index = @hashes.index(hash)-1) >= 0
 				@hashes[index]
 			else
-				if @parent
+				unless @parent.instance_of?(Rimv::DB::TagTree)
 					node = self
 					begin
 						node = node.parent.prev_node_of(node)
@@ -172,21 +187,25 @@ class Rimv::DB::TagTree
 				self
 			else
 				tags.collect do |tag|
-							next unless self.has_child? tag
-							self[tag].shuffle tags - [tag]
-						end.compact.flatten
-					end
-				end
+					next unless self.has_child? tag
+					self[tag].shuffle tags - [tag]
+				end.compact.flatten
+			end
+		end
 
-				def [] tag
-					@children.find do |child|
-						child.tag == tag
-					end
+		def [] tag, *tags
+			unless tags.empty?
+				self[tag][*tags]
+			else
+				@children.find do |child|
+					child.tag == tag
 				end
+			end
+		end
 
-				def has_child? tag
-					@children.any? do |child|
-						child.tag == tag
+		def has_child? tag
+			@children.any? do |child|
+				child.tag == tag
 			end
 		end
 	end

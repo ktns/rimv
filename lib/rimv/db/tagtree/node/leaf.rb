@@ -29,6 +29,10 @@ class Rimv::DB::TagTree::Node
 			[@hash, @node].hash
 		end
 
+		def tree
+			@node.tree
+		end
+
 		def inspect
 			"#<#{self.class.name};#{@node.to_s}->#{to_s}>"
 		end
