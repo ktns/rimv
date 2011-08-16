@@ -24,6 +24,12 @@ module Rimv
 			signal_connect("key-press-event") do |w, e|
 				@kparser.send(w,e)
 			end
+			signal_connect("focus-out-event") do
+				@tagpopup.hide if @tagpopup
+			end
+			signal_connect("focus-in-event") do
+				@tagpopup.show if @tagpopup
+			end
 			tmp_handler_id = signal_connect("window_state_event") do |w, e|
 				if e.changed_mask == Gdk::EventWindowState::MAXIMIZED
 					signal_handler_disconnect tmp_handler_id
