@@ -13,6 +13,7 @@ lib/rimv/db/tagtree/node.rb
 lib/rimv/db/tagtree/node/leaf.rb
 lib/rimv/main_win.rb
 lib/rimv/main_win/key_parser.rb
+lib/rimv/size.rb
 script/console
 script/destroy
 script/generate
