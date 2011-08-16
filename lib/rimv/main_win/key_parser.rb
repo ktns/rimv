@@ -26,6 +26,10 @@ class Rimv::MainWin
 			}, [GDK_KEY_r] => lambda {|w|
 				verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
 				@@random = ! @@random
+			}, [GDK_KEY_t,GDK_KEY_s] => lambda {|w|
+					verbose(1).puts 'toggle tag popup window'
+					w.tagpopup.toggle
+					verbose(2).puts "tag popup is now #{w.tagpopup ? 'on' : 'off'}"
 			},
 				[GDK_KEY_s, GDK_KEY_plus] => lambda {|w|
 				w.score_up
