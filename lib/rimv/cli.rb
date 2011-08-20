@@ -52,24 +52,5 @@ module Rimv::CLI
 		opt.parse!
 
 		abort 'path_tag and tag option is mutually exclusive!' if @@path_tag && @@tag
-
-		case @@mode
-		when 'add'
-			raise 'No file to add!' if ARGV.empty?
-			raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
-			DB.open do |db|
-				ARGV.each do |name|
-					db.addfile(name, @@path_tag)
-				end
-			end
-		when 'view',nil
-			DB.open do |db|
-				abort 'No Image!' if (hashlist = db.getallhash).empty?
-				main_win = MainWin.new(db)
-				Gtk.main
-			end
-		else
-			raise NotImplementedError, "Unexpected mode `#{mode}'!"
-		end
 	end
 end

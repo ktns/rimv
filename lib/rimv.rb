@@ -83,6 +83,27 @@ module Rimv
 
 	# Workaround for Enumerator in ruby-1.8.x and 1.9.x
 	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
+
+	def run
+		case @@mode
+		when 'add'
+			raise 'No file to add!' if ARGV.empty?
+			raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
+			DB.open do |db|
+				ARGV.each do |name|
+					db.addfile(name, @@path_tag)
+				end
+			end
+		when 'view',nil
+			DB.open do |db|
+				abort 'No Image!' if (hashlist = db.getallhash).empty?
+				main_win = MainWin.new(db)
+				Gtk.main
+			end
+		else
+			raise NotImplementedError, "Unexpected mode `#{mode}'!"
+		end
+	end
 end
 
 require 'rimv/db'
