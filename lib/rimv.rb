@@ -2,8 +2,8 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 module Rimv
-	APP_NAME = "imv"
-  VERSION = '0.0.1'
+	APP_NAME = "rimv"
+	Version  = '0.0.7'
 
 	require "gtk2"
 

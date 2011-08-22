@@ -50,9 +50,11 @@ describe Rimv::DB::TagTree::Node::Leaf do
 end
 
 describe Rimv::DB::TagTree do
-	before :suite do
-		class Rimv::DB::TagTree
-			attr_reader :root
+	RSpec.configure do |config|
+		config.before(:suite) do
+			class Rimv::DB::TagTree
+				attr_reader :root
+			end
 		end
 	end
 

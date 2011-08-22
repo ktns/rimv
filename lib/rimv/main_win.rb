@@ -1,91 +1,21 @@
+require 'rimv/size'
+
 module Rimv
-	class Size
-		attr_accessor :width, :height
-
-		def initialize width, height
-			@width, @height = [width, height].collect &:to_i
-		end
-
-		def self.[] *arg
-			case arg.size
-			when 1
-				arg = arg.first
-				if arg.kind_of?(Array)
-					self.new(*arg)
-				elsif arg.respond_to?(:size)
-					self.new(*arg.size)
-				else
-					self.new(arg.width, arg.height)
-				end
-			when 2
-				self.new(arg.first,arg.last)
-			else
-				raise ArgumentError, "#{arg.size} arguments is not supported!"
-			end
-		end
-
-		def to_a
-			[@width, @height]
-		end
-
-		def to_s
-			"[#{@width},#{@height}]"
-		end
-
-		def == other
-			other.kind_of?(self.class) and
-			@width == other.width && @height == other.height
-		end
-
-		def op_for_both other, &block
-			case other
-			when Size
-				Size.new(*([[@width, other.width],
-									 [@height, other.height]].collect &block))
-			when Array
-				self - Size.new(*other)
-			else
-				raise TypeError, "Invalid class `#{other.class}'!"
-			end
-		end
-		private :op_for_both
-
-		def + other
-			op_for_both(other){|s,o| s + o}
-		end
-
-		def - other
-			op_for_both(other){|s,o| s - o}
-		end
-
-		def * other
-			Size.new(@width * other, @height * other)
-		end
-
-		def / other
-			Size.new(@width / other, @height / other)
-		end
-
-		def abs
-			Size.new(@width.abs, @height.abs)
-		end
-
-		def fit frame
-			ratio = [frame.width.to_f/@width,frame.height.to_f/@height].min
-			Size[@width * ratio, @height *ratio]
-		end
-	end
-
 	class MainWin < Gtk::Window
 		include Rimv
+
+		attr_reader :tagpopup
 
 		def initialize db
 			raise TypeError, "Rimv::DB expected for `db', but #{db.class}" unless db.kind_of?(Rimv::DB)
 
 			super(APP_NAME)
-			@db      = db
-			@tree    = Rimv::DB::TagTree.new(db)
-			@kparser = KeyParser.new
+			@db       = db
+			@tree     = Rimv::DB::TagTree.new(db)
+			@kparser  = KeyParser.new
+			@tagpopup = TagPopup.new self
+
+			self.title = APP_NAME + Version
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
@@ -95,6 +25,12 @@ module Rimv
 			end
 			signal_connect("key-press-event") do |w, e|
 				@kparser.send(w,e)
+			end
+			signal_connect("focus-out-event") do
+				@tagpopup.hide if @tagpopup
+			end
+			signal_connect("focus-in-event") do
+				@tagpopup.show if @tagpopup
 			end
 			tmp_handler_id = signal_connect("window_state_event") do |w, e|
 				if e.changed_mask == Gdk::EventWindowState::MAXIMIZED
@@ -106,6 +42,11 @@ module Rimv
 						unmaximize
 						self.resizable = false
 						display (@@random ? @tree.random : @tree.first)
+						signal_connect("configure_event") do |w, e|
+							verbose(2).puts('mainwin#configure_event')
+							@tagpopup.move
+							print ''
+						end
 					end
 				end
 			end
@@ -152,6 +93,7 @@ module Rimv
 				resize(*size_view)
 				set_window_position(Gtk::Window::POS_CENTER_ALWAYS)
 				show_all
+				@tagpopup.display hash
 			ensure
 				window.cursor = nil
 			end
@@ -176,3 +118,4 @@ module Rimv
 end
 
 require 'rimv/main_win/key_parser'
+require 'rimv/main_win/tagpopup'
