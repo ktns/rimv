@@ -15,7 +15,7 @@ module Rimv::DB
 
 		def initialize db
 			verbose(2).puts 'Initializing TagTree...'
-			raise unless db.kind_of?(Rimv::DB)
+			raise unless db.kind_of?(Rimv::DB::Adaptor)
 			@mutex       = Mutex.new
 			@root        = Node.new(self, nil)
 			@random_hist = []
