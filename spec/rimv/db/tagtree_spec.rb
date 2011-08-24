@@ -1,53 +1,4 @@
-require File.dirname(__FILE__) + '/spec_helper.rb'
-
-describe Rimv::DB::TagTree::Node do
-	before :each do
-		@root_node = root_node
-		@root_node.add('hoge', %w<a b>)
-	end
-
-	describe "['a', 'b'] and ['a']['b']" do
-		it 'should be same' do
-			@root_node[*%w<a b>].should equal @root_node['a']['b']
-		end
-	end
-end
-
-describe Rimv::DB::TagTree::Node::Leaf do
-	describe 'leaves with same hashes and different nodes' do
-		before :all do
-			@root_node = root_node
-			@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
-				Rimv::DB::TagTree::Node::Leaf.new('piyo',
-																					Rimv::DB::TagTree::Node.new(@root_node, s)
-																				 )
-			end
-		end
-
-		it 'should have equal hash' do
-			hash1, hash2 = @leaf1.to_s, @leaf2.to_s
-			hash1.should == hash2
-			hash1.should === hash2
-		end
-
-		it 'should have different node' do
-			@leaf1.node.should_not equal @leaf2.node
-			@leaf1.node.should_not eql @leaf2.node
-			@leaf1.node.should_not == @leaf2.node
-			@leaf1.node.should_not === @leaf2.node
-		end
-
-		it 'should not be equal' do
-			@leaf1.should_not equal @leaf2
-			@leaf1.should_not eql @leaf2
-			@leaf1.should_not == @leaf2
-		end
-
-		it 'should be equal with ===' do
-			@leaf1.should === @leaf2
-		end
-	end
-end
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_helper.rb'].flatten))
 
 describe Rimv::DB::TagTree do
 	RSpec.configure do |config|
@@ -76,17 +27,6 @@ describe Rimv::DB::TagTree do
 
 		it 'should not be loading' do
 			@@tree.should_not be_loading
-		end
-
-		shared_examples_for 'nodes and leaves' do
-			describe '#tree' do
-				it 'should return parent tree' do
-					@@tree.leaves.each do |leaf|
-						leaf.should respond_to :tree
-						leaf.tree.should equal @@tree
-					end
-				end
-			end
 		end
 
 		describe 'nodes' do

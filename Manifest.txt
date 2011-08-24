@@ -20,6 +20,8 @@ lib/rimv/size.rb
 script/console
 script/destroy
 script/generate
-spec/rimv_spec.rb
+spec/rimv/db/tagtree/node/leaf_spec.rb
+spec/rimv/db/tagtree/node_spec.rb
+spec/rimv/db/tagtree_spec.rb
 spec/spec_helper.rb
 tasks/rcov.rake
