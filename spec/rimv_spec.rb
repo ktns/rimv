@@ -6,3 +6,13 @@ describe 'blank_db' do
 		FileUtils.touch blank_db
 	end
 end
+
+describe 'asset_path' do
+	it 'should be an existing directory' do
+		FileTest.directory?(asset_path).should be_true
+	end
+
+	it 'should include file `logo.xpm\'' do
+		FileTest.exist?(File.join(asset_path, 'logo.xpm')).should be_true
+	end
+end
