@@ -27,7 +27,7 @@ module Rimv
 				end
 
 				def initialize db_file=nil
-					@db_file = db_file or "#{ENV['HOME']}/.imv.sqlite3"
+					@db_file = db_file || "#{ENV['HOME']}/.imv.sqlite3"
 					@db = Database.new(@db_file)
 					if tables.empty?
 						create_tables
