@@ -29,6 +29,38 @@ module Rimv
 				def initialize db_file=nil
 					@db_file = db_file or "#{ENV['HOME']}/.imv.sqlite3"
 					@db = Database.new(@db_file)
+					if tables.empty?
+						create_tables
+					end
+				end
+
+				def tables
+					@db.execute(<<SQL)
+SELECT name FROM sqlite_master WHERE type='table' 
+UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table'
+SQL
+				end
+
+				def create_tables
+					@db.transaction do
+						@db.execute(<<SQL)
+CREATE TABLE "img"
+            (hash TEXT PRIMARY KEY NOT NULL,
+             img NOT NULL, score INTEGER NOT NULL DEFAULT 0,
+             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+             last_displayed_at TIMESTAMP DEFAULT NULL);
+SQL
+            @db.execute(<<SQL)
+CREATE TABLE "name"
+             (hash TEXT NOT NULL, name TEXT NOT NULL,
+              PRIMARY KEY(hash, name));
+SQL
+            @db.execute(<<SQL)
+CREATE TABLE "tag"
+             (hash TEXT NOT NULL, tag TEXT NOT NULL,
+              PRIMARY KEY(hash, tag));
+SQL
+					end
 				end
 
 				def close
