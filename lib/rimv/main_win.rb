@@ -7,7 +7,7 @@ module Rimv
 		attr_reader :tagpopup
 
 		def initialize db
-			raise TypeError, "Rimv::DB expected for `db', but #{db.class}" unless db.kind_of?(Rimv::DB)
+			raise TypeError, "Rimv::DB expected for `db', but #{db.class}" unless db.kind_of?(Rimv::DB::Adaptor)
 
 			super(APP_NAME)
 			@db       = db
