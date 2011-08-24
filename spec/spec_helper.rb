@@ -31,6 +31,16 @@ def test_adaptor_open &block
 	Rimv::DB::Adaptor::SQLite3.open("#{ENV['HOME']}/.imv.sqlite3.test", &block) 
 end
 
+def blank_db
+	require 'tmpdir'
+	tmpdir=Dir.mktmpdir
+	at_exit do
+		require 'fileutils'
+		FileUtils.rm_rf tmpdir
+	end
+	File.join(tmpdir,'db')
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
