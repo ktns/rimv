@@ -21,6 +21,7 @@ script/console
 script/destroy
 script/generate
 spec/rimv/db/adaptor/sqlite3_spec.rb
+spec/rimv/db/adaptor_spec.rb
 spec/rimv/db/tagtree/node/leaf_spec.rb
 spec/rimv/db/tagtree/node_spec.rb
 spec/rimv/db/tagtree_spec.rb
