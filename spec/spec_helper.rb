@@ -9,18 +9,18 @@ end
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'rimv'
 
-def tree_stub
-	tree_stub = stub(:tagtree)
-	class <<tree_stub
-		def instance_of? klass
-			if klass == Rimv::DB::TagTree
-				true
-			else
-				super
-			end
+class TreeStub
+	def instance_of? klass
+		if klass == Rimv::DB::TagTree
+			true
+		else
+			super
 		end
 	end
-	tree_stub
+end
+
+def tree_stub
+	TreeStub.new
 end
 
 def root_node
