@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 module Rimv
 	APP_NAME = "rimv"
-	Version  = '0.0.7'
+	Version  = '0.0.8'
 
 	require "gtk2"
 
