@@ -37,12 +37,12 @@ class Rimv::MainWin
 					verbose(1).puts 'toggle tag popup window'
 					w.tagpopup.toggle
 					verbose(2).puts "tag popup is now #{w.tagpopup ? 'on' : 'off'}"
-			},
-				[GDK_KEY_s, GDK_KEY_plus] => lambda {|w|
-				w.score_up
-			},
-				[GDK_KEY_s, GDK_KEY_minus] => lambda {|w|
-				w.score_down
+#			},
+#				[GDK_KEY_s, GDK_KEY_plus] => lambda {|w|
+#				w.score_up
+#			},
+#				[GDK_KEY_s, GDK_KEY_minus] => lambda {|w|
+#				w.score_down
 			}
 		}
 
