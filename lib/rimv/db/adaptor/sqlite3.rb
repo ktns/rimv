@@ -146,7 +146,7 @@ ORDER BY min(name.name)
 
 				#Retrieve all existing tags
 				def tags
-					@db.execute(<<SQL)
+					@db.execute(<<SQL).collect(&:to_s)
 SELECT tag
 FROM tag
 GROUP BY tag
