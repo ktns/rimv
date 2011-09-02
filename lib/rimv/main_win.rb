@@ -114,8 +114,15 @@ module Rimv
 				display(@tree.random_prev)
 			end
 		end
+
+		# Let the user add a new tag on current image
+		def tagadd
+			tagadd = TagaddWin.new(@db)
+			tagadd.show
+		end
 	end
 end
 
 require 'rimv/main_win/key_parser'
 require 'rimv/main_win/tagpopup'
+require 'rimv/tagadd_win'
