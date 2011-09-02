@@ -17,6 +17,7 @@ lib/rimv/main_win.rb
 lib/rimv/main_win/key_parser.rb
 lib/rimv/main_win/tagpopup.rb
 lib/rimv/size.rb
+lib/rimv/tagadd_win.rb
 script/console
 script/destroy
 script/generate
