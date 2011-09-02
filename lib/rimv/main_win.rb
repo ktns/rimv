@@ -117,8 +117,7 @@ module Rimv
 
 		# Let the user add a new tag on current image
 		def tagadd
-			tagadd = TagaddWin.new(@db)
-			tagadd.show
+			tagadd = TagaddWin.new(@db, self)
 		end
 	end
 end
