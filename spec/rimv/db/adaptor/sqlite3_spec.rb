@@ -8,4 +8,22 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 		end
 	end
+
+	describe 'with some tags' do
+		before :all do
+			class Rimv::DB::Adaptor::SQLite3
+				public_class_method :new
+			end
+			@adaptor = Rimv::DB::Adaptor::SQLite3.new(blank_db)
+			@adaptor.addtag 'hoge', 'piyo'
+		end
+
+		subject {@adaptor}
+
+		its(:tags) { should include_only String }
+
+		after :all do
+			@adaptor.close
+		end
+	end
 end

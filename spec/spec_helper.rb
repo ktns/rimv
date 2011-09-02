@@ -55,3 +55,20 @@ shared_examples_for 'nodes and leaves' do
 		end
 	end
 end
+
+require 'rspec/expectations'
+
+RSpec::Matchers.define :include_only do |type|
+	match do |container|
+		@type = type
+		@rejected = container.reject do |e|
+			type === e
+		end
+		@rejected.empty?
+	end
+
+	failure_message_for_should do |container|
+		"expected #{container.inspect} to include only #{@type},\n" +
+		"but found #{@rejected.first.inspect}"
+	end
+end
