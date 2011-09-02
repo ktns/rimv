@@ -16,6 +16,16 @@ class Rimv::TagaddWin < Gtk::Window
 		@cancel.signal_connect('clicked',&method(:cancel))
 		#@ok.grab_default
 		set_resizable false
+
+		completion = Gtk::EntryCompletion.new
+		@entry.set_completion(completion)
+		liststore=Gtk::ListStore.new(String)
+		liststore.set_sort_column_id(0, Gtk::SORT_ASCENDING)
+		completion.set_text_column(0)
+		completion.model = liststore
+		adaptor.tags.each do |tag|
+			liststore.append.set_value(0,tag.to_s)
+		end
 	end
 
 	def ok *args
