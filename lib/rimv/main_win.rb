@@ -9,13 +9,11 @@ module Rimv
 		def initialize db
 			raise TypeError, "Rimv::DB expected for `db', but #{db.class}" unless db.kind_of?(Rimv::DB::Adaptor)
 
-			super(APP_NAME)
+			super(APP_NAME + Version)
 			@db       = db
 			@tree     = Rimv::DB::TagTree.new(db)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
-
-			self.title = APP_NAME + Version
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)
