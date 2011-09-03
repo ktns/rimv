@@ -13,7 +13,6 @@ class Rimv::TagaddWin < Gtk::Window
 		@entry.width_chars = adaptor.tags_max_length + 3
 		@ok.signal_connect('clicked',&method(:ok))
 		@cancel.signal_connect('clicked',&method(:cancel))
-		#@ok.grab_default
 		set_resizable false
 
 		completion = Gtk::EntryCompletion.new
@@ -28,6 +27,10 @@ class Rimv::TagaddWin < Gtk::Window
 
 		set_modal(true)
 		set_transient_for(parent)
+
+		@ok.can_default=true
+		@ok.grab_default
+		@entry.activates_default=true
 
 		show_all
 	end
