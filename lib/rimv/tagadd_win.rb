@@ -1,10 +1,16 @@
 require 'gtk2'
 require 'rimv/db/adaptor'
+require 'rimv/keyval'
 
 class Rimv::TagaddWin < Gtk::Window
+	include Rimv::Keyval
 	def initialize adaptor, parent
-		super 'Add a tag'
 		raise TypeError unless adaptor.kind_of?(Rimv::DB::Adaptor)
+
+		super 'Add a tag'
+
+		self.signal_connect('key-press-event', &method(:keypress))
+
 		add @vbox = Gtk::VBox.new
 		@vbox.add @entry = Gtk::Entry.new
 		@vbox.add @hbox  = Gtk::HBox.new
@@ -42,5 +48,11 @@ class Rimv::TagaddWin < Gtk::Window
 
 	def cancel *args
 		hide
+	end
+
+	def keypress widget, event
+		if event.keyval == GDK_KEY_Escape
+			cancel
+		end
 	end
 end
