@@ -1,3 +1,5 @@
+require 'rimv/db/adaptor'
+
 module Rimv
 	module DB
 		module Adaptor
