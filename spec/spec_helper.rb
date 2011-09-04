@@ -42,7 +42,7 @@ def blank_db
 end
 
 def asset_path
-	asset_path = File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
+	File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
 end
 
 shared_examples_for 'nodes and leaves' do
