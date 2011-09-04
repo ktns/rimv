@@ -12,12 +12,11 @@ describe Rimv::DB::TagTree do
 	describe 'complete tree' do
 		before :all do
 			unless self.class.class_variable_defined? :@@tree
-				test_adaptor_open do |adaptor|
-					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
-					$complete_tag_tree_was_built = true
-					@@tree = Rimv::DB::TagTree.new(adaptor.tagenum)
-					@@tree.wait_until_loading
-				end
+				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+				adaptor = MockAdaptor.new
+				$complete_tag_tree_was_built = true
+				@@tree = Rimv::DB::TagTree.new(adaptor.tagenum)
+				@@tree.wait_until_loading
 			end
 		end
 
