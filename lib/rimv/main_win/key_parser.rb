@@ -3,7 +3,7 @@ require 'rimv/keyval'
 class Rimv::MainWin
 	class KeyParser
 		include Rimv
-		include Gdk::Keyval
+		include Rimv::Keyval
 
 		def initialize
 			@stack = []
