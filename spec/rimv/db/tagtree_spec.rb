@@ -15,7 +15,7 @@ describe Rimv::DB::TagTree do
 				test_adaptor_open do |adaptor|
 					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 					$complete_tag_tree_was_built = true
-					@@tree = Rimv::DB::TagTree.new(adaptor)
+					@@tree = Rimv::DB::TagTree.new(adaptor.tagenum)
 					@@tree.wait_until_loading
 				end
 			end
