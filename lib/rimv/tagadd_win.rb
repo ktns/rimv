@@ -32,7 +32,7 @@ class Rimv::TagaddWin < Gtk::Window
 		end
 
 		set_modal(true)
-		set_transient_for(parent)
+		set_transient_for(@parent=parent)
 
 		@ok.can_default=true
 		@ok.grab_default
@@ -42,7 +42,7 @@ class Rimv::TagaddWin < Gtk::Window
 	end
 
 	def ok *args
-		#TODO: Add a tag
+		@parent.tagadd @entry.text
 		cancel
 	end
 

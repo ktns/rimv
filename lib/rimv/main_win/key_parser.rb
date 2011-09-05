@@ -39,7 +39,7 @@ class Rimv::MainWin
 #				[GDK_KEY_s, GDK_KEY_minus] => lambda {|w|
 #				w.score_down
 			[GDK_KEY_t, GDK_KEY_a] => lambda {|w|
-						w.tagadd
+						w.pop_tagadd_win
 			}
 		}
 

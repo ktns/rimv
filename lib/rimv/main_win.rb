@@ -116,8 +116,13 @@ module Rimv
 		end
 
 		# Let the user add a new tag on the current image
-		def tagadd
-			tagadd = TagaddWin.new(@db, self)
+		def pop_tagadd_win
+			TagaddWin.new(@db, self)
+		end
+
+		# Add specified tag on current image
+		def tagadd tag
+			raise NotImplementedError
 		end
 	end
 end

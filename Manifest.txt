@@ -28,6 +28,7 @@ spec/rimv/db/adaptor_spec.rb
 spec/rimv/db/tagtree/node/leaf_spec.rb
 spec/rimv/db/tagtree/node_spec.rb
 spec/rimv/db/tagtree_spec.rb
+spec/rimv/tagadd_win_spec.rb
 spec/rimv_spec.rb
 spec/spec_helper.rb
 tasks/db2fixture.rake

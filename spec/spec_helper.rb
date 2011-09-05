@@ -54,6 +54,10 @@ class MockAdaptor
 			YAML.load(f).each &block
 		end
 	end
+
+	def tags
+		hashtags.collect(&:last).flatten.uniq
+	end
 end
 
 def asset_path
