@@ -7,7 +7,7 @@ module Rimv
 		attr_reader :tagpopup
 
 		def initialize adaptor
-			raise TypeError, "Rimv::DB expected for `adaptor', but #{adaptor.class}" unless adaptor.kind_of?(Rimv::DB::Adaptor)
+			raise TypeError, "Rimv::DB::Adaptor expected for `adaptor', but #{adaptor.class}" unless adaptor.kind_of?(Rimv::DB::Adaptor)
 
 			super(APP_NAME)
 			@adaptor       = adaptor
