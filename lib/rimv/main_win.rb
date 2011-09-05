@@ -11,7 +11,7 @@ module Rimv
 
 			super(APP_NAME)
 			@db       = db
-			@tree     = Rimv::DB::TagTree.new(db.tagenum)
+			@tree     = Rimv::DB::TagTree.new(db.hashtags)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
 

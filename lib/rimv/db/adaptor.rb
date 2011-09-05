@@ -42,7 +42,7 @@ module Rimv
 				end
 			end
 
-			def tagenum
+			def hashtags
 				enum_for(:each_hash_tags)
 			end
 		end
