@@ -6,12 +6,12 @@ module Rimv
 
 		attr_reader :tagpopup
 
-		def initialize db
-			raise TypeError, "Rimv::DB expected for `db', but #{db.class}" unless db.kind_of?(Rimv::DB::Adaptor)
+		def initialize adaptor
+			raise TypeError, "Rimv::DB expected for `adaptor', but #{adaptor.class}" unless adaptor.kind_of?(Rimv::DB::Adaptor)
 
 			super(APP_NAME)
-			@db       = db
-			@tree     = Rimv::DB::TagTree.new(db.hashtags)
+			@adaptor       = adaptor
+			@tree     = Rimv::DB::TagTree.new(adaptor.hashtags)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
 
@@ -69,12 +69,12 @@ module Rimv
 				if @cur_img
 					10.times {Gtk.main_iteration if Gtk.events_pending?}
 					add_img = false
-					new_img = @db.getimage(hash)
+					new_img = @adaptor.getimage(hash)
 					@cur_img.pixbuf = new_img.pixbuf if new_img.pixbuf
 					@cur_img.pixbuf_animation = new_img.pixbuf_animation if new_img.pixbuf_animation
 				else
 					add_img = true
-					@cur_img = @db.getimage(hash)
+					@cur_img = @adaptor.getimage(hash)
 				end
 
 				raise ScriptError, "image has neither pixbuf or pixbuf_animation!\nhash=`#{hash}'" unless @cur_img.pixbuf || @cur_img.pixbuf_animation
@@ -117,7 +117,7 @@ module Rimv
 
 		# Let the user add a new tag on the current image
 		def pop_tagadd_win
-			TagaddWin.new(@db, self)
+			TagaddWin.new(@adaptor, self)
 		end
 
 		# Add specified tag on current image
