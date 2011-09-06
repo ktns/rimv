@@ -38,4 +38,26 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			@adaptor.close
 		end
 	end
+
+	describe 'with a image' do
+		before :all do
+			class Rimv::DB::Adaptor::SQLite3
+				public_class_method :new
+			end
+			@adaptor = Rimv::DB::Adaptor::SQLite3.new(blank_db)
+			@hash    = @adaptor.addfile File.join(logo_path).first
+		end
+
+		describe '#addtag' do
+			it 'should add tag' do
+				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+				@adaptor.addtag @hash, 'tag'
+				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+			end
+		end
+
+		after :all do
+			@adaptor.close
+		end
+	end
 end
