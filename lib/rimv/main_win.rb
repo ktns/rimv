@@ -122,7 +122,7 @@ module Rimv
 
 		# Add specified tag on current image
 		def tagadd tag
-			raise NotImplementedError
+			@adaptor.addtag cur_hash, tag
 		end
 	end
 end
