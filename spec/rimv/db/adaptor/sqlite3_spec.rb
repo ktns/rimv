@@ -10,6 +10,15 @@ describe Rimv::DB::Adaptor::SQLite3 do
 				adaptor.addfile(logo_path)
 			end
 		end
+
+		describe '#addfile' do
+			it 'should return file hash' do
+				Rimv::DB::Adaptor::SQLite3.open(blank_db) do |adaptor|
+					adaptor.addfile(logo_path).should include \
+						Rimv::DB.digest IO.read(logo_path)
+				end
+			end
+		end
 	end
 
 	describe 'with some tags' do

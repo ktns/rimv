@@ -69,7 +69,7 @@ SQL
 
 				def addimage name, img
 					raise TypeError unless img.kind_of?(String)
-					hash = Digest::MD5.digest(img).unpack('h*').first
+					hash = DB.digest img
 					@db.transaction do |db|
 						db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
 INSERT INTO img (hash, img, score)
