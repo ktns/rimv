@@ -31,14 +31,6 @@ module Rimv
 		end
 	end
 
-	class DummyIO
-		def method_missing name, *arg
-			unless IO.method_defined?(name)
-				raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
-			end
-		end
-	end
-
 	class <<self
 		def verbosity
 			@@verbosity
@@ -49,13 +41,31 @@ module Rimv
 		end
 	end
 
-	def verbose verbosity
-		raise ScriptError, "invalid verbosity `#{num}'!" unless verbosity > 0
-		if verbosity <= @@verbosity
-			$stdout
-		else
-			DummyIO.new
+	class VerboseMessenger
+		include Rimv
+
+		def initialize verbose_level
+			raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
+			@verbose_level = verbose_level
 		end
+
+		def method_missing name, *args, &block
+			if @@verbosity >= @verbose_level
+				if block
+					$stdout.send(name, *block.call(*args))
+				else
+					$stdout.send(name, *args)
+				end
+			else
+				unless IO.method_defined?(name)
+					raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
+				end
+			end
+		end
+	end
+
+	def verbose verbose_level
+		VerboseMessenger.new(verbose_level)
 	end
 end
 

@@ -15,7 +15,7 @@ module Rimv
 						img = Gtk::Image.new(path)
 						if img.pixbuf || img.pixbuf_animation
 							File.open(path) do |file|
-								verbose(1).puts "adding file `#{path}'"
+								verbose(1).puts {"adding file `#{path}'"}
 								hash = addimage(path,file.read)
 								if @base
 									verbose(3).puts "tag base = #{@base}"
