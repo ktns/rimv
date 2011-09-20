@@ -53,6 +53,10 @@ module Rimv
 					tag.to_s.length
 				end.max
 			end
+
+			def hashtags
+				enum_for(:each_hash_tags)
+			end
 		end
 	end
 end

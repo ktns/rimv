@@ -41,8 +41,23 @@ def blank_db
 	File.join(tmpdir,'db')
 end
 
+def fixtures_path
+	File.expand_path(File.join(File.dirname(__FILE__), 'fixtures'))
+end
+
+require 'yaml'
+class MockAdaptor
+	include Rimv::DB::Adaptor
+
+	def each_hash_tags &block
+		File.open(File.join(fixtures_path, 'hashtags.yml'),'r') do |f|
+			YAML.load(f).each &block
+		end
+	end
+end
+
 def asset_path
-	asset_path = File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
+	File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
 end
 
 shared_examples_for 'nodes and leaves' do
