@@ -41,6 +41,10 @@ module Rimv
 					@base = nil if base
 				end
 			end
+
+			def hashtags
+				enum_for(:each_hash_tags)
+			end
 		end
 	end
 end
