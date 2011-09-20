@@ -4,7 +4,8 @@
 #  Copyright (c) Katsuhiko Nishimra 2009-2010. All rights reserved.
 
 require 'rubygems'
-require File.expand_path(File.dirname(__FILE__) + "/../lib/rimv")
+$:.unshift File.expand_path(File.join(File.dirname(__FILE__), *%w<.. lib>))
+require 'rimv'
 
 Signal.trap(:USR1) do
 	$stderr.puts "Received SIGUSR1.", "Starting garbage collection..."
