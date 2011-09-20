@@ -43,7 +43,7 @@ namespace :db do
 		Rimv::DB.open do |db|
 			destdir=ENV['DEST_DIR'] || '.'
 			File.open("#{destdir}/hashtags.yml",'w') do |f|
-				f.puts(db.tagenum.to_a.shuffle[0..99].collect do |hash, tags|
+				f.puts(db.hashtags.to_a.shuffle[0..99].collect do |hash, tags|
 					[hash_an[hash],tags.collect{|t|tag_an[t]}]
 				end.to_yaml)
 			end
