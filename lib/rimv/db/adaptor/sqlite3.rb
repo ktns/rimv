@@ -12,6 +12,8 @@ module Rimv
 
 				include ::SQLite3
 
+				private_class_method :new
+
 				public
 				def self.open db_file=nil
 					db = new db_file
