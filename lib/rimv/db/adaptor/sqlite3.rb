@@ -10,8 +10,6 @@ module Rimv
 
 				include ::SQLite3
 
-				private_class_method :new
-
 				public
 				def self.open db_file=nil
 					db = new db_file
@@ -144,6 +142,15 @@ FROM (img LEFT JOIN tag ON img.hash = tag.hash)
 GROUP BY img.hash
 ORDER BY min(name.name)
 					SQL
+				end
+
+				#Retrieve all existing tags
+				def tags
+					@db.execute(<<SQL)
+SELECT tag
+FROM tag
+GROUP BY tag
+SQL
 				end
 			end
 		end
