@@ -211,4 +211,15 @@ describe Rimv::DB::TagTree do
 			end
 		end
 	end
+
+	describe 'with only one element' do
+		before :each do
+			@tree = Rimv::DB::TagTree.new([:hash, [:tag1]])
+			@leaf = @tree.first
+		end
+		
+		it do
+			lambda {@leaf.next}.should_not raise_error
+		end
+	end
 end
