@@ -41,6 +41,18 @@ module Rimv
 					@base = nil if base
 				end
 			end
+
+			# Retrieve all existing tags (to be defined)
+			def tags
+				raise NotImplementedError
+			end
+
+			# Retrieve the max length among the tags
+			def tags_max_length
+				tags.collect do |tag|
+					tag.to_s.length
+				end.max
+			end
 		end
 	end
 end
