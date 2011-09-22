@@ -111,7 +111,11 @@ class Rimv::DB::TagTree
 		def next_hash_of hash
 			@hashes[@hashes.index(hash)+1] or
 			if @children.empty?
-				@parent.next_node_of(self).first
+				if @parent.instance_of?(self.class)
+					@parent.next_node_of(self).first
+				else
+					first
+				end
 			else
 				@children.first.first
 			end
