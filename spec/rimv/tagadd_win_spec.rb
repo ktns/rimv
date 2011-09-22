@@ -14,9 +14,9 @@ describe Rimv::TagaddWin do
 		@win.ok
 	end
 
-	after :each do
-		while Gtk.events_pending?
-			Gtk.main_iteration
-		end
-	end
+	#after :each do
+	#	while Gtk.events_pending?
+	#		Gtk.main_iteration
+	#	end
+	#end
 end
