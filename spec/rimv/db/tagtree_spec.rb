@@ -209,15 +209,30 @@ describe Rimv::DB::TagTree do
 	end
 
 	context 'with only one leaf' do
-		before :all do
-			@tree  = Rimv::DB::TagTree.new([['hoge',[]]])
-			@first = @tree.first
+		shared_examples_for 'single leaf' do
+			describe '#next' do
+				it 'should return the identical leaf to first one' do
+					@first.next.should == @first
+				end
+			end
 		end
 
-		describe '#next' do
-			it 'should return the identical leaf to first one' do
-				@first.next.should == @first
+		context 'without tags' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',[]]])
+				@first = @tree.first
 			end
+
+			it_should_behave_like 'single leaf'
+		end
+
+		context 'with a tag' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',['fuga']]])
+				@first = @tree.first
+			end
+
+			it_should_behave_like 'single leaf'
 		end
 	end
 end
