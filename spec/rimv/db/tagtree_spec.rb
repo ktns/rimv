@@ -1,14 +1,10 @@
 require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_helper.rb'].flatten))
 
-describe Rimv::DB::TagTree do
-	RSpec.configure do |config|
-		config.before(:suite) do
-			class Rimv::DB::TagTree
-				attr_reader :root
-			end
-		end
-	end
+class Rimv::DB::TagTree
+	attr_reader :root
+end
 
+describe Rimv::DB::TagTree do
 	describe 'complete tree' do
 		before :all do
 			unless self.class.class_variable_defined? :@@tree
