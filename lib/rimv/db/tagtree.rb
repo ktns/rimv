@@ -25,11 +25,13 @@ module Rimv::DB
 		end
 
 		def enq node, hash, tags
+			verbose(3).puts {'Enqueuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
 			@queue.enq [node, hash, tags]
 		end
 
 		def deq
 			node, hash, tags = *@queue.deq
+			verbose(3).puts {'Dequeuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
 			node ||= @root
 			node.add hash, tags
 		end
