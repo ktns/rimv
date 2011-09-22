@@ -207,4 +207,17 @@ describe Rimv::DB::TagTree do
 			end
 		end
 	end
+
+	context 'with only one leaf' do
+		before :all do
+			@tree  = Rimv::DB::TagTree.new(['hoge',[]])
+			@first = @tree.first
+		end
+
+		describe '#next' do
+			it 'should return the identical leaf to first one' do
+				@first.next.should == @first
+			end
+		end
+	end
 end
