@@ -9,13 +9,11 @@ module Rimv
 		def initialize adaptor
 			raise TypeError, "Rimv::DB::Adaptor expected for `adaptor', but #{adaptor.class}" unless adaptor.kind_of?(Rimv::DB::Adaptor)
 
-			super(APP_NAME)
+			super(APP_NAME + Version)
 			@adaptor       = adaptor
 			@tree     = Rimv::DB::TagTree.new(adaptor.hashtags)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
-
-			self.title = APP_NAME + Version
 
 			self.icon_list = Logo.icons
 			self.icon      = Logo.icon(32)

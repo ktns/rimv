@@ -9,13 +9,22 @@ end
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 require 'rimv'
 
-class TreeStub
+class TreeStub < Rimv::DB::TagTree
+	def initialize
+		@queue=Queue.new
+	end
+
 	def instance_of? klass
 		if klass == Rimv::DB::TagTree
 			true
 		else
 			super
 		end
+	end
+
+	def enq node, hash, tags
+		@queue.enq [node,hash,tags]
+		deq
 	end
 end
 

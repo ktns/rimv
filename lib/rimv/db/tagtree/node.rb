@@ -48,8 +48,10 @@ class Rimv::DB::TagTree
 		end
 
 		def initialize parent, tag
-			verbose(4).puts 'Initializing new TagTree Node; ' +
+			verbose(4).puts do
+				'Initializing new TagTree Node; ' +
 				"parent=#{parent ? parent.to_s : 'none'}, tag = #{tag}"
+			end
 			unless [self.class, Rimv::DB::TagTree].any?{|c| parent.instance_of?(c)}
 				raise TypeError, "`#{self.class}' or `#{Rimv::DB::TagTree}' expected, but `#{parent.class}'"
 			end
@@ -62,7 +64,7 @@ class Rimv::DB::TagTree
 		end
 
 		def consistent? depth = 0
-			verbose(1).puts "Consistency Check for tag #{@tag}, depth #{depth}"
+			verbose(1).puts {"Consistency Check for tag #{@tag}, depth #{depth}"}
 			@children.each do |c|
 				unless c.parent == self
 					raise "TagTree consistency Error! tag = #{@tag}, depth = #{depth}"
@@ -74,8 +76,10 @@ class Rimv::DB::TagTree
 		end
 
 		def add hash, tags
-			verbose(4).puts "adding hash `#{hash}' onto #{self}; " +
+			verbose(4).puts do
+				"adding hash `#{hash}' onto #{self}; " +
 				"tagstack [#{tags.join(', ')}]"
+			end
 			if tags.empty?
 				new_leaf = Leaf.new(hash, self)
 				@hashes.push new_leaf unless @hashes.include? new_leaf
@@ -91,7 +95,7 @@ class Rimv::DB::TagTree
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-					child.add hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten
+					tree.enq(child, hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten)
 				end
 			end
 		end
@@ -99,7 +103,8 @@ class Rimv::DB::TagTree
 		def first
 			raise ScriptError, "#{self.inspect}#\@hashes was nil!" if @hashes.nil?
 			raise ScriptError, "#{self.inspect}#\@children was nil!" if @children.nil?
-			raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
+			#raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
+			@parent.next_node_of(self).first if @hashes.empty? && @children.empty?
 			@hashes.first or @children.first.first or
 			raise "#{inspect}.first returned nil"
 		end
