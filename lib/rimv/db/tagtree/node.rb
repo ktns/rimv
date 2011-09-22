@@ -76,6 +76,7 @@ class Rimv::DB::TagTree
 		end
 
 		def add hash, tags
+			raise TypeError.new('Expected Enumerable but %s for tags!' % tags.class) unless tags.kind_of?(Enumerable)
 			verbose(4).puts do
 				"adding hash `#{hash}' onto #{self}; " +
 				"tagstack [#{tags.join(', ')}]"
