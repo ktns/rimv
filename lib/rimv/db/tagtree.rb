@@ -12,18 +12,26 @@ module Rimv::DB
 			@thread = Thread.new do
 				Thread.current.abort_on_exception = true
 				hashtags.each do |hash, tags|
-					@queue.enq [hash, tags]
+					enq nil, hash, tags
 				end
 			end
 			verbose(3).puts 'Waiting for first leaf to be added...'
-			deq
+			until leaves.count > 0
+				deq
+			end
 			@current = first
 			verbose(3).puts 'First leaf has now been added.'
 			GLib::Idle.add{deq}
 		end
 
+		def enq node, hash, tags
+			@queue.enq [node, hash, tags]
+		end
+
 		def deq
-			@root.add *@queue.deq
+			node, hash, tags = *@queue.deq
+			node ||= @root
+			node.add hash, tags
 		end
 
 		def loading?

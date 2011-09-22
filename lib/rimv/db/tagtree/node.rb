@@ -95,7 +95,7 @@ class Rimv::DB::TagTree
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-					child.add hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten
+					tree.enq(child, hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten)
 				end
 			end
 		end
@@ -103,7 +103,8 @@ class Rimv::DB::TagTree
 		def first
 			raise ScriptError, "#{self.inspect}#\@hashes was nil!" if @hashes.nil?
 			raise ScriptError, "#{self.inspect}#\@children was nil!" if @children.nil?
-			raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
+			#raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
+			@parent.next_node_of(self).first if @hashes.empty? && @children.empty?
 			@hashes.first or @children.first.first or
 			raise "#{inspect}.first returned nil"
 		end
