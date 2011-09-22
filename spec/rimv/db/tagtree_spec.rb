@@ -210,7 +210,7 @@ describe Rimv::DB::TagTree do
 
 	context 'with only one leaf' do
 		before :all do
-			@tree  = Rimv::DB::TagTree.new(['hoge',[]])
+			@tree  = Rimv::DB::TagTree.new([['hoge',[]]])
 			@first = @tree.first
 		end
 
