@@ -79,3 +79,9 @@ shared_examples_for 'nodes and leaves' do
 		end
 	end
 end
+
+module Rimv
+	if (verbosity=ENV['VERBOSITY'].to_i) > 0
+		@@verbosity = verbosity
+	end
+end
