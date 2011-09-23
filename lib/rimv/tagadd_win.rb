@@ -47,7 +47,7 @@ class Rimv::TagaddWin < Gtk::Window
 	end
 
 	def cancel *args
-		hide
+		destroy
 	end
 
 	def keypress widget, event
