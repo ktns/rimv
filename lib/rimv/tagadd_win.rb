@@ -42,7 +42,7 @@ class Rimv::TagaddWin < Gtk::Window
 	end
 
 	def ok *args
-		@parent.tagadd @entry.text
+		@parent.addtag @entry.text
 		cancel
 	end
 

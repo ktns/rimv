@@ -12,11 +12,11 @@ describe Rimv::MainWin do
 			@win=TestMainWin.new @adaptor=MockAdaptor.new
 		end
 
-		it '#tagadd should invoke Adaptor#tagadd' do
+		it '#addtag should invoke Adaptor#addtag' do
 			tag=stub(:tag)
 			@win.stub!(:cur_hash).and_return(cur_hash=stub(:cur_hash))
 			@adaptor.should_receive(:addtag).with(cur_hash, tag)
-			@win.tagadd tag
+			@win.addtag tag
 		end
 	end
 end
