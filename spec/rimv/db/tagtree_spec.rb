@@ -235,4 +235,30 @@ describe Rimv::DB::TagTree do
 			it_should_behave_like 'single leaf'
 		end
 	end
+
+	context 'with a leaf and with a node without a leaf' do
+		before :all do
+			@tree = Rimv::DB::TagTree.new([['hoge',['fuga']],['fuga',['piyo']]])
+			until @tree.leaves.count > 0
+				@tree.deq
+			end
+			@first = @tree.first
+		end
+
+		it 'should have a node witout a leaf' do
+			@tree.nodes.should be_any do |node|
+				node.children.empty?
+			end
+		end
+
+		it 'should have only one lefa' do
+			@tree.leaves.count.should == 1
+		end
+
+		describe 'existing leaf#next' do
+			it 'should return existing leaf' do 
+				@first.next.should == @first
+			end
+		end
+	end
 end
