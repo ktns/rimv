@@ -27,7 +27,9 @@
 			end
 
 			def display leaf
-				raise unless leaf.instance_of?(Rimv::DB::TagTree::Node::Leaf)
+				unless leaf.instance_of?(Rimv::DB::TagTree::Node::Leaf)
+					raise TypeError 'expected Rimv::DB::TagTree::Node::Leaf, but %s' %leaf.class
+				end
 				verbose(2).puts "tagpopup#display; path=#{leaf.path}"
 				tags = leaf.path.collect{|n|n.tag}
 				tags.shift
