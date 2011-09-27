@@ -149,15 +149,14 @@ class Rimv::DB::TagTree
 			if (index = @hashes.index(hash)-1) >= 0
 				@hashes[index]
 			else
-				unless @parent.instance_of?(Rimv::DB::TagTree)
-					node = self
-					begin
-						node = node.parent.prev_node_of(node)
-					end until node.last_hash
-					node.last_hash
-				else
-					last_node.last_hash
-				end
+				node = self
+				begin
+					if node.parent.instance_of?(Rimv::DB::TagTree)
+						return last_node.last_hash
+					end
+					node = node.parent.prev_node_of(node)
+				end until node.last_hash
+				node.last_hash
 			end
 		end
 
