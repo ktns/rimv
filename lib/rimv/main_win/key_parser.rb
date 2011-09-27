@@ -1,15 +1,10 @@
+require 'rimv/keyval'
+
 class Rimv::MainWin
 	class KeyParser
 		include Rimv
 		include Gdk::Keyval
 
-		def self.const_missing id
-			if constants.include?(oid = id.to_s.sub('GDK_KEY_', 'GDK_'))
-				const_set(id, const_get(oid))
-			else
-				super
-			end
-		end
 		def initialize
 			@stack = []
 		end
@@ -37,12 +32,14 @@ class Rimv::MainWin
 					verbose(1).puts 'toggle tag popup window'
 					w.tagpopup.toggle
 					verbose(2).puts "tag popup is now #{w.tagpopup ? 'on' : 'off'}"
-#			},
+			},
 #				[GDK_KEY_s, GDK_KEY_plus] => lambda {|w|
 #				w.score_up
 #			},
 #				[GDK_KEY_s, GDK_KEY_minus] => lambda {|w|
 #				w.score_down
+			[GDK_KEY_t, GDK_KEY_a] => lambda {|w|
+						w.pop_tagadd_win
 			}
 		}
 

@@ -76,6 +76,7 @@ class Rimv::DB::TagTree
 		end
 
 		def add hash, tags
+			raise TypeError.new('Expected Enumerable but %s for tags!' % tags.class) unless tags.kind_of?(Enumerable)
 			verbose(4).puts do
 				"adding hash `#{hash}' onto #{self}; " +
 				"tagstack [#{tags.join(', ')}]"
@@ -95,7 +96,7 @@ class Rimv::DB::TagTree
 						@children.sort!
 					end
 					raise "#{self.class} expected, but #{child.class}!" unless child.class == self.class
-					child.add hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten
+					tree.enq(child, hash, [tags, tags_splitted.join('/')].flatten.reject(&:empty?) - [tag_with_slash, child.tags].flatten)
 				end
 			end
 		end
@@ -103,15 +104,21 @@ class Rimv::DB::TagTree
 		def first
 			raise ScriptError, "#{self.inspect}#\@hashes was nil!" if @hashes.nil?
 			raise ScriptError, "#{self.inspect}#\@children was nil!" if @children.nil?
-			raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
-			@hashes.first or @children.first.first or
+			#raise ScriptError, "#{self.inspect}#\@hashes and @children were both empty" if @hashes.empty? && @children.empty?
+			return @parent.next_node_of(self).first if @hashes.empty? && @children.empty?
+			@hashes.first or
+			@children.first.first or
 			raise "#{inspect}.first returned nil"
 		end
 
 		def next_hash_of hash
 			@hashes[@hashes.index(hash)+1] or
 			if @children.empty?
-				@parent.next_node_of(self).first
+				if @parent.instance_of?(self.class)
+					@parent.next_node_of(self).first
+				else
+					first
+				end
 			else
 				@children.first.first
 			end
@@ -142,15 +149,14 @@ class Rimv::DB::TagTree
 			if (index = @hashes.index(hash)-1) >= 0
 				@hashes[index]
 			else
-				unless @parent.instance_of?(Rimv::DB::TagTree)
-					node = self
-					begin
-						node = node.parent.prev_node_of(node)
-					end until node.last_hash
-					node.last_hash
-				else
-					last_node.last_hash
-				end
+				node = self
+				begin
+					if node.parent.instance_of?(Rimv::DB::TagTree)
+						return last_node.last_hash
+					end
+					node = node.parent.prev_node_of(node)
+				end until node.last_hash
+				node.last_hash
 			end
 		end
 

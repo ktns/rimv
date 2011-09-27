@@ -8,12 +8,11 @@ describe Rimv::DB::TagTree do
 	describe 'complete tree' do
 		before :all do
 			unless self.class.class_variable_defined? :@@tree
-				test_adaptor_open do |adaptor|
-					raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
-					$complete_tag_tree_was_built = true
-					@@tree = Rimv::DB::TagTree.new(adaptor)
-					@@tree.wait_until_loading
-				end
+				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+				adaptor = MockAdaptor.new
+				$complete_tag_tree_was_built = true
+				@@tree = Rimv::DB::TagTree.new(adaptor.hashtags)
+				@@tree.wait_until_loading
 			end
 		end
 
@@ -205,6 +204,66 @@ describe Rimv::DB::TagTree do
 				@root_node.each_nodes do |node|
 					node.tags.uniq!.should be_nil
 				end
+			end
+		end
+	end
+
+	context 'with only one leaf' do
+		shared_examples_for 'single leaf' do
+			describe '#next' do
+				it 'should return the identical leaf to first one' do
+					@first.next.should == @first
+				end
+			end
+		end
+
+		context 'without tags' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',[]]])
+				@first = @tree.first
+			end
+
+			it_should_behave_like 'single leaf'
+		end
+
+		context 'with a tag' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',['fuga']]])
+				@first = @tree.first
+			end
+
+			it_should_behave_like 'single leaf'
+		end
+	end
+
+	context 'with a leaf and with a node without a leaf' do
+		before :all do
+			@tree = Rimv::DB::TagTree.new([['hoge',['fuga']],['fuga',['piyo']]])
+			until @tree.leaves.count > 0
+				@tree.deq
+			end
+			@first = @tree.first
+		end
+
+		it 'should have a node witout a leaf' do
+			@tree.nodes.should be_any do |node|
+				node.children.empty?
+			end
+		end
+
+		it 'should have only one lefa' do
+			@tree.leaves.count.should == 1
+		end
+
+		describe 'existing leaf#next' do
+			it 'should return existing leaf' do 
+				@first.next.should == @first
+			end
+		end
+
+		describe 'existing leaf#prev' do
+			it 'should return existing leaf' do 
+				@first.prev.should == @first
 			end
 		end
 	end

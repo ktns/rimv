@@ -1,3 +1,5 @@
+require 'rimv/db/adaptor'
+
 module Rimv
 	module DB
 		module Adaptor
@@ -68,8 +70,8 @@ SQL
 				end
 
 				def addimage name, img
-					raise TypeError unless img.kind_of?(String)
-					hash = Digest::MD5.digest(img).unpack('h*').first
+					name, img = name.to_s, img.to_s
+					hash = DB.digest img
 					@db.transaction do |db|
 						db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
 INSERT INTO img (hash, img, score)
@@ -86,7 +88,7 @@ WHERE NOT EXISTS (SELECT 1 FROM name WHERE hash=:hash AND name=:name);
 
 				def addtag hash, tag
 					verbose(1).puts "tagging image `#{hash} as `#{tag}'"
-					@db.execute(<<-SQL, :hash => hash, :tag => tag)
+					@db.execute(<<-SQL, :hash => hash.to_s, :tag => tag.to_s)
 INSERT INTO tag (hash, tag)
 SELECT :hash, :tag
 WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
@@ -144,6 +146,15 @@ FROM (img LEFT JOIN tag ON img.hash = tag.hash)
 GROUP BY img.hash
 ORDER BY min(name.name)
 					SQL
+				end
+
+				#Retrieve all existing tags
+				def tags
+					@db.execute(<<SQL).collect(&:to_s)
+SELECT tag
+FROM tag
+GROUP BY tag
+SQL
 				end
 			end
 		end

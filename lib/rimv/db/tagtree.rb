@@ -2,35 +2,38 @@ module Rimv::DB
 	class TagTree
 		include Rimv
 
-		def sync
-			@mutex.lock
-			begin
-				return yield
-			ensure
-				@mutex.unlock
-			end
-		end
-
 		attr_reader :current
 
-		def initialize db
+		def initialize hashtags
 			verbose(2).puts 'Initializing TagTree...'
-			raise unless db.kind_of?(Rimv::DB::Adaptor)
-			@mutex       = Mutex.new
+			@queue       = Queue.new
 			@root        = Node.new(self, nil)
 			@random_hist = []
 			@thread = Thread.new do
 				Thread.current.abort_on_exception = true
-				db.each_hash_tags do |hash, tags|
-					sync do
-						@root.add hash, tags
-					end
+				hashtags.each do |hash, tags|
+					enq nil, hash, tags
 				end
 			end
 			verbose(3).puts 'Waiting for first leaf to be added...'
-			Thread.pass until sync {leaves.count > 0}
+			until leaves.count > 0
+				deq
+			end
 			@current = first
 			verbose(3).puts 'First leaf has now been added.'
+			GLib::Idle.add{deq}
+		end
+
+		def enq node, hash, tags
+			verbose(3).puts {'Enqueuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
+			@queue.enq [node, hash, tags]
+		end
+
+		def deq
+			node, hash, tags = *@queue.deq
+			verbose(3).puts {'Dequeuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
+			node ||= @root
+			node.add hash, tags
 		end
 
 		def loading?
@@ -39,55 +42,42 @@ module Rimv::DB
 
 		def wait_until_loading
 			@thread.join
+			until @queue.empty?
+				deq
+			end
 		end
 
 		def consistent?
-			sync do
-				@root.consistent?
-			end
+			@root.consistent?
 		end
 
 		def first
-			sync do
-				@current = @root.first
-			end
+			@current = @root.first
 		end
 
 		def next
-			sync do
-				@current = @current.next
-			end
+			@current = @current.next
 		end
 
 		def prev
-			sync do
-				@current = @current.prev
-			end
+			@current = @current.prev
 		end
 
 		def last
-			sync do
-				@root.last
-			end
+			@root.last
 		end
 
 		def random
-			sync do
-				@random_hist.push @current
-				@current = leaves.entries[rand(leaves.count)]
-			end
+			@random_hist.push @current
+			@current = leaves.entries[rand(leaves.count)]
 		end
 
 		def random_prev
-			sync do
-				@current = @random_hist.pop
-			end || random
+			@current = @random_hist.pop or random
 		end
 
 		def each_leaves &block
-			sync do
-				@root.each_leaves &block
-			end
+			@root.each_leaves &block
 		end
 
 		def leaves
@@ -95,9 +85,7 @@ module Rimv::DB
 		end
 
 		def each_nodes &block
-			sync do
-				@root.each_nodes &block
-			end
+			@root.each_nodes &block
 		end
 
 		def nodes
