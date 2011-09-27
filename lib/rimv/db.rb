@@ -11,6 +11,10 @@ module Rimv
 		def self.digest img
 			Digest::MD5.digest(img).unpack('h*').first
 		end
+
+		def self.acceptable_tag? tag
+			/\A\w+(\/\w+)*\Z/ =~ tag
+		end
 	end
 end
 

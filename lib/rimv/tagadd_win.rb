@@ -17,6 +17,7 @@ class Rimv::TagaddWin < Gtk::Window
 		@hbox.add @ok = Gtk::Button.new('OK')
 		@hbox.add @cancel = Gtk::Button.new('Cancel')
 		@entry.width_chars = adaptor.tags_max_length + 3
+		@entry.signal_connect('changed',&method(:changed))
 		@ok.signal_connect('clicked',&method(:ok))
 		@cancel.signal_connect('clicked',&method(:cancel))
 		set_resizable false
@@ -34,9 +35,10 @@ class Rimv::TagaddWin < Gtk::Window
 		set_modal(true)
 		set_transient_for(@parent=parent)
 
-		@ok.can_default=true
+		@ok.sensitive            = false
+		@ok.can_default          = true
 		@ok.grab_default
-		@entry.activates_default=true
+		@entry.activates_default = true
 
 		show_all
 	end
@@ -54,5 +56,9 @@ class Rimv::TagaddWin < Gtk::Window
 		if event.keyval == GDK_KEY_Escape
 			cancel
 		end
+	end
+
+	def changed widget
+		@ok.sensitive=Rimv::DB.acceptable_tag? @entry.text
 	end
 end
