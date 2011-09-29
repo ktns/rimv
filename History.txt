@@ -1,3 +1,7 @@
+=== 0.1.1 2011-09-29
+* 1 minor enhancements:
+	* Fixed a bug in constant name workaround
+
 === 0.1.0 2011-09-28
 * 3 major enhancements:
 	* Use fixtures for testing
