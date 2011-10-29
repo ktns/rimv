@@ -1,3 +1,5 @@
+module Rimv
+	class MainWin
 		class TagPopup < Gtk::Window
 			def on?
 				@on
@@ -44,3 +46,5 @@
 				super(*(Size[@main_win.position]+Size[@main_win]-Size[size]))
 			end
 		end
+	end
+end
