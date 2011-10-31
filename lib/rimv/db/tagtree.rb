@@ -4,6 +4,7 @@ module Rimv::DB
 
 		attr_reader :current
 
+		#Initialize TagTree from tuples of hash and tags
 		def initialize hashtags
 			verbose(2).puts 'Initializing TagTree...'
 			@queue       = Queue.new
@@ -24,11 +25,14 @@ module Rimv::DB
 			GLib::Idle.add{deq}
 		end
 
+		#Enqueue a tuple of hash and tags into @queue
 		def enq node, hash, tags
 			verbose(3).puts {'Enqueuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
 			@queue.enq [node, hash, tags]
 		end
 
+		#Dequeue a tuple of hash and tags from @queue,
+		#and build corresponding nodes and leaves
 		def deq
 			node, hash, tags = *@queue.deq
 			verbose(3).puts {'Dequeuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
@@ -36,10 +40,12 @@ module Rimv::DB
 			node.add hash, tags
 		end
 
+		#Returns true if TagTree has not finished loading
 		def loading?
 			@thread.alive? or not @queue.empty?
 		end
 
+		#Ensure TagTree has finished loading
 		def wait_until_loading
 			@thread.join
 			until @queue.empty?
@@ -47,14 +53,17 @@ module Rimv::DB
 			end
 		end
 
+		#Check consistency of TagTree
 		def consistent?
 			@root.consistent?
 		end
 
+		#Return and set @current to first leaf
 		def first
 			@current = @root.first
 		end
 
+		#Return and set @current to next leaf of @current
 		def next
 			@current = @current.next
 		end
