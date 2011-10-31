@@ -37,7 +37,7 @@ module Rimv::DB
 		end
 
 		def loading?
-			@thread.alive?
+			@thread.alive? or not @queue.empty?
 		end
 
 		def wait_until_loading
