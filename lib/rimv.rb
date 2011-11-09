@@ -67,6 +67,8 @@ module Rimv
 	def verbose verbose_level
 		VerboseMessenger.new(verbose_level)
 	end
+
+	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 end
 
 require 'rimv/db'
