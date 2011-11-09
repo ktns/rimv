@@ -7,41 +7,41 @@ end
 describe Rimv::DB::TagTree do
 	describe 'complete tree' do
 		before :all do
-			unless self.class.class_variable_defined? :@@tree
+			unless @tree
 				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
 				adaptor = MockAdaptor.new
 				$complete_tag_tree_was_built = true
-				@@tree = Rimv::DB::TagTree.new(adaptor.hashtags)
-				@@tree.wait_until_loading
+				@tree = Rimv::DB::TagTree.new(adaptor.hashtags)
+				@tree.wait_until_loading
 			end
 		end
 
 		it 'should be consistent' do
-			@@tree.should be_consistent
+			@tree.should be_consistent
 		end
 
 		it 'should not be loading' do
-			@@tree.should_not be_loading
+			@tree.should_not be_loading
 		end
 
 		describe 'nodes' do
 			it 'should all be enumerated by each_nodes' do
-				enumerator = @@tree.nodes
+				enumerator = @tree.nodes
 				enumerator.all? do |n|
-					n.should be_instance_of @@tree.class::Node
+					n.should be_instance_of @tree.class::Node
 				end
 
-				ObjectSpace.each_object(@@tree.class::Node).select do |n|
-					n.tree.equal? @@tree
+				ObjectSpace.each_object(@tree.class::Node).select do |n|
+					n.tree.equal? @tree
 				end.each do |n|
 					enumerator.should be_include n
 				end
 			end
 
 			it 'should have consistent paths' do
-				@@tree.each_nodes do |n|
+				@tree.each_nodes do |n|
 					path = n.path
-					path.first.should equal @@tree.root
+					path.first.should equal @tree.root
 					path.last.should equal n
 					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
 				end
@@ -52,40 +52,40 @@ describe Rimv::DB::TagTree do
 
 		describe 'leaves' do
 			it 'should exist' do
-				@@tree.leaves.count.should > 0
+				@tree.leaves.count.should > 0
 			end
 
 			it 'should all be Leaf class' do
-				@@tree.each_leaves do |leaf|
-					leaf.should be_kind_of(@@tree.class::Node::Leaf)
+				@tree.each_leaves do |leaf|
+					leaf.should be_kind_of(@tree.class::Node::Leaf)
 				end
 			end
 
 			it 'should have sane node' do
-				@@tree.each_leaves do |leaf|
+				@tree.each_leaves do |leaf|
 					leaf.node.should_not be_nil
-					@@tree.nodes.should include leaf.node
+					@tree.nodes.should include leaf.node
 				end
 			end
 
 			it 'next of last should return to first' do
-				_first = @@tree.first
+				_first = @tree.first
 				_next = nil
-				@@tree.leaves.count.times do
-					_next = @@tree.next
+				@tree.leaves.count.times do
+					_next = @tree.next
 				end
 				_next.should_not be_nil
 				_first.should equal _next
 			end
 
 			it 'should all be enuemrated by #next' do
-				leaves = @@tree.leaves.entries
+				leaves = @tree.leaves.entries
 				lambda do
-					leaves.delete @@tree.first
+					leaves.delete @tree.first
 				end.should change(leaves, :size).by(-1)
 				leaves.size.times do
 					lambda do
-						leaves.delete @@tree.next
+						leaves.delete @tree.next
 					end.should change(leaves, :size).by(-1)
 				end
 				leaves.should be_empty
@@ -96,22 +96,22 @@ describe Rimv::DB::TagTree do
 
 		describe 'current leaf' do
 			it 'should be instance of Rimv::DB::TagTree::Node::Leaf'do
-				@@tree.current.should be_instance_of Rimv::DB::TagTree::Node::Leaf
+				@tree.current.should be_instance_of Rimv::DB::TagTree::Node::Leaf
 			end
 
 			it 'should change after #next' do
 				lambda do
-					@@tree.next
-				end.should change(@@tree,:current)
+					@tree.next
+				end.should change(@tree,:current)
 			end
 
 			it 'should not change after next and prev' do
-				@@tree.leaves.count.times do
+				@tree.leaves.count.times do
 					lambda do
-						@@tree.next
-						@@tree.prev
-					end.should_not change(@@tree, :current)
-					@@tree.next
+						@tree.next
+						@tree.prev
+					end.should_not change(@tree, :current)
+					@tree.next
 				end
 			end
 		end
@@ -119,9 +119,9 @@ describe Rimv::DB::TagTree do
 		describe 'isotopes' do
 			shared_examples_for 'of any' do
 				before :all do
-					@orig = @@tree.send(enum).max_by{|item| item.path.count}
+					@orig = @tree.send(enum).max_by{|item| item.path.count}
 					@orig.path.size.should > 2
-					@isotopes = @@tree.isotopes @orig
+					@isotopes = @tree.isotopes @orig
 				end
 
 				it 'should all be unique' do
