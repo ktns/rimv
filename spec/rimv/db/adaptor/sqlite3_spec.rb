@@ -57,7 +57,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 		end
 
 		after :all do
-			@adaptor.close
+			@adaptor.close if @adaptor
 		end
 	end
 end
