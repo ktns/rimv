@@ -9,6 +9,7 @@ require 'rspec'
 require 'rspec/collection_matchers'
 require 'rspec/its'
 require 'rimv'
+require 'rimv/cli'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
