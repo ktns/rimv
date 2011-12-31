@@ -51,7 +51,7 @@ module ::Rimv::CLI
 		opt.on('-t TAG', '--tag=TAG',
 					 'specify tag of images to be added (or deleted with TAG-)'){|tag| @@tag.concat tag.split(',')}
 
-		opt.parse!
+		opt.parse! argv
 
 		abort 'path_tag and tag option is mutually exclusive!' if @@path_tag && @@tag
 	end
