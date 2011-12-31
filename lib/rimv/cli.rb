@@ -1,5 +1,7 @@
-module Rimv::CLI
-	include Rimv
+require 'rimv'
+
+module ::Rimv::CLI
+	include ::Rimv
 	MODES={
 			'add'=>'add image(s) to database',
 			'view'=>'view images in database'
