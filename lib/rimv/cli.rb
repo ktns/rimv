@@ -7,7 +7,7 @@ module ::Rimv::CLI
 			'view'=>'view images in database'
 	}
 
-	def self.parse argv
+	def self.parse argv=ARGV
 		opt = OptionParser.new
 		MODES.each do |mode,desc|
 			opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
