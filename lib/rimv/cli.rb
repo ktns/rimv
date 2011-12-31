@@ -9,12 +9,12 @@ module Rimv::CLI
 		opt = OptionParser.new
 		MODES.each do |mode,desc|
 			opt.on('-'+mode[0,1],'--'+mode,desc) do |v|
-				if @@mode
+				if Rimv.mode
 					$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
-												 mode, @@mode)
+												 mode, Rimv.mode)
 					abort
 				else
-					@@mode = mode
+					Rimv.mode = mode
 				end
 			end
 		end

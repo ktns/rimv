@@ -84,6 +84,16 @@ module Rimv
 	# Workaround for Enumerator in ruby-1.8.x and 1.9.x
 	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 
+	# Get application mode
+	def self.mode
+		@@mode
+	end
+
+	# Set application mode
+	def self.mode= mode
+		@@mode = mode
+	end
+
 	def run
 		case @@mode
 		when 'add'

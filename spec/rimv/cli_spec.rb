@@ -6,7 +6,7 @@ describe Rimv::CLI do
 			it 'should invoke add mode' do
 				Rimv::CLI.parse %w<-a>
 				include ::Rimv
-				@@mode.should == 'add'
+				Rimv.mode.should == 'add'
 			end
 		end
 	end
