@@ -37,7 +37,7 @@ def root_node
 end
 
 def test_adaptor_open &block
-	Rimv::DB::Adaptor::SQLite3.open("#{ENV['HOME']}/.imv.sqlite3.test", &block) 
+	Rimv::DB::Adaptor::SQLite3.open("#{ENV['HOME']}/.imv.sqlite3.test", &block)
 end
 
 def blank_db

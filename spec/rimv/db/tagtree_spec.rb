@@ -256,13 +256,13 @@ describe Rimv::DB::TagTree do
 		end
 
 		describe 'existing leaf#next' do
-			it 'should return existing leaf' do 
+			it 'should return existing leaf' do
 				@first.next.should == @first
 			end
 		end
 
 		describe 'existing leaf#prev' do
-			it 'should return existing leaf' do 
+			it 'should return existing leaf' do
 				@first.prev.should == @first
 			end
 		end

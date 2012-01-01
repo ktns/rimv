@@ -38,7 +38,7 @@ module Rimv
 
 				def tables
 					@db.execute(<<SQL)
-SELECT name FROM sqlite_master WHERE type='table' 
+SELECT name FROM sqlite_master WHERE type='table'
 UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table'
 SQL
 				end
