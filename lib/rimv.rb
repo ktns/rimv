@@ -1,8 +1,11 @@
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
+# Application Namespace
 module Rimv
+	#Name of this application
 	APP_NAME = "rimv"
+	#Version of this application
 	Version  = '0.1.3'
 
 	require "gtk2"
@@ -14,6 +17,7 @@ module Rimv
 	@@score     = nil
 	@@verbosity = 0
 
+	# Namespace for the application logo
 	module Logo
 		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.xpm')
 		@@sizes = Hash[
@@ -22,20 +26,24 @@ module Rimv
 			end.flatten)
 		]
 
+		# Returns an array containing icons of various sizes
 		def self.icons
 			@@sizes.values
 		end
 
+		# Returns an icon of the specified size
 		def self.icon size
 			@@sizes[size]
 		end
 	end
 
 	class <<self
+		# Get the verbosity level of the application message
 		def verbosity
 			@@verbosity
 		end
 
+		# Set the verbosity level of the application message
 		def verbosity= new_verbosity
 			@@verbosity = new_verbosity
 		end
@@ -73,6 +81,7 @@ module Rimv
 		VerboseMessenger.new(verbose_level)
 	end
 
+	# Workaround for Enumerator in ruby-1.8.x and 1.9.x
 	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 end
 
