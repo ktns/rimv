@@ -41,14 +41,18 @@ module Rimv
 		end
 	end
 
+	# Virtural IO class for log
 	class VerboseMessenger
 		include Rimv
 
+		# Create logger with specified verbosity level
 		def initialize verbose_level
 			raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
 			@verbose_level = verbose_level
 		end
 
+		# Pass through method call to $stdout if the specified
+		# verbosity level exceeds the application verbosity level
 		def method_missing name, *args, &block
 			if @@verbosity >= @verbose_level
 				if block
@@ -64,6 +68,7 @@ module Rimv
 		end
 	end
 
+	#Returns VerboseMessenger with specified versbosity level
 	def verbose verbose_level
 		VerboseMessenger.new(verbose_level)
 	end
