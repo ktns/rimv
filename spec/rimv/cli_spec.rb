@@ -14,6 +14,14 @@ describe Rimv::CLI do
 			end
 		end
 
+		describe '--add' do
+			it 'should invoke add mode' do
+				Rimv::CLI.parse %w<--add>
+				include ::Rimv
+				Rimv.mode.should == 'add'
+			end
+		end
+
 		describe '-v' do
 			it 'should invoke view mode' do
 				Rimv::CLI.parse %w<-v>
