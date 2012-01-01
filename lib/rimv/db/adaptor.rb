@@ -1,7 +1,11 @@
 module Rimv
 	module DB
+		# Namespace for database adaptors
 		module Adaptor
 			include Rimv
+
+			# Utility function for adaptors;
+			# Add file(s) into the database
 			def addfile path, base=false
 				@base = path.sub(/\/*$/,'') if base
 				begin
@@ -55,6 +59,7 @@ module Rimv
 				end.max
 			end
 
+			# Return enumerator over every hash-tags pair
 			def hashtags
 				enum_for(:each_hash_tags)
 			end
