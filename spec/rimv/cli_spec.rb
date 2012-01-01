@@ -29,5 +29,13 @@ describe Rimv::CLI do
 				Rimv.mode.should == 'view'
 			end
 		end
+
+		describe '--view' do
+			it 'should invoke view mode' do
+				Rimv::CLI.parse %w<--view>
+				include ::Rimv
+				Rimv.mode.should == 'view'
+			end
+		end
 	end
 end
