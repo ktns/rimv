@@ -45,7 +45,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 				public_class_method :new
 			end
 			@adaptor = Rimv::DB::Adaptor::SQLite3.new(blank_db)
-			@hash    = @adaptor.addfile File.join(logo_path).first
+			@hash    = @adaptor.addfile logo_path
 		end
 
 		describe '#addtag' do
@@ -57,7 +57,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 		end
 
 		after :all do
-			@adaptor.close
+			@adaptor.close if @adaptor
 		end
 	end
 end

@@ -6,7 +6,7 @@ module Rimv
 				@base = path.sub(/\/*$/,'') if base
 				begin
 					if File.directory?(path)
-						Enumerable::Enumerator.new(Dir, :foreach, path).collect do |file|
+						Enumerator.new(Dir, :foreach, path).collect do |file|
 							next if %w<. ..>.include?(file)
 							verbose(1).puts "adding directory `#{path}/#{file}'"
 							addfile("#{path}/#{file}")

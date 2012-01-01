@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 module Rimv
 	APP_NAME = "rimv"
-	Version  = '0.1.2'
+	Version  = '0.1.3'
 
 	require "gtk2"
 
@@ -67,6 +67,8 @@ module Rimv
 	def verbose verbose_level
 		VerboseMessenger.new(verbose_level)
 	end
+
+	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 end
 
 require 'rimv/db'

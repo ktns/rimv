@@ -76,9 +76,9 @@ end
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
-			@@tree.leaves.each do |leaf|
+			@tree.leaves.each do |leaf|
 				leaf.should respond_to :tree
-				leaf.tree.should equal @@tree
+				leaf.tree.should equal @tree
 			end
 		end
 	end

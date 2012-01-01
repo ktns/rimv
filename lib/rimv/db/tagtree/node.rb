@@ -177,7 +177,7 @@ class Rimv::DB::TagTree
 		end
 
 		def leaves
-			Enumerable::Enumerator.new(self, :each_leaves)
+			Enumerator.new(self, :each_leaves)
 		end
 
 		def each_nodes &block
@@ -189,7 +189,7 @@ class Rimv::DB::TagTree
 		end
 
 		def nodes
-			Enumerable::Enumerator.new(self, :each_nodes)
+			Enumerator.new(self, :each_nodes)
 		end
 
 		def shuffle tags
