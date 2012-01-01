@@ -1,6 +1,6 @@
 = rimv
 
-* http://ktns.ath.cx/
+* http://ktns.dyndns.org/
 
 == DESCRIPTION:
 
