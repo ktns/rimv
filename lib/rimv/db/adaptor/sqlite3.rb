@@ -3,6 +3,7 @@ require 'rimv/db/adaptor'
 module Rimv
 	module DB
 		module Adaptor
+			# Database adaptor class using a SQLite3 backend
 			class SQLite3
 
 				include Adaptor
@@ -12,9 +13,22 @@ module Rimv
 
 				include ::SQLite3
 
-				private_class_method :new
+				private
+				def self.new *args
+					super
+				end
+
+				def initialize db_file=nil
+					@db_file = db_file || "#{ENV['HOME']}/.imv.sqlite3"
+					@db = Database.new(@db_file)
+					if tables.empty?
+						create_tables
+					end
+				end
 
 				public
+				# Execute given block with an opened database and
+				# ensure it is closed
 				def self.open db_file=nil
 					db = new db_file
 					begin
@@ -28,14 +42,7 @@ module Rimv
 					end
 				end
 
-				def initialize db_file=nil
-					@db_file = db_file || "#{ENV['HOME']}/.imv.sqlite3"
-					@db = Database.new(@db_file)
-					if tables.empty?
-						create_tables
-					end
-				end
-
+				# Fetch table list from the database
 				def tables
 					@db.execute(<<SQL)
 SELECT name FROM sqlite_master WHERE type='table'
@@ -43,6 +50,7 @@ UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table'
 SQL
 				end
 
+				# Create tables for this application
 				def create_tables
 					@db.transaction do
 						@db.execute(<<SQL)
@@ -65,10 +73,12 @@ SQL
 					end
 				end
 
+				# Close the database
 				def close
 					@db.close
 				end
 
+				# Add an image to the database
 				def addimage name, img
 					name, img = name.to_s, img.to_s
 					hash = DB.digest img
@@ -86,6 +96,7 @@ WHERE NOT EXISTS (SELECT 1 FROM name WHERE hash=:hash AND name=:name);
 					end and hash
 				end
 
+				# Add a tag to an image specified by hash
 				def addtag hash, tag
 					verbose(1).puts "tagging image `#{hash} as `#{tag}'"
 					@db.execute(<<-SQL, :hash => hash.to_s, :tag => tag.to_s)
@@ -95,7 +106,7 @@ WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
 					SQL
 				end
 
-		# Read image binary data from db
+				# Read image binary data from db
 				def getimage_bin hash
 					@db.get_first_value(<<-SQL,hash.to_s)
 SELECT img
@@ -105,9 +116,9 @@ LIMIT 1
 					SQL
 				end
 
-		# Create instance of Gtk::Image
+				# Create instance of Gtk::Image
 				def getimage hash
-			# TODO: implementation without Tempfile
+					# TODO: implementation without Tempfile
 					require 'tempfile'
 					tmp = Tempfile.new(APP_NAME)
 					begin
@@ -119,7 +130,9 @@ LIMIT 1
 					end
 				end
 
+				# Get hashes of all the images that satisfies the given condition
 				def getallhash
+					# TODO: purge and reuse the condition check clause
 					where,arg =
 						case @@score
 						when nil
@@ -138,6 +151,7 @@ FROM img
 					SQL
 				end
 
+				# enumerate all the hash and tags
 				def each_hash_tags
 					@db.execute(<<-SQL) {|hash, tags| yield hash, (tags||'').split('|').uniq}
 SELECT img.hash, group_concat(tag,'|')
