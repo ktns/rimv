@@ -1,0 +1,270 @@
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_helper.rb'].flatten))
+
+class Rimv::DB::TagTree
+	attr_reader :root
+end
+
+describe Rimv::DB::TagTree do
+	describe 'complete tree' do
+		before :all do
+			unless @tree
+				raise 'tag tree was built multiple time!' if $complete_tag_tree_was_built
+				adaptor = MockAdaptor.new
+				$complete_tag_tree_was_built = true
+				@tree = Rimv::DB::TagTree.new(adaptor.hashtags)
+				@tree.wait_until_loading
+			end
+		end
+
+		it 'should be consistent' do
+			@tree.should be_consistent
+		end
+
+		it 'should not be loading' do
+			@tree.should_not be_loading
+		end
+
+		describe 'nodes' do
+			it 'should all be enumerated by each_nodes' do
+				enumerator = @tree.nodes
+				enumerator.all? do |n|
+					n.should be_instance_of @tree.class::Node
+				end
+
+				ObjectSpace.each_object(@tree.class::Node).select do |n|
+					n.tree.equal? @tree
+				end.each do |n|
+					enumerator.should be_include n
+				end
+			end
+
+			it 'should have consistent paths' do
+				@tree.each_nodes do |n|
+					path = n.path
+					path.first.should equal @tree.root
+					path.last.should equal n
+					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
+				end
+			end
+
+			it_should_behave_like 'nodes and leaves'
+		end
+
+		describe 'leaves' do
+			it 'should exist' do
+				@tree.leaves.count.should > 0
+			end
+
+			it 'should all be Leaf class' do
+				@tree.each_leaves do |leaf|
+					leaf.should be_kind_of(@tree.class::Node::Leaf)
+				end
+			end
+
+			it 'should have sane node' do
+				@tree.each_leaves do |leaf|
+					leaf.node.should_not be_nil
+					@tree.nodes.should include leaf.node
+				end
+			end
+
+			it 'next of last should return to first' do
+				_first = @tree.first
+				_next = nil
+				@tree.leaves.count.times do
+					_next = @tree.next
+				end
+				_next.should_not be_nil
+				_first.should equal _next
+			end
+
+			it 'should all be enuemrated by #next' do
+				leaves = @tree.leaves.entries
+				lambda do
+					leaves.delete @tree.first
+				end.should change(leaves, :size).by(-1)
+				leaves.size.times do
+					lambda do
+						leaves.delete @tree.next
+					end.should change(leaves, :size).by(-1)
+				end
+				leaves.should be_empty
+			end
+
+			it_should_behave_like 'nodes and leaves'
+		end
+
+		describe 'current leaf' do
+			it 'should be instance of Rimv::DB::TagTree::Node::Leaf'do
+				@tree.current.should be_instance_of Rimv::DB::TagTree::Node::Leaf
+			end
+
+			it 'should change after #next' do
+				lambda do
+					@tree.next
+				end.should change(@tree,:current)
+			end
+
+			it 'should not change after next and prev' do
+				@tree.leaves.count.times do
+					lambda do
+						@tree.next
+						@tree.prev
+					end.should_not change(@tree, :current)
+					@tree.next
+				end
+			end
+		end
+
+		describe 'isotopes' do
+			shared_examples_for 'of any' do
+				before :all do
+					@orig = @tree.send(enum).max_by{|item| item.path.count}
+					@orig.path.size.should > 2
+					@isotopes = @tree.isotopes @orig
+				end
+
+				it 'should all be unique' do
+					@isotopes.uniq.should == @isotopes
+				end
+
+				it 'should all have same tags if sorted' do
+					@isotopes.each do |i|
+						i.tags.sort.should == @orig.tags.sort
+					end
+				end
+
+				it 'should all be same class as original' do
+					@isotopes.each do |i|
+						i.should be_instance_of(@orig.class)
+					end
+				end
+			end
+
+			describe 'of a node' do
+				def enum
+					:nodes
+				end
+
+				it_should_behave_like 'of any'
+			end
+
+			describe 'of a leaf' do
+				def enum
+					:leaves
+				end
+
+				it_should_behave_like 'of any'
+			end
+		end
+	end
+
+	describe 'node tagged with slash' do
+		before :all do
+			@root_node = root_node
+			@root_node.add('hoge', ['a/b/c'])
+		end
+
+		it 'should have tag nodes splitted by slash' do
+			@root_node.should_not       have_child 'a/b'
+			@root_node.should           have_child 'a'
+			@root_node['a'].should      have_child 'b'
+			@root_node[*%w<a b>].should have_child 'c'
+		end
+
+		it 'should not have inverted relationship' do
+			@root_node.should_not      have_child 'b'
+			@root_node.should_not      have_child 'c'
+			@root_node['a'].should_not have_child 'c'
+		end
+
+		describe 'and with duplicate parent tags' do
+			before :all do
+				@root_node.add('fuga', %w<c/d c/e>)
+			end
+
+			it 'should have a common parent node' do
+				@root_node['c'].should have_child 'd'
+				@root_node['c'].should have_child 'e'
+			end
+
+			it 'should not have parent tag in children again' do
+				@root_node['c'].each_nodes do |child|
+					child.should_not have_child 'c'
+				end
+			end
+
+			it 'should return sane first leaf' do
+				@root_node['c'].each_nodes do |node|
+					node.first.to_s.should == 'fuga'
+				end
+			end
+
+			it 'should not have duplicate path' do
+				@root_node.each_nodes do |node|
+					node.tags.uniq!.should be_nil
+				end
+			end
+		end
+	end
+
+	context 'with only one leaf' do
+		shared_examples_for 'single leaf' do
+			describe '#next' do
+				it 'should return the identical leaf to first one' do
+					@first.next.should == @first
+				end
+			end
+		end
+
+		context 'without tags' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',[]]])
+				@first = @tree.first
+			end
+
+			it_should_behave_like 'single leaf'
+		end
+
+		context 'with a tag' do
+			before :all do
+				@tree  = Rimv::DB::TagTree.new([['hoge',['fuga']]])
+				@first = @tree.first
+			end
+
+			it_should_behave_like 'single leaf'
+		end
+	end
+
+	context 'with a leaf and with a node without a leaf' do
+		before :all do
+			@tree = Rimv::DB::TagTree.new([['hoge',['fuga']],['fuga',['piyo']]])
+			until @tree.leaves.count > 0
+				@tree.deq
+			end
+			@first = @tree.first
+		end
+
+		it 'should have a node witout a leaf' do
+			@tree.nodes.should be_any do |node|
+				node.children.empty?
+			end
+		end
+
+		it 'should have only one lefa' do
+			@tree.leaves.count.should == 1
+		end
+
+		describe 'existing leaf#next' do
+			it 'should return existing leaf' do
+				@first.next.should == @first
+			end
+		end
+
+		describe 'existing leaf#prev' do
+			it 'should return existing leaf' do
+				@first.prev.should == @first
+			end
+		end
+	end
+end
