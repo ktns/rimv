@@ -4,7 +4,7 @@ module Rimv
 
 		module ConstMissing
 			def const_missing id
-				if constants.include?(oid = id.to_s.sub('GDK_KEY_', 'GDK_'))
+				if const_defined?(oid = id.to_s.sub('GDK_KEY_', 'GDK_'))
 					const_set(id, const_get(oid))
 				else
 					super
