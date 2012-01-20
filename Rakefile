@@ -15,7 +15,7 @@ $hoe = Hoe.spec 'rimv' do
 	self.post_install_message = 'PostInstall.txt'
 	self.extra_rdoc_files << 'README.rdoc'
 	self.extra_deps = [
-		['sqlite3-ruby', '>= 1.2.3'],
+		['sqlite3', '>= 1.2.3'],
 		['gtk2'        , '> 0']
 	]
 	self.rubyforge_name = Rimv::APP_NAME
