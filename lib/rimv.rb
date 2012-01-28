@@ -3,7 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
 
 module Rimv
 	APP_NAME = "rimv"
-	Version  = '0.1.4'
+	Version  = IO.read(File.join(File.dirname(__FILE__),%w<.. VERSION>)).rstrip
 
 	require "gtk2"
 
