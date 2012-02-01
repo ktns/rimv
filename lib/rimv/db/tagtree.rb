@@ -1,4 +1,5 @@
 module Rimv::DB
+	# Construct tag tree structure for browsing
 	class TagTree
 		include Rimv
 
@@ -68,39 +69,48 @@ module Rimv::DB
 			@current = @current.next
 		end
 
+		# Returns the previous leaf of the current leaf
 		def prev
 			@current = @current.prev
 		end
 
+		# Returns the last leaf of the tree
 		def last
 			@root.last
 		end
 
+		# Returns a random leaf and add the current leaf to the history
 		def random
 			@random_hist.push @current
 			@current = leaves.entries[rand(leaves.count)]
 		end
 
+		# Pops and returns a leaf pushed into history previously by #random
 		def random_prev
 			@current = @random_hist.pop or random
 		end
 
+		# Enumerates leaves and yield a given block
 		def each_leaves &block
 			@root.each_leaves &block
 		end
 
+		# Returns an Array containing all the leaves
 		def leaves
 			@root.leaves
 		end
 
+		# Enumerates nodes and yield a given block
 		def each_nodes &block
 			@root.each_nodes &block
 		end
 
+		# Returns an Array containing all the leaves
 		def nodes
 			@root.nodes
 		end
 
+		# Returns Nodes/Leafs with shuffled path
 		def isotopes item
 			node = item.instance_of?(Node::Leaf) ? item.node : item
 			raise ArgumentError, "#{Node} expected, but #{node.class}" unless
