@@ -18,7 +18,7 @@ module ::Rimv
 					self.new(arg.width, arg.height)
 				end
 			when 2
-				self.new(arg.first,arg.last)
+				self.new(*arg)
 			else
 				raise ArgumentError, "#{arg.size} arguments is not supported!"
 			end
@@ -34,7 +34,7 @@ module ::Rimv
 
 		def == other
 			other.kind_of?(self.class) and
-			@width == other.width && @height == other.height
+			to_a == other.to_a
 		end
 
 		def op_for_both other, &block
