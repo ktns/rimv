@@ -4,6 +4,7 @@ source "http://rubygems.org"
 #   gem "activesupport", ">= 2.3.5"
 gem 'sqlite3', '~> 1.3'
 gem 'gtk2'   , '~> 2.2'
+gem 'hpricot', '~> 0.8'
 
 
 # Add dependencies to develop your gem here.

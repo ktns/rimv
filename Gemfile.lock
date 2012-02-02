@@ -42,6 +42,7 @@ GEM
       pango (= 2.2.0)
     hashie (2.1.1)
     highline (1.6.21)
+    hpricot (0.8.6)
     jeweler (2.0.1)
       builder
       bundler (>= 1.0)
@@ -98,6 +99,7 @@ DEPENDENCIES
   byebug
   debugger
   gtk2 (~> 2.2)
+  hpricot (~> 0.8)
   jeweler (~> 2.0)
   rdoc (>= 4.1.1)
   rspec (~> 2.14)
