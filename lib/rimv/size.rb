@@ -43,7 +43,7 @@ module ::Rimv
 				Size.new(*([[@width, other.width],
 									 [@height, other.height]].collect &block))
 			when Array
-				self - Size.new(*other)
+				op_for_both Size.new(*other)
 			else
 				raise TypeError, "Invalid class `#{other.class}'!"
 			end
