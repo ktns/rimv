@@ -2,10 +2,10 @@ module ::Rimv
 	# Class represents rectangular size.
 	# Width and height are restricted to integer.
 	class Size
-		# R/W access to width value
-		attr_accessor :width
-		# R/W access to height value
-		attr_accessor :height
+		# Read only access to width value
+		attr_reader :width
+		# Read only access to height value
+		attr_reader :height
 
 		# Creates a new instance with given width and height.
 		# Width and height are converted to Integer by to_i method.
