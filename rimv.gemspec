@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Katsuhiko Nishimra"]
-  s.date = "2012-02-02"
+  s.date = "2012-02-03"
   s.description = "Tag base image manager and viewer"
   s.email = "ktns.87@gmail.com"
   s.executables = ["rimv"]
@@ -32,8 +32,8 @@ Gem::Specification.new do |s|
     "lib/rimv/db/adaptor.rb",
     "lib/rimv/db/adaptor/sqlite3.rb",
     "lib/rimv/db/tagtree.rb",
+    "lib/rimv/db/tagtree/leaf.rb",
     "lib/rimv/db/tagtree/node.rb",
-    "lib/rimv/db/tagtree/node/leaf.rb",
     "lib/rimv/keyval.rb",
     "lib/rimv/main_win.rb",
     "lib/rimv/main_win/key_parser.rb",
