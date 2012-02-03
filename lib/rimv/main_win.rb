@@ -1,11 +1,14 @@
 require 'rimv/size'
 
 module Rimv
+	# This class represents the main window of the application.
 	class MainWin < Gtk::Window
 		include Rimv
 
+		# Tag indicator popup window
 		attr_reader :tagpopup
 
+		# Creates a new main window with the specified DB::Adaptor
 		def initialize adaptor
 			raise TypeError, "Rimv::DB::Adaptor expected for `adaptor', but `#{adaptor.class}'" unless adaptor.kind_of?(Rimv::DB::Adaptor)
 
@@ -56,10 +59,12 @@ module Rimv
 			verbose(2).puts 'max image size was retrieved.'
 		end
 
+		# Returns a TagTree::Leaf currently displayed
 		def cur_hash
 			@tree.current
 		end
 
+		# Displays an image specified by a TagTree::Leaf
 		def display hash
 			verbose(1).puts "displaying image with hash #{hash}"
 			window.cursor = Gdk::Cursor.new(Gdk::Cursor::WATCH)
@@ -97,6 +102,7 @@ module Rimv
 			end
 		end
 
+		# Displays an image specified with the next TagTree::Leaf of the current TagTree::Leaf
 		def display_next
 			unless @@random
 				display(@tree.next)
@@ -105,6 +111,7 @@ module Rimv
 			end
 		end
 
+		# Displays an image specified with the previous TagTree::Leaf of the current TagTree::Leaf
 		def display_prev
 			unless @@random
 				display(@tree.prev)
