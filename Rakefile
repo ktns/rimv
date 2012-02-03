@@ -1,33 +1,54 @@
+# encoding: utf-8
+
 require 'rubygems'
-gem 'hoe', '>= 2.1.0'
-require 'hoe'
-require 'fileutils'
-require './lib/rimv'
+require 'bundler'
+begin
+  Bundler.setup(:default, :development)
+rescue Bundler::BundlerError => e
+  $stderr.puts e.message
+  $stderr.puts "Run `bundle install` to install missing gems"
+  exit e.status_code
+end
+require 'rake'
 
-Hoe.plugin :newgem
-# Hoe.plugin :website
-# Hoe.plugin :cucumberfeatures
+require 'jeweler'
+Jeweler::Tasks.new do |gem|
+  # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
+  gem.name = "rimv"
+  gem.homepage = "http://github.com/ktns/rimv"
+  gem.license = "GPLv3"
+  gem.summary = %Q{Tag base image manager and viewer}
+  gem.description = %Q{Tag base image manager and viewer}
+  gem.email = "ktns.87@gmail.com"
+  gem.authors = ["Katsuhiko Nishimra"]
+  # dependencies defined in Gemfile
+end
+Jeweler::RubygemsDotOrgTasks.new
 
-# Generate all the Rake tasks
-# Run 'rake -T' to see list of generated tasks (from gem root directory)
-$hoe = Hoe.spec 'rimv' do
-	self.developer 'Katsuhiko Nishimra', 'kat841@hotmail.com'
-	self.post_install_message = 'PostInstall.txt'
-	self.extra_rdoc_files << 'README.rdoc'
-	self.extra_deps = [
-		['sqlite3', '>= 1.2.3'],
-		['gtk2'        , '> 0']
-	]
-	self.rubyforge_name = Rimv::APP_NAME
-	self.version        = Rimv::Version
+require 'rspec/core'
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-require 'newgem/tasks'
+RSpec::Core::RakeTask.new(:rcov) do |spec|
+  spec.pattern = 'spec/**/*_spec.rb'
+  spec.rcov = true
+		spec.rcov_opts = Gem.path.collect do |p|
+			['-x',p]
+		end.flatten.concat(['-x', '^spec/'])
+end
+
+task :default => :spec
+
+require 'rdoc/task'
+Rake::RDocTask.new do |rdoc|
+  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+
+  rdoc.rdoc_dir = 'rdoc'
+  rdoc.title = "rimv #{version}"
+  rdoc.rdoc_files.include('README*')
+  rdoc.rdoc_files.include('lib/**/*.rb')
+end
+
 Dir['tasks/**/*.rake'].each { |t| load t }
-
-require 'rake/clean'
-CLEAN << '.rbx'
-
-# TODO - want other tests/tasks run by default? Add them to the list
-# remove_task :default
-# task :default => [:spec, :features]

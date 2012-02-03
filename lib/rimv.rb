@@ -6,7 +6,7 @@ module Rimv
 	#Name of this application
 	APP_NAME = "rimv"
 	#Version of this application
-	Version  = '0.1.3'
+	Version  = IO.read(File.join(File.dirname(__FILE__),%w<.. VERSION>)).rstrip
 
 	require "gtk2"
 
