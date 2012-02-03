@@ -1,11 +1,11 @@
 require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*4, 'spec_helper.rb'].flatten))
 
-describe Rimv::DB::TagTree::Node::Leaf do
+describe Rimv::DB::TagTree::Leaf do
 	describe 'leaves with same hashes and different nodes' do
 		before :all do
 			@root_node = root_node
 			@leaf1,@leaf2 = ['hoge','fuga'].collect do |s|
-				Rimv::DB::TagTree::Node::Leaf.new('piyo',
+				Rimv::DB::TagTree::Leaf.new('piyo',
 																					Rimv::DB::TagTree::Node.new(@root_node, s)
 																				 )
 			end

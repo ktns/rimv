@@ -57,7 +57,7 @@ describe Rimv::DB::TagTree do
 
 			it 'should all be Leaf class' do
 				@tree.each_leaves do |leaf|
-					leaf.should be_kind_of(@tree.class::Node::Leaf)
+					leaf.should be_kind_of(@tree.class::Leaf)
 				end
 			end
 
@@ -95,8 +95,8 @@ describe Rimv::DB::TagTree do
 		end
 
 		describe 'current leaf' do
-			it 'should be instance of Rimv::DB::TagTree::Node::Leaf'do
-				@tree.current.should be_instance_of Rimv::DB::TagTree::Node::Leaf
+			it 'should be instance of Rimv::DB::TagTree::Leaf'do
+				@tree.current.should be_instance_of Rimv::DB::TagTree::Leaf
 			end
 
 			it 'should change after #next' do

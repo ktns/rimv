@@ -1,4 +1,4 @@
-class Rimv::DB::TagTree::Node
+class Rimv::DB::TagTree
 	class Leaf
 		attr_reader :node
 

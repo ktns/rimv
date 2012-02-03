@@ -254,4 +254,4 @@ class Rimv::DB::TagTree
 	end
 end
 
-require 'rimv/db/tagtree/node/leaf'
+require 'rimv/db/tagtree/leaf'
