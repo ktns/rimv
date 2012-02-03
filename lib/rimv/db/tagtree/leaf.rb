@@ -18,11 +18,11 @@ class Rimv::DB::TagTree
 		end
 
 		def == other
-			@hash == other.to_s and node == other.node
+			@hash == other.to_s and @node == other.node
 		end
 
 		def eql? other
-			@hash.eql? other.to_s and node.eql? other.node
+			@hash.eql? other.to_s and @node.eql? other.node
 		end
 
 		def hash
