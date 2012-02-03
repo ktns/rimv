@@ -3,6 +3,7 @@ module Rimv::DB
 	class TagTree
 		include Rimv
 
+		# Currently selected Leaf node
 		attr_reader :current
 
 		#Initialize TagTree from tuples of hash and tags
