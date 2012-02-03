@@ -73,6 +73,10 @@ def asset_path
 	File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
 end
 
+def logo_path
+	File.join(asset_path, 'logo.xpm')
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
