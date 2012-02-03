@@ -1,6 +1,14 @@
 require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*3, 'spec_helper.rb'].flatten))
 
 describe Rimv::DB::Adaptor::SQLite3 do
+	describe '.new' do
+		it 'should be a private class method' do
+			lambda do
+				Rimv::DB::Adaptor::SQLite3.new blank_db
+			end.should raise_error(NoMethodError)
+		end
+	end
+
 	describe 'with blank database' do
 		it 'should be able to add an image' do
 			Rimv::DB::Adaptor::SQLite3.open(blank_db) do |adaptor|

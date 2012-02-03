@@ -17,6 +17,7 @@ module Rimv
 				def self.new *args
 					super
 				end
+				private_class_method :new
 
 				def initialize db_file=nil
 					@db_file = db_file || "#{ENV['HOME']}/.imv.sqlite3"
