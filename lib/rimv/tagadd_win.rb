@@ -2,8 +2,10 @@ require 'gtk2'
 require 'rimv/db/adaptor'
 require 'rimv/keyval'
 
+# This class represents a window for tag addition.
 class Rimv::TagaddWin < Gtk::Window
 	include Rimv::Keyval
+	# Creates a new window instance
 	def initialize adaptor, parent
 		raise TypeError unless adaptor.kind_of?(Rimv::DB::Adaptor)
 		@adaptor=adaptor
@@ -46,6 +48,7 @@ class Rimv::TagaddWin < Gtk::Window
 		show_all
 	end
 
+	# Initialize a new Entry
 	def initialize_entry entry
 			entry.width_chars = @entry_width_chars
 			entry.signal_connect('changed',&method(:changed))
@@ -54,6 +57,7 @@ class Rimv::TagaddWin < Gtk::Window
 			entry.activates_default = true
 	end
 
+	# Returns entries for tag input
 	def entries &block
 		if block
 			@entries.each &block
@@ -62,6 +66,7 @@ class Rimv::TagaddWin < Gtk::Window
 		end
 	end
 
+	# Event handler for ok button
 	def ok *args
 		entries do |entry|
 			@parent.addtag entry.text
@@ -69,16 +74,19 @@ class Rimv::TagaddWin < Gtk::Window
 		cancel
 	end
 
+	# Event handler for cancel button
 	def cancel *args
 		destroy
 	end
 
+	# Event handler for keypress event sent to TagaddWin
 	def keypress widget, event
 		if event.keyval == GDK_KEY_Escape
 			cancel
 		end
 	end
 
+	# Event handler for keypress event sent to Entry
 	def keypress_entry widget, event
 		if widget.text == '' and event.keyval == GDK_KEY_BackSpace
 			if entries.count==1
@@ -92,6 +100,7 @@ class Rimv::TagaddWin < Gtk::Window
 		end
 	end
 
+	# Event handler for text change event on an entry
 	def changed widget
 		splitted=entries.find do |entry|
 			entry.text=~/#{Rimv::DB::TAG_CHARS}+,#{Rimv::DB::TAG_CHARS}/
