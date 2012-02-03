@@ -14,11 +14,14 @@ module Rimv
 				include ::SQLite3
 
 				private
+				# Private method
 				def self.new *args
 					super
 				end
 				private_class_method :new
 
+				# Creates new adaptor.
+				# new is a private class method.
 				def initialize db_file=nil
 					@db_file = db_file || "#{ENV['HOME']}/.imv.sqlite3"
 					@db = Database.new(@db_file)
