@@ -1,14 +1,17 @@
 require 'rimv/keyval'
 
 class Rimv::MainWin
+	# KeyParser class for MainWin
 	class KeyParser
 		include Rimv
 		include Rimv::Keyval
 
+		# Creates new KeyParser
 		def initialize
 			@stack = []
 		end
 
+		# Keymap
 		@@map = {
 			[GDK_KEY_q] =>
 			lambda {|w|
@@ -43,12 +46,14 @@ class Rimv::MainWin
 			}
 		}
 
+		# Tells whether stacked key strokes have chance to be a part of command
 		def has_chance?
 			@@map.each_key.any? do |key|
 				key[0...@stack.size] == @stack
 			end
 		end
 
+		# Gtk event handler
 		def send w, e
 			@stack << e.keyval
 			if handler = @@map[@stack]
