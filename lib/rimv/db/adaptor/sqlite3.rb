@@ -120,20 +120,6 @@ LIMIT 1
 					SQL
 				end
 
-				# Create instance of Gtk::Image
-				def getimage hash
-					# TODO: implementation without Tempfile
-					require 'tempfile'
-					tmp = Tempfile.new(APP_NAME)
-					begin
-						tmp.write getimage_bin(hash)
-						tmp.close
-						return Gtk::Image.new(tmp.path)
-					ensure
-						tmp.close(true)
-					end
-				end
-
 				# Get hashes of all the images that satisfies the given condition
 				def getallhash
 					# TODO: purge and reuse the condition check clause
