@@ -67,11 +67,13 @@ module Rimv
 			# Create instance of Gtk::Image
 			def getimage hash
 				begin
-					Gdk::PixbufLoader.open do |loader|
-						loader.last_write(getimage_bin(hash))
-						return Gtk::Image.new(loader.pixbuf)
-					end
+					loader = Gdk::PixbufLoader.new
+					loader.last_write(getimage_bin(hash))
+					return Gtk::Image.new(loader.pixbuf)
 				rescue Gdk::PixbufError
+					if $!.message.include? 'Application transferred too few scanlines'
+						return Gtk::Image.new loader.pixbuf
+					end
 					$!.message.concat("\nhash was `#{hash}'")
 					raise $!
 				end
