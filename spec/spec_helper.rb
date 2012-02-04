@@ -71,12 +71,12 @@ class MockAdaptor
 	end
 end
 
-def asset_path
-	File.expand_path(File.join(File.dirname(__FILE__), *%w<.. asset>))
+def asset_path *args
+	File.expand_path(File.join(File.dirname(__FILE__), %w<.. asset>, *args))
 end
 
 def logo_path
-	File.join(asset_path, 'logo.xpm')
+	asset_path 'logo.xpm'
 end
 
 shared_examples_for 'nodes and leaves' do
