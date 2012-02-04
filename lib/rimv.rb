@@ -19,7 +19,7 @@ module Rimv
 
 	# Namespace for the application logo
 	module Logo
-		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.xpm')
+		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.png')
 		@@sizes = Hash[
 			*([8,16,32,64].collect do |size|
 				[size, @@base.scale(size, size)]

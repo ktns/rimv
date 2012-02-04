@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
-    "asset/logo.xpm",
+    "asset/logo.png",
     "bin/rimv",
     "lib/rimv.rb",
     "lib/rimv/db.rb",

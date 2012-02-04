@@ -2,7 +2,7 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*1, 'spec_help
 
 describe Rimv::DB do
 	describe '.digest' do
-		subject {Rimv::DB.digest(IO.read(File.join(asset_path,'logo.xpm')))}
+		subject {Rimv::DB.digest(IO.read(File.join(asset_path,'logo.png')))}
 
 		it 'should return String' do
 			should be_kind_of String

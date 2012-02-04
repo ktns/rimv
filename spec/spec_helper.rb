@@ -76,7 +76,7 @@ def asset_path *args
 end
 
 def logo_path
-	asset_path 'logo.xpm'
+	asset_path 'logo.png'
 end
 
 def read_logo

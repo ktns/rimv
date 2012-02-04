@@ -12,7 +12,7 @@ describe 'asset_path' do
 		FileTest.directory?(asset_path).should be_true
 	end
 
-	it 'should include file `logo.xpm\'' do
-		FileTest.exist?(File.join(asset_path, 'logo.xpm')).should be_true
+	it 'should include file `logo.png\'' do
+		FileTest.exist?(File.join(asset_path, 'logo.png')).should be_true
 	end
 end

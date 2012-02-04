@@ -3,7 +3,7 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_help
 describe Rimv::DB::Adaptor do
 	describe 'addfile' do
 		before :each do
-			@file = File.join(asset_path, 'logo.xpm')
+			@file = File.join(asset_path, 'logo.png')
 			@adaptor=mock('adaptor')
 			@adaptor.extend Rimv::DB::Adaptor
 		end
