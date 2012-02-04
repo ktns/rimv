@@ -79,6 +79,10 @@ def logo_path
 	asset_path 'logo.xpm'
 end
 
+def read_logo
+	IO.read(logo_path)
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
