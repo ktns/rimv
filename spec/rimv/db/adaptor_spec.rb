@@ -13,4 +13,28 @@ describe Rimv::DB::Adaptor do
 			@adaptor.addfile @file
 		end
 	end
+
+	describe '.getimage' do
+		before :all do
+			@adaptor=stub('adaptor').extend(Rimv::DB::Adaptor)
+			@hash=stub('hash')
+			class <<@adaptor
+				def getimage_bin hash
+					read_logo
+				end
+			end
+		end
+
+		it 'should invoke getimage_bin' do
+			@adaptor.should_receive(:getimage_bin).exactly(1).times.
+				with(@hash).and_return(read_logo)
+			@adaptor.getimage @hash
+		end
+
+		subject {@adaptor.getimage @hash}
+
+		it do
+			should be_instance_of Gtk::Image
+		end
+	end
 end
