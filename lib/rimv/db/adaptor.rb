@@ -66,15 +66,14 @@ module Rimv
 
 			# Create instance of Gtk::Image
 			def getimage hash
-				# TODO: implementation without Tempfile
-				require 'tempfile'
-				tmp = Tempfile.new(APP_NAME)
 				begin
-					tmp.write getimage_bin(hash)
-					tmp.close
-					return Gtk::Image.new(tmp.path)
-				ensure
-					tmp.close(true)
+					Gdk::PixbufLoader.open do |loader|
+						loader.last_write(getimage_bin(hash))
+						return Gtk::Image.new(loader.pixbuf)
+					end
+				rescue Gdk::PixbufError
+					$!.message.concat("\nhash was `#{hash}'")
+					raise $!
 				end
 			end
 		end
