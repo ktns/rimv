@@ -36,5 +36,21 @@ describe Rimv::DB::Adaptor do
 		it do
 			should be_instance_of Gtk::Image
 		end
+
+		context 'with truncated binary' do
+			before :all do
+				@adaptor=@adaptor.clone
+				class <<@adaptor
+					def getimage_bin hash
+						bin = read_logo
+						return bin[0..bin.size-30]
+					end
+				end
+			end
+
+			it do
+				should be_instance_of Gtk::Image
+			end
+		end
 	end
 end
