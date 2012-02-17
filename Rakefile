@@ -12,7 +12,7 @@ end
 require 'rake'
 
 require 'jeweler'
-Jeweler::Tasks.new do |gem|
+$jeweler = Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "rimv"
   gem.homepage = "http://github.com/ktns/rimv"
@@ -22,7 +22,7 @@ Jeweler::Tasks.new do |gem|
   gem.email = "ktns.87@gmail.com"
   gem.authors = ["Katsuhiko Nishimra"]
   # dependencies defined in Gemfile
-end
+end.jeweler
 Jeweler::RubygemsDotOrgTasks.new
 
 require 'rspec/core'
@@ -52,3 +52,18 @@ Rake::RDocTask.new do |rdoc|
 end
 
 Dir['tasks/**/*.rake'].each { |t| load t }
+
+%w<major minor patch>.each do |ver|
+	begin 
+		desc Rake::Task["version:bump:#{ver}"].comment + ', and Generate gemspec'
+	rescue
+	end
+	task "version:up:#{ver}" => ["version:bump:#{ver}"] do
+		git = Git.open(File.dirname(__FILE__))
+		$jeweler.write_gemspec
+		git.add $jeweler.gemspec_helper.path
+		commit  = git.gcommit('HEAD')
+		tree    = git.write_tree
+		system 'git commit --amend -C HEAD'
+	end
+end
