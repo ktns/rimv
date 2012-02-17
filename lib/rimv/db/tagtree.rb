@@ -36,10 +36,12 @@ module Rimv::DB
 		#Dequeue a tuple of hash and tags from @queue,
 		#and build corresponding nodes and leaves
 		def deq
-			node, hash, tags = *@queue.deq
-			verbose(3).puts {'Dequeuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
-			node ||= @root
-			node.add hash, tags
+			unless @queue.empty?
+				node, hash, tags = *@queue.deq
+				verbose(3).puts {'Dequeuing TagTree node: node=%s, hash=%s, tags=%s' % [node,hash,tags].collect(&:inspect)}
+				node ||= @root
+				node.add hash, tags
+			end
 		end
 
 		#Returns true if TagTree has not finished loading
