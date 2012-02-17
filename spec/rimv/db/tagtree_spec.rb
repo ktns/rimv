@@ -268,15 +268,17 @@ describe Rimv::DB::TagTree do
 		end
 	end
 
-	context 'with few entries' do
-		before :all do
-			@adaptor = MockAdaptor.new([['piyo',[]],['hoge',[]]])
-		end
+	describe '#deq' do
+		context 'called more times than hashes' do
+			before :all do
+				@tree = Rimv::DB::TagTree.new([['piyo',[]],['hoge',[]]])
+			end
 
-		it 'should not deadlock' do
-			proc do
-				Rimv::MainWin.new(@adaptor)
-			end.should_not raise_error
+			it 'should not deadlock' do
+				lambda do
+					3.times{@tree.deq}
+				end.should_not raise_error
+			end
 		end
 	end
 end
