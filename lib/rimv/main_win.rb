@@ -13,7 +13,7 @@ module Rimv
 			raise TypeError, "Rimv::DB::Adaptor expected for `adaptor', but `#{adaptor.class}'" unless adaptor.kind_of?(Rimv::DB::Adaptor)
 
 			super(APP_NAME + Version)
-			@adaptor       = adaptor
+			@adaptor  = adaptor
 			@tree     = Rimv::DB::TagTree.new(adaptor.hashtags)
 			@kparser  = KeyParser.new
 			@tagpopup = TagPopup.new self
