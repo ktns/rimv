@@ -267,4 +267,18 @@ describe Rimv::DB::TagTree do
 			end
 		end
 	end
+
+	describe '#deq' do
+		context 'called more times than hashes' do
+			before :all do
+				@tree = Rimv::DB::TagTree.new([['piyo',[]],['hoge',[]]])
+			end
+
+			it 'should not deadlock' do
+				lambda do
+					3.times{@tree.deq}
+				end.should_not raise_error
+			end
+		end
+	end
 end
