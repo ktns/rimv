@@ -37,6 +37,10 @@ describe Rimv::DB::Adaptor do
 			should be_instance_of Gtk::Image
 		end
 
+		its("pixbuf.pixels") do
+			Rimv::DB.digest(subject).should eq '74119156e0139f57c3cb2f38eafef303'
+		end
+
 		context 'with truncated binary' do
 			before :all do
 				@adaptor=@adaptor.clone
