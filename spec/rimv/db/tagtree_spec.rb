@@ -267,4 +267,16 @@ describe Rimv::DB::TagTree do
 			end
 		end
 	end
+
+	context 'with few entries' do
+		before :all do
+			@adaptor = MockAdaptor.new([['piyo',[]],['hoge',[]]])
+		end
+
+		it 'should not deadlock' do
+			proc do
+				Rimv::MainWin.new(@adaptor)
+			end.should_not raise_error
+		end
+	end
 end

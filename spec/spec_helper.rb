@@ -60,9 +60,17 @@ require 'yaml'
 class MockAdaptor
 	include Rimv::DB::Adaptor
 
+	def initialize hashtags=nil
+		@hashtags = hashtags
+	end
+
 	def each_hash_tags &block
-		File.open(File.join(fixtures_path, 'hashtags.yml'),'r') do |f|
-			YAML.load(f).each &block
+		if @hashtags
+			@hashtags.each &block
+		else
+			File.open(File.join(fixtures_path, 'hashtags.yml'),'r') do |f|
+				YAML.load(f).each &block
+			end
 		end
 	end
 
