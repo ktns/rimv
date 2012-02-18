@@ -10,110 +10,112 @@ module Rimv
 
 	require "gtk2"
 
-	@@mode      = nil
-	@@path_tag  = false
-	@@tag       = []
-	@@random    = false
-	@@score     = nil
-	@@verbosity = 0
+	class Application
+		@@mode      = nil
+		@@path_tag  = false
+		@@tag       = []
+		@@random    = false
+		@@score     = nil
+		@@verbosity = 0
 
-	# Namespace for the application logo
-	module Logo
+		# Namespace for the application logo
+		module Logo
 		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.png')
-		@@sizes = Hash[
-			*([8,16,32,64].collect do |size|
+			@@sizes = Hash[
+				*([8,16,32,64].collect do |size|
 				[size, @@base.scale(size, size)]
-			end.flatten)
-		]
+				end.flatten)
+			]
 
-		# Returns an array containing icons of various sizes
-		def self.icons
-			@@sizes.values
+			# Returns an array containing icons of various sizes
+			def self.icons
+				@@sizes.values
+			end
+
+			# Returns an icon of the specified size
+			def self.icon size
+				@@sizes[size]
+			end
 		end
 
-		# Returns an icon of the specified size
-		def self.icon size
-			@@sizes[size]
-		end
-	end
+		class <<self
+			# Get the verbosity level of the application message
+			def verbosity
+				@@verbosity
+			end
 
-	class <<self
-		# Get the verbosity level of the application message
-		def verbosity
-			@@verbosity
-		end
-
-		# Set the verbosity level of the application message
-		def verbosity= new_verbosity
-			@@verbosity = new_verbosity
-		end
-	end
-
-	# Virtural IO class for log
-	class VerboseMessenger
-		include Rimv
-
-		# Create logger with specified verbosity level
-		def initialize verbose_level
-			raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
-			@verbose_level = verbose_level
+			# Set the verbosity level of the application message
+			def verbosity= new_verbosity
+				@@verbosity = new_verbosity
+			end
 		end
 
-		# Pass through method call to $stdout if the specified
-		# verbosity level exceeds the application verbosity level
-		def method_missing name, *args, &block
-			if @@verbosity >= @verbose_level
-				if block
-					$stdout.send(name, *block.call(*args))
+		# Virtural IO class for log
+		class VerboseMessenger
+			include Rimv
+
+			# Create logger with specified verbosity level
+			def initialize verbose_level
+				raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
+				@verbose_level = verbose_level
+			end
+
+			# Pass through method call to $stdout if the specified
+			# verbosity level exceeds the application verbosity level
+			def method_missing name, *args, &block
+				if @@verbosity >= @verbose_level
+					if block
+						$stdout.send(name, *block.call(*args))
+					else
+						$stdout.send(name, *args)
+					end
 				else
-					$stdout.send(name, *args)
+					unless IO.method_defined?(name)
+						raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
+					end
+				end
+			end
+		end
+
+		#Returns VerboseMessenger with specified versbosity level
+		def verbose verbose_level
+			VerboseMessenger.new(verbose_level)
+		end
+
+		# Get application mode
+		def self.mode
+			@@mode
+		end
+
+		# Set application mode
+		def self.mode= mode
+			@@mode = mode
+		end
+
+		def run
+			case @@mode
+			when 'add'
+				raise 'No file to add!' if ARGV.empty?
+				raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
+				DB.open do |db|
+					ARGV.each do |name|
+						db.addfile(name, @@path_tag)
+					end
+				end
+			when 'view',nil
+				DB.open do |db|
+					abort 'No Image!' if (hashlist = db.getallhash).empty?
+					main_win = MainWin.new(db)
+					Gtk.main
 				end
 			else
-				unless IO.method_defined?(name)
-					raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
-				end
+				raise NotImplementedError, "Unexpected mode `#{mode}'!"
 			end
 		end
 	end
 
-	#Returns VerboseMessenger with specified versbosity level
-	def verbose verbose_level
-		VerboseMessenger.new(verbose_level)
-	end
-
-	# Workaround for Enumerator in ruby-1.8.x and 1.9.x
-	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
-
-	# Get application mode
-	def self.mode
-		@@mode
-	end
-
-	# Set application mode
-	def self.mode= mode
-		@@mode = mode
-	end
-
-	def run
-		case @@mode
-		when 'add'
-			raise 'No file to add!' if ARGV.empty?
-			raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
-			DB.open do |db|
-				ARGV.each do |name|
-					db.addfile(name, @@path_tag)
-				end
-			end
-		when 'view',nil
-			DB.open do |db|
-				abort 'No Image!' if (hashlist = db.getallhash).empty?
-				main_win = MainWin.new(db)
-				Gtk.main
-			end
-		else
-			raise NotImplementedError, "Unexpected mode `#{mode}'!"
-		end
-	end
+		# Workaround for Enumerator in ruby-1.8.x and 1.9.x
+		Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 end
 
 require 'rimv/db'
