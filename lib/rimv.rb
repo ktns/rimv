@@ -11,12 +11,12 @@ module Rimv
 	require "gtk2"
 
 	class Application
-		@@mode      = nil
-		@@path_tag  = false
-		@@tag       = []
-		@@random    = false
-		@@score     = nil
-		@@verbosity = 0
+		@mode      = nil
+		@path_tag  = false
+		@tag       = []
+		@random    = false
+		@score     = nil
+		@verbosity = 0
 
 		# Namespace for the application logo
 		module Logo
@@ -38,17 +38,7 @@ module Rimv
 			end
 		end
 
-		class <<self
-			# Get the verbosity level of the application message
-			def verbosity
-				@@verbosity
-			end
-
-			# Set the verbosity level of the application message
-			def verbosity= new_verbosity
-				@@verbosity = new_verbosity
-			end
-		end
+		attr_accessor :verbosity
 
 		# Virtural IO class for log
 		class VerboseMessenger
