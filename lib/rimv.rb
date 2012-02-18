@@ -10,6 +10,53 @@ module Rimv
 
 	require "gtk2"
 
+	# Namespace for the application logo
+	module Logo
+		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.png')
+		@@sizes = Hash[
+			*([8,16,32,64].collect do |size|
+			[size, @@base.scale(size, size)]
+			end.flatten)
+		]
+
+		# Returns an array containing icons of various sizes
+		def self.icons
+			@@sizes.values
+		end
+
+		# Returns an icon of the specified size
+		def self.icon size
+			@@sizes[size]
+		end
+	end
+
+	# Virtural IO class for log
+	class VerboseMessenger
+		include Rimv
+
+		# Create logger with specified verbosity level
+		def initialize verbose_level
+			raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
+			@verbose_level = verbose_level
+		end
+
+		# Pass through method call to $stdout if the specified
+		# verbosity level exceeds the application verbosity level
+		def method_missing name, *args, &block
+			if @@verbosity >= @verbose_level
+				if block
+					$stdout.send(name, *block.call(*args))
+				else
+					$stdout.send(name, *args)
+				end
+			else
+				unless IO.method_defined?(name)
+					raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
+				end
+			end
+		end
+	end
+
 	class Application
 		@mode      = nil
 		@path_tag  = false
@@ -18,54 +65,7 @@ module Rimv
 		@score     = nil
 		@verbosity = 0
 
-		# Namespace for the application logo
-		module Logo
-		@@base  = Gdk::Pixbuf.new(File.dirname(__FILE__) + '/../asset/logo.png')
-			@@sizes = Hash[
-				*([8,16,32,64].collect do |size|
-				[size, @@base.scale(size, size)]
-				end.flatten)
-			]
-
-			# Returns an array containing icons of various sizes
-			def self.icons
-				@@sizes.values
-			end
-
-			# Returns an icon of the specified size
-			def self.icon size
-				@@sizes[size]
-			end
-		end
-
-		attr_accessor :verbosity
-
-		# Virtural IO class for log
-		class VerboseMessenger
-			include Rimv
-
-			# Create logger with specified verbosity level
-			def initialize verbose_level
-				raise ScriptError, "invalid verbose level `#{num}'!" unless verbose_level > 0
-				@verbose_level = verbose_level
-			end
-
-			# Pass through method call to $stdout if the specified
-			# verbosity level exceeds the application verbosity level
-			def method_missing name, *args, &block
-				if @@verbosity >= @verbose_level
-					if block
-						$stdout.send(name, *block.call(*args))
-					else
-						$stdout.send(name, *args)
-					end
-				else
-					unless IO.method_defined?(name)
-						raise NoMethodError.new("method `#{name}' is undefined in IO class!", name, arg)
-					end
-				end
-			end
-		end
+		attr_accessor :versbosity
 
 		#Returns VerboseMessenger with specified versbosity level
 		def verbose verbose_level
