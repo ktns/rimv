@@ -10,8 +10,12 @@ gem 'gtk2'   , '~> 1.1.2'
 # Include everything needed to run rake, tests, features, etc.
 group :development do
   gem "rdoc"   , '~> 3.12'
-  gem "rspec"  , '~> 2.8.0'
   gem "bundler", '~> 1.0'
   gem "jeweler", '~> 1.8.3'
-  gem "rcov"   , '~> 1.0.0'
+end
+
+group :test do
+  gem "rspec"    , '~> 2.8.0'
+  gem "simplecov", '~> 0.6.1', :platforms => :ruby_19, :require => false
+  gem "rcov"     , '~> 1.0.0', :platforms => :ruby_18
 end
