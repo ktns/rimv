@@ -31,14 +31,6 @@ RSpec::Core::RakeTask.new(:spec) do |spec|
   spec.pattern = FileList['spec/**/*_spec.rb']
 end
 
-RSpec::Core::RakeTask.new(:rcov) do |spec|
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
-		spec.rcov_opts = Gem.path.collect do |p|
-			['-x',p]
-		end.flatten.concat(['-x', '^spec/'])
-end
-
 task :default => :spec
 
 require 'rdoc/task'
