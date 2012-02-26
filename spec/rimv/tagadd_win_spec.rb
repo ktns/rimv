@@ -1,4 +1,4 @@
-require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*1, 'spec_helper.rb'].flatten))
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*1, 'spec_helper.rb']))
 
 describe Rimv::TagaddWin do
 	before :each do

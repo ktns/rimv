@@ -1,4 +1,4 @@
-require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*0, 'spec_helper.rb'].flatten))
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*0, 'spec_helper.rb']))
 
 describe 'blank_db' do
 	it 'should be accessible' do

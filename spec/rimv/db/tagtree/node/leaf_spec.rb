@@ -1,4 +1,4 @@
-require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*4, 'spec_helper.rb'].flatten))
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*4, 'spec_helper.rb']))
 
 describe Rimv::DB::TagTree::Leaf do
 	describe 'leaves with same hashes and different nodes' do

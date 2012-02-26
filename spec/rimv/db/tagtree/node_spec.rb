@@ -1,4 +1,4 @@
-require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*3, 'spec_helper.rb'].flatten))
+require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*3, 'spec_helper.rb']))
 
 describe Rimv::DB::TagTree::Node do
 	before :each do
