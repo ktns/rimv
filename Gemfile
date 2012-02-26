@@ -16,5 +16,6 @@ end
 
 group :test do
   gem "rspec"    , '~> 2.8.0'
-  gem "simplecov", '~> 0.6.1', :require => false
+  gem "simplecov", '~> 0.6.1', :platforms => :ruby_19, :require => false
+  gem "rcov"     , '~> 1.0.0', :platforms => :ruby_18
 end
