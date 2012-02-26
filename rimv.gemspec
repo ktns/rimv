@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "rimv"
-  s.version = "0.1.7"
+  s.version = "0.1.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Katsuhiko Nishimra"]
-  s.date = "2012-02-17"
+  s.date = "2012-02-26"
   s.description = "Tag base image manager and viewer"
   s.email = "ktns.87@gmail.com"
   s.executables = ["rimv"]
@@ -48,6 +48,7 @@ Gem::Specification.new do |s|
     "spec/rimv/db/tagtree/node_spec.rb",
     "spec/rimv/db/tagtree_spec.rb",
     "spec/rimv/db_spec.rb",
+    "spec/rimv/keyval_spec.rb",
     "spec/rimv/main_win/tagpopup_spec.rb",
     "spec/rimv/main_win_spec.rb",
     "spec/rimv/tagadd_win_spec.rb",
@@ -68,27 +69,21 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<sqlite3>, ["~> 1.3.5"])
       s.add_runtime_dependency(%q<gtk2>, ["~> 1.1.2"])
       s.add_development_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_development_dependency(%q<rspec>, ["~> 2.8.0"])
       s.add_development_dependency(%q<bundler>, ["~> 1.0"])
       s.add_development_dependency(%q<jeweler>, ["~> 1.8.3"])
-      s.add_development_dependency(%q<rcov>, ["~> 1.0.0"])
     else
       s.add_dependency(%q<sqlite3>, ["~> 1.3.5"])
       s.add_dependency(%q<gtk2>, ["~> 1.1.2"])
       s.add_dependency(%q<rdoc>, ["~> 3.12"])
-      s.add_dependency(%q<rspec>, ["~> 2.8.0"])
       s.add_dependency(%q<bundler>, ["~> 1.0"])
       s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
-      s.add_dependency(%q<rcov>, ["~> 1.0.0"])
     end
   else
     s.add_dependency(%q<sqlite3>, ["~> 1.3.5"])
     s.add_dependency(%q<gtk2>, ["~> 1.1.2"])
     s.add_dependency(%q<rdoc>, ["~> 3.12"])
-    s.add_dependency(%q<rspec>, ["~> 2.8.0"])
     s.add_dependency(%q<bundler>, ["~> 1.0"])
     s.add_dependency(%q<jeweler>, ["~> 1.8.3"])
-    s.add_dependency(%q<rcov>, ["~> 1.0.0"])
   end
 end
 
