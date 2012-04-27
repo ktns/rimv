@@ -27,9 +27,11 @@ module Rimv
 									unless tag == '.'
 										addtag hash, tag
 									end
-								elsif @@tag
-									verbose(3).puts "tagging `#{path}'(#{hash}) as `#{@@tag}'"
-									addtag hash, @@tag
+								elsif not @@tag.empty?
+									@@tag.each do |tag|
+										verbose(3).puts "tagging `#{path}'(#{hash}) as `#{tag}'"
+										addtag hash, tag
+									end
 								end
 								return hash
 							end

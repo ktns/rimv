@@ -62,7 +62,7 @@ begin
 					 'tag image with directory name'){@@path_tag = true}
 
 		opt.on('-t TAG', '--tag=TAG',
-					 'specify tag of images to be added'){|tag| @@tag = tag}
+					 'specify tag of images to be added'){|tag| @@tag.concat tag.split(',')}
 
 		opt.parse!
 

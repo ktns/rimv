@@ -12,7 +12,7 @@ module Rimv
 
 	@@mode      = nil
 	@@path_tag  = false
-	@@tag       = nil
+	@@tag       = []
 	@@random    = false
 	@@score     = nil
 	@@verbosity = 0
