@@ -2,7 +2,7 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*1, 'spec_help
 
 describe Rimv::TagaddWin do
 	before :each do
-		@win=Rimv::TagaddWin.new MockAdaptor.new, @parent=Gtk::Window.new
+		@win=Rimv::TagaddWin.new @adaptor=MockAdaptor.new, @parent=Gtk::Window.new
 	end
 
 	it 's ok should invoke MainWin#addtag' do
