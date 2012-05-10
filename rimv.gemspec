@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "rimv"
-  s.version = "0.1.8"
+  s.version = "0.1.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Katsuhiko Nishimra"]
-  s.date = "2012-02-26"
+  s.date = "2012-05-10"
   s.description = "Tag base image manager and viewer"
   s.email = "ktns.87@gmail.com"
   s.executables = ["rimv"]
@@ -59,7 +59,7 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/ktns/rimv"
   s.licenses = ["GPLv3"]
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.10"
+  s.rubygems_version = "1.8.24"
   s.summary = "Tag base image manager and viewer"
 
   if s.respond_to? :specification_version then
