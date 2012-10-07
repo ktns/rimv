@@ -45,7 +45,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 	end
 
 	describe 'with a image' do
-		before :all do
+		before :each do
 			class Rimv::DB::Adaptor::SQLite3
 				public_class_method :new
 			end
@@ -61,7 +61,19 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 		end
 
-		after :all do
+		describe '#deltag' do
+			before :each do
+				@adaptor.addtag @hash, 'tag'
+			end
+
+			it 'should delete tag' do
+				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+				@adaptor.deltag @hash, 'tag'
+				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+			end
+		end
+
+		after :each do
 			@adaptor.close if @adaptor
 		end
 	end
