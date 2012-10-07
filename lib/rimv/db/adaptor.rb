@@ -1,7 +1,7 @@
 module Rimv
 	module DB
 		# Namespace for database adaptors
-		module Adaptor
+		class Adaptor
 			include Rimv
 
 			# Utility function for adaptors;

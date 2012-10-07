@@ -64,8 +64,7 @@ def fixtures_path
 end
 
 require 'yaml'
-class MockAdaptor
-	include Rimv::DB::Adaptor
+class MockAdaptor < Rimv::DB::Adaptor
 
 	def initialize hashtags=nil
 		@hashtags = hashtags

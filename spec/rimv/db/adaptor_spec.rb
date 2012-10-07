@@ -4,8 +4,7 @@ describe Rimv::DB::Adaptor do
 	describe '#addfile' do
 		before :each do
 			@file = File.join(asset_path, 'logo.png')
-			@adaptor=mock('adaptor')
-			@adaptor.extend Rimv::DB::Adaptor
+			@adaptor = MockAdaptor.new
 		end
 
 		it 'should invoke addimage' do
@@ -16,7 +15,7 @@ describe Rimv::DB::Adaptor do
 
 	describe '.getimage' do
 		before :all do
-			@adaptor=stub('adaptor').extend(Rimv::DB::Adaptor)
+			@adaptor = MockAdaptor.new
 			@hash=stub('hash')
 			class <<@adaptor
 				def getimage_bin hash

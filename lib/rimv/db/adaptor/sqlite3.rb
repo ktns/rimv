@@ -2,12 +2,9 @@ require 'rimv/db/adaptor'
 
 module Rimv
 	module DB
-		module Adaptor
+		class Adaptor
 			# Database adaptor class using a SQLite3 backend
-			class SQLite3
-
-				include Adaptor
-
+			class SQLite3 < Adaptor
 				require 'sqlite3'
 				require 'digest/md5'
 
