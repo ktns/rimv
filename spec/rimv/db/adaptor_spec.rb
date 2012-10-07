@@ -11,6 +11,25 @@ describe Rimv::DB::Adaptor do
 			@adaptor.should_receive(:addimage).with(@file, anything())
 			@adaptor.addfile @file
 		end
+
+		context 'with tag ending with -' do
+			before :each do
+				module Rimv
+					@@tag = ['hoge-']
+				end
+			end
+
+			it 'should invoke deltag' do
+				@adaptor.should_receive(:deltag).with(anything(), 'hoge')
+				@adaptor.addfile @file
+			end
+
+			after :each do
+				module Rimv
+					@@tag = []
+				end
+			end
+		end
 	end
 
 	describe '.getimage' do
