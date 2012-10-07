@@ -83,6 +83,22 @@ class MockAdaptor < Rimv::DB::Adaptor
 	def tags
 		hashtags.collect(&:last).flatten.uniq
 	end
+
+	# Add an image to the database (no implementation)
+	def addimage name, img
+	end
+
+	# Add a tag to an image specified by hash(no implementation)
+	def addtag hash, tag
+	end
+
+	# Delete a tag from an image specified by hash(no implementation)
+	def deltag hash, tag
+	end
+
+	# Read image binary data from db (no implementation)
+	def getimage_bin hash
+	end
 end
 
 def asset_path *args

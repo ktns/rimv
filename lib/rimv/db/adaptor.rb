@@ -80,6 +80,26 @@ module Rimv
 					raise $!
 				end
 			end
+
+			# Add an image to the database (no implementation)
+			def addimage name, img
+				raise NotImplementedError
+			end
+
+			# Add a tag to an image specified by hash(no implementation)
+			def addtag hash, tag
+				raise NotImplementedError
+			end
+
+			# Delete a tag from an image specified by hash(no implementation)
+			def deltag hash, tag
+				raise NotImplementedError
+			end
+
+			# Read image binary data from db (no implementation)
+			def getimage_bin hash
+				raise NotImplementedError
+			end
 		end
 	end
 end
