@@ -28,8 +28,11 @@ GNU General Public Licence v3 (or later), published at URL bellow.
 
 == SYNOPSIS:
 
-* Add image into database
+* Add images into database
 	rimv -a [-t TAG] [-s SCORE] FILES
+
+  * Untag images 
+		rimv -a -t TAG- FILES
 
 * View images
 	rimv [-v] [-t TAG] [-s SCORE|SCORE_RANGE]
