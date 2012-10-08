@@ -107,6 +107,15 @@ WHERE NOT EXISTS (SELECT 1 FROM tag WHERE hash=:hash AND tag = :tag);
 					SQL
 				end
 
+				# Delete a tag from an image specified by hash(no implementation)
+				def deltag hash, tag
+					verbose(1).puts "untagging image `#{hash} as `#{tag}'"
+					@db.execute(<<-SQL, :hash => hash.to_s, :tag => tag.to_s)
+DELETE FROM tag
+WHERE hash=:hash and tag=:tag
+					SQL
+				end
+
 				# Read image binary data from db
 				def getimage_bin hash
 					@db.get_first_value(<<-SQL,hash.to_s)
