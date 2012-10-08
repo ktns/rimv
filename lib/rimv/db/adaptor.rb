@@ -29,8 +29,14 @@ module Rimv
 									end
 								elsif not @@tag.empty?
 									@@tag.each do |tag|
-										verbose(3).puts "tagging `#{path}'(#{hash}) as `#{tag}'"
-										addtag hash, tag
+										if tag =~ /-$/
+											tag = tag.sub(/-$/,'')
+											verbose(3).puts "untagging `#{path}'(#{hash}) as `#{tag}'"
+											deltag hash, tag
+										else
+											verbose(3).puts "tagging `#{path}'(#{hash}) as `#{tag}'"
+											addtag hash, tag
+										end
 									end
 								end
 								return hash
