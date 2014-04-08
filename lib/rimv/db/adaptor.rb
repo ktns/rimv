@@ -84,6 +84,9 @@ module Rimv
 					end
 					$!.message.concat("\nhash was `#{hash}'")
 					raise $!
+				rescue Object
+					$!.message.concat("\nhash was `#{hash}'")
+					raise $!
 				end
 			end
 
