@@ -251,7 +251,7 @@ describe Rimv::DB::TagTree do
 			end
 		end
 
-		it 'should have only one lefa' do
+		it 'should have only one leaf' do
 			@tree.leaves.count.should == 1
 		end
 
