@@ -49,14 +49,18 @@ describe Rimv::DB::Adaptor do
 			@adaptor.getimage @hash
 		end
 
-		subject {@adaptor.getimage @hash}
+		let(:image){@adaptor.getimage @hash}
+		subject{image}
 
 		it do
 			should be_instance_of Gtk::Image
 		end
 
-		its("pixbuf.pixels") do
-			Rimv::DB.digest(subject).should eq '74119156e0139f57c3cb2f38eafef303'
+		describe '.pixbuf.pixels' do
+			subject{image.pixbuf.pixels}
+			it 'should be digested correctly' do
+				Rimv::DB.digest(subject).should eq '74119156e0139f57c3cb2f38eafef303'
+			end
 		end
 
 		context 'with truncated binary' do

@@ -2,7 +2,7 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_help
 
 describe Rimv::MainWin::TagPopup do
 	before :each do
-		@tagpopup = Rimv::MainWin::TagPopup.new mock(:mainwin)
+		@tagpopup = Rimv::MainWin::TagPopup.new double(:mainwin)
 	end
 
 	describe '#display' do
