@@ -13,8 +13,8 @@ describe Rimv::MainWin do
 		end
 
 		it '#addtag should invoke Adaptor#addtag' do
-			tag=stub(:tag)
-			@win.stub!(:cur_hash).and_return(cur_hash=stub(:cur_hash))
+			tag=double(:tag)
+			@win.stub(:cur_hash).and_return(cur_hash=double(:cur_hash))
 			@adaptor.should_receive(:addtag).with(cur_hash, tag)
 			@win.addtag tag
 		end
