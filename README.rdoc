@@ -14,7 +14,7 @@ Tag base image manager and viewer
 
 == LICENSE:
 
-Copyright (C) Katsuhiko Nishimra 2009-2012.
+Copyright (C) Katsuhiko Nishimra 2009-2014.
 
 This program is free software, and may be redistributed under the terms in
 GNU General Public Licence v3 (or later), published at URL bellow.
