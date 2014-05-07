@@ -205,7 +205,7 @@ class Rimv::DB::TagTree
 
 		# Returns enumerator with each_leaves
 		def leaves
-			Enumerator.new(self, :each_leaves)
+			to_enum :each_leaves
 		end
 
 		# Enumerates all Nodes under self including self
@@ -219,7 +219,7 @@ class Rimv::DB::TagTree
 
 		# Returns enumerator with each_nodes
 		def nodes
-			Enumerator.new(self, :each_nodes)
+			to_enum :each_nodes
 		end
 
 		# Returns Nodes which have tags shuffled into all possible order as path
