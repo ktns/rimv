@@ -251,8 +251,42 @@ describe Rimv::DB::TagTree do
 			end
 		end
 
-		it 'should have only one lefa' do
+		it 'should have only one leaf' do
 			@tree.leaves.count.should == 1
+		end
+
+		describe 'existing leaf#next' do
+			it 'should return existing leaf' do
+				@first.next.should == @first
+			end
+		end
+
+		describe 'existing leaf#prev' do
+			it 'should return existing leaf' do
+				@first.prev.should == @first
+			end
+		end
+	end
+
+	context 'with a leaf on root node and with a node without a leaf' do
+		before :all do
+			@tree = Rimv::DB::TagTree.new([['hoge',[]],['fuga',['fuga']]])
+			while @tree.leaves.count < 2
+				@tree.deq
+			end
+			@tree.root['fuga'].hashes.clear
+			@first = @tree.first
+		end
+
+		it 'should have a node witout a leaf' do
+			@tree.nodes.select do |node|
+				node.children.empty?
+			end.should have_exactly(1).node
+		end
+
+		it 'should have only one leaf on the root node' do
+			@tree.leaves.should have_exactly(1).leaf
+			@tree.leaves.first.node.should == @tree.root
 		end
 
 		describe 'existing leaf#next' do
