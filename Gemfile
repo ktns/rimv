@@ -18,3 +18,8 @@ group :test do
   gem "rspec"
   gem "simplecov", :require => false
 end
+
+group :debug do
+  gem 'debugger', :platform => :ruby_19
+  gem 'byebug', :platform => [:ruby_20, :ruby_21]
+end
