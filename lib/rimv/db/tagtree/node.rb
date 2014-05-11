@@ -169,6 +169,22 @@ class Rimv::DB::TagTree
 			end
 		end
 
+		# Returns whether this node and all child nodes are empty
+		def empty?
+			return @hashes.empty? && (@children.empty? || @children.all?(&:empty?))
+		end
+
+		# Returns the last non-empty child Node, if exists, or self or parent
+		def last_non_empty_node
+			non_empty = @children.reject(&:empty?)
+			if non_empty.empty?
+				return self unless @hashes.empty?
+				return @parent.last_non_empty_node
+			else
+				return non_empty.last.last_node
+			end
+		end
+
 		# Returns the previous Leaf Node of the specified Leaf node
 		def prev_hash_of hash
 			if (index = @hashes.index(hash)-1) >= 0
@@ -177,7 +193,7 @@ class Rimv::DB::TagTree
 				node = self
 				begin
 					if node.parent.instance_of?(Rimv::DB::TagTree)
-						return last_node.last_hash
+						return last_non_empty_node.last_hash
 					end
 					node = node.parent.prev_node_of(node)
 				end until node.last_hash
