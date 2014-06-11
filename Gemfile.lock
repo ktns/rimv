@@ -99,7 +99,7 @@ DEPENDENCIES
   debugger
   gtk2 (~> 2.2)
   jeweler (~> 2.0)
-  rdoc (>= 4.1.1)
+  rdoc (~> 4.1)
   rspec (~> 2.14)
   simplecov
   sqlite3 (~> 1.3)
