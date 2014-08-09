@@ -7,6 +7,7 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'rspec/collection_matchers'
+require 'rspec/its'
 require 'rimv'
 
 # Requires supporting files with custom matchers and macros, etc,
