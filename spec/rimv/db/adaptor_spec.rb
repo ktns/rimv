@@ -33,23 +33,24 @@ describe Rimv::DB::Adaptor do
 	end
 
 	describe '.getimage' do
-		before :all do
-			@adaptor = MockAdaptor.new
-			@hash=stub('hash')
-			class <<@adaptor
-				def getimage_bin hash
-					read_logo
+		let(:adaptor) do
+			MockAdaptor.new.tap do |adaptor|
+				class <<adaptor
+					def getimage_bin hash
+						read_logo
+					end
 				end
 			end
 		end
+		let(:hash){double('hash')}
 
 		it 'should invoke getimage_bin' do
-			@adaptor.should_receive(:getimage_bin).exactly(1).times.
-				with(@hash).and_return(read_logo)
-			@adaptor.getimage @hash
+			adaptor.should_receive(:getimage_bin).exactly(1).times.
+				with(hash).and_return(read_logo)
+			adaptor.getimage hash
 		end
 
-		let(:image){@adaptor.getimage @hash}
+		let(:image){adaptor.getimage hash}
 		subject{image}
 
 		it do
@@ -64,12 +65,13 @@ describe Rimv::DB::Adaptor do
 		end
 
 		context 'with truncated binary' do
-			before :all do
-				@adaptor=@adaptor.clone
-				class <<@adaptor
-					def getimage_bin hash
-						bin = read_logo
-						return bin[0..bin.size-30]
+			let(:adaptor) do
+				MockAdaptor.new.tap do |adaptor|
+					class <<adaptor
+						def getimage_bin hash
+							bin = read_logo
+							return bin[0..bin.size-30]
+						end
 					end
 				end
 			end
