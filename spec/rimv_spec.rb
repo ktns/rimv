@@ -9,10 +9,10 @@ end
 
 describe 'asset_path' do
 	it 'should be an existing directory' do
-		FileTest.directory?(asset_path).should be_true
+		FileTest.directory?(asset_path).should be_truthy
 	end
 
 	it 'should include file `logo.png\'' do
-		FileTest.exist?(File.join(asset_path, 'logo.png')).should be_true
+		FileTest.exist?(File.join(asset_path, 'logo.png')).should be_truthy
 	end
 end

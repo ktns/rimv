@@ -12,14 +12,14 @@ describe Rimv::DB do
 	shared_examples_for 'acceptable' do |tag|
 		subject{Rimv::DB.acceptable_tag?(tag)}
 		it 'should return true' do
-			should be_true
+			should be_truthy
 		end
 	end
 
 	shared_examples_for 'unacceptable' do |tag|
 		subject{Rimv::DB.acceptable_tag?(tag)}
 		it 'should return false' do
-			should be_false
+			should be_falsey
 		end
 	end
 
