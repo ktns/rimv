@@ -19,7 +19,7 @@ begin
 	require 'optparse'
 	require 'rimv/cli'
 
-	CLI.parse ARGV
-	Rimv.run
+	Rimv::App = CLI.parse(ARGV)
+	Rimv::App.run
 rescue Interrupt
 end

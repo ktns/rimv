@@ -19,6 +19,8 @@ RSpec.configure do |config|
   
 end
 
+Rimv::App = Rimv::Application.new
+
 class TreeStub < Rimv::DB::TagTree
 	def initialize
 		@queue=Queue.new

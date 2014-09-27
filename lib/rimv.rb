@@ -57,39 +57,30 @@ module Rimv
 		end
 	end
 
+	#Returns VerboseMessenger with specified versbosity level
+	def verbose verbose_level
+		VerboseMessenger.new(verbose_level)
+	end
+
+	# Instance representing the application
 	class Application
-		@mode      = nil
-		@path_tag  = false
-		@tag       = []
-		@random    = false
-		@score     = nil
-		@verbosity = 0
-
-		attr_accessor :versbosity
-
-		#Returns VerboseMessenger with specified versbosity level
-		def verbose verbose_level
-			VerboseMessenger.new(verbose_level)
+		def initialize mode = nil, path_tag = false, tag = [], random = false, score = nil, verbosity = 0
+			@mode, @path_tag, @tag, @random, @score, @verbosity = mode, path_tag, tag, random, score, verbosity
 		end
 
-		# Get application mode
-		def self.mode
-			@@mode
-		end
+		attr_accessor :verbosity
 
-		# Set application mode
-		def self.mode= mode
-			@@mode = mode
-		end
+		# Get/Set application mode
+		attr_accessor :mode
 
 		def run
-			case @@mode
+			case @mode
 			when 'add'
 				raise 'No file to add!' if ARGV.empty?
-				raise "Non-integer score is not acceptable in `add' mode!" unless ! @@score || @@score.kind_of?(Integer)
+				raise "Non-integer score is not acceptable in `add' mode!" unless ! @score || @score.kind_of?(Integer)
 				DB.open do |db|
 					ARGV.each do |name|
-						db.addfile(name, @@path_tag)
+						db.addfile(name, @path_tag)
 					end
 				end
 			when 'view',nil
