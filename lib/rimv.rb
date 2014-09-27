@@ -43,7 +43,7 @@ module Rimv
 		# Pass through method call to $stdout if the specified
 		# verbosity level exceeds the application verbosity level
 		def method_missing name, *args, &block
-			if @@verbosity >= @verbose_level
+			if Rimv::App.verbosity >= @verbose_level
 				if block
 					$stdout.send(name, *block.call(*args))
 				else
