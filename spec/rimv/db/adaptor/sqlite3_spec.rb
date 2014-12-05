@@ -3,9 +3,9 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*3, 'spec_help
 describe Rimv::DB::Adaptor::SQLite3 do
 	describe '.new' do
 		it 'should be a private class method' do
-			lambda do
+			expect do
 				Rimv::DB::Adaptor::SQLite3.new blank_db
-			end.should raise_error(NoMethodError)
+			end.to raise_error(NoMethodError)
 		end
 	end
 
@@ -19,7 +19,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 		describe '#addfile' do
 			it 'should return file hash' do
 				Rimv::DB::Adaptor::SQLite3.open(blank_db) do |adaptor|
-					adaptor.addfile(logo_path).should include \
+					expect(adaptor.addfile(logo_path)).to include \
 						Rimv::DB.digest IO.read(logo_path)
 				end
 			end
@@ -55,9 +55,9 @@ describe Rimv::DB::Adaptor::SQLite3 do
 
 		describe '#addtag' do
 			it 'should add tag' do
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to be_empty
 				@adaptor.addtag @hash, 'tag'
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to include 'tag'
 			end
 		end
 
@@ -67,9 +67,9 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 
 			it 'should delete tag' do
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to include 'tag'
 				@adaptor.deltag @hash, 'tag'
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to be_empty
 			end
 		end
 

@@ -8,7 +8,7 @@ describe Rimv::DB::TagTree::Node do
 
 	describe "['a', 'b'] and ['a']['b']" do
 		it 'should be same' do
-			@root_node[*%w<a b>].should equal @root_node['a']['b']
+			expect(@root_node[*%w<a b>]).to equal @root_node['a']['b']
 		end
 	end
 end

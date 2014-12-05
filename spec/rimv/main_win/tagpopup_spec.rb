@@ -8,9 +8,9 @@ describe Rimv::MainWin::TagPopup do
 	describe '#display' do
 		context '(nil)' do
 			it 'should raise TypeError' do
-				lambda do
+				expect do
 					@tagpopup.display nil
-				end.should raise_error TypeError
+				end.to raise_error TypeError
 			end
 		end
 	end

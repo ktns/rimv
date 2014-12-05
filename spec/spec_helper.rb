@@ -117,8 +117,8 @@ shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
 			@tree.leaves.each do |leaf|
-				leaf.should respond_to :tree
-				leaf.tree.should equal @tree
+				expect(leaf).to respond_to :tree
+				expect(leaf.tree).to equal @tree
 			end
 		end
 	end
@@ -135,7 +135,7 @@ RSpec::Matchers.define :include_only do |type|
 		@rejected.empty?
 	end
 
-	failure_message_for_should do |container|
+	failure_message do |container|
 		"expected #{container.inspect} to include only #{@type},\n" +
 		"but found #{@rejected.first.inspect}"
 	end
