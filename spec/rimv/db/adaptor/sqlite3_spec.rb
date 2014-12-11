@@ -73,6 +73,23 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 		end
 
+		describe '#tags' do
+			before :each do
+				@tag = ("a".."z").to_a.sample(rand(1..8)).join
+				@adaptor.addtag @hash, @tag
+			end
+
+			it 'should all be a String' do
+				@adaptor.tags.each do |tag|
+					tag.should be_a String
+				end
+			end
+
+			it 'should include added tag' do
+				@adaptor.tags.should include @tag
+			end
+		end
+
 		after :each do
 			@adaptor.close if @adaptor
 		end
