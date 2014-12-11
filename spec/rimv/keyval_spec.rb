@@ -15,7 +15,7 @@ describe 'A module including Rimv::Keyval' do
 				@const_name = 'GDK_KEY_q'
 			end
 
-			it {should_not raise_error}
+			it {is_expected.not_to raise_error}
 		end
 
 		context 'with undefined constant name' do
@@ -23,7 +23,7 @@ describe 'A module including Rimv::Keyval' do
 				@const_name = 'HOGE'
 			end
 
-			it {should raise_error NameError}
+			it {is_expected.to raise_error NameError}
 		end
 	end
 end

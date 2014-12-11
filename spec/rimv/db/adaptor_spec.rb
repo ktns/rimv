@@ -8,7 +8,7 @@ describe Rimv::DB::Adaptor do
 		end
 
 		it 'should invoke addimage' do
-			@adaptor.should_receive(:addimage).with(@file, anything())
+			expect(@adaptor).to receive(:addimage).with(@file, anything())
 			@adaptor.addfile @file
 		end
 
@@ -20,7 +20,7 @@ describe Rimv::DB::Adaptor do
 			end
 
 			it 'should invoke deltag' do
-				@adaptor.should_receive(:deltag).with(anything(), 'hoge')
+				expect(@adaptor).to receive(:deltag).with(anything(), 'hoge')
 				@adaptor.addfile @file
 			end
 
@@ -45,7 +45,7 @@ describe Rimv::DB::Adaptor do
 		let(:hash){double('hash')}
 
 		it 'should invoke getimage_bin' do
-			adaptor.should_receive(:getimage_bin).exactly(1).times.
+			expect(adaptor).to receive(:getimage_bin).exactly(1).times.
 				with(hash).and_return(read_logo)
 			adaptor.getimage hash
 		end
@@ -54,13 +54,13 @@ describe Rimv::DB::Adaptor do
 		subject{image}
 
 		it do
-			should be_instance_of Gtk::Image
+			is_expected.to be_instance_of Gtk::Image
 		end
 
 		describe '.pixbuf.pixels' do
 			subject{image.pixbuf.pixels}
 			it 'should be digested correctly' do
-				Rimv::DB.digest(subject).should eq '74119156e0139f57c3cb2f38eafef303'
+				expect(Rimv::DB.digest(subject)).to eq '74119156e0139f57c3cb2f38eafef303'
 			end
 		end
 
@@ -77,7 +77,7 @@ describe Rimv::DB::Adaptor do
 			end
 
 			it do
-				should be_instance_of Gtk::Image
+				is_expected.to be_instance_of Gtk::Image
 			end
 		end
 	end

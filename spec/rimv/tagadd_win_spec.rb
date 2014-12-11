@@ -7,8 +7,8 @@ describe Rimv::TagaddWin do
 
 	it 's ok should invoke MainWin#addtag' do
 		entry=@win.entries.first
-		entry.should_receive(:text).and_return :tag_to_be_added
-		@parent.should_receive(:addtag).with(:tag_to_be_added)
+		expect(entry).to receive(:text).and_return :tag_to_be_added
+		expect(@parent).to receive(:addtag).with(:tag_to_be_added)
 		@win.ok
 	end
 

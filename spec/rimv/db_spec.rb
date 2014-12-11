@@ -5,21 +5,21 @@ describe Rimv::DB do
 		subject {Rimv::DB.digest(IO.read(File.join(asset_path,'logo.png')))}
 
 		it 'should return String' do
-			should be_kind_of String
+			is_expected.to be_kind_of String
 		end
 	end
 
 	shared_examples_for 'acceptable' do |tag|
 		subject{Rimv::DB.acceptable_tag?(tag)}
 		it 'should return true' do
-			should be_truthy
+			is_expected.to be_truthy
 		end
 	end
 
 	shared_examples_for 'unacceptable' do |tag|
 		subject{Rimv::DB.acceptable_tag?(tag)}
 		it 'should return false' do
-			should be_falsey
+			is_expected.to be_falsey
 		end
 	end
 
