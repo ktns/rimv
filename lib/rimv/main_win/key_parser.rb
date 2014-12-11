@@ -29,8 +29,8 @@ class Rimv::MainWin
 			}, [GDK_KEY_BackSpace] => lambda {|w|
 				w.display_prev
 			}, [GDK_KEY_r] => lambda {|w|
-				verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
-				@@random = ! @@random
+				verbose(1).puts "#{Application.random ? 'exit' :'enter'}ing random mode"
+				Application.random = ! Application.random
 			}, [GDK_KEY_t,GDK_KEY_s] => lambda {|w|
 					verbose(1).puts 'toggle tag popup window'
 					w.tagpopup.toggle

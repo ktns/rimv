@@ -59,7 +59,7 @@ module ::Rimv::CLI
 
 		opt.parse! argv
 
-		abort 'path_tag and tag option is mutually exclusive!' if path_tag && tag
+		abort 'path_tag and tag option is mutually exclusive!' if path_tag && !tag.empty?
 
 		return Application.new mode, path_tag, tag, random, score, verbosity
 	end

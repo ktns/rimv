@@ -143,9 +143,3 @@ RSpec::Matchers.define :include_only do |type|
 		"but found #{@rejected.first.inspect}"
 	end
 end
-
-module Rimv
-	if (verbosity=ENV['VERBOSITY'].to_i) > 0
-		@@verbosity = verbosity
-	end
-end

@@ -42,7 +42,7 @@ module Rimv
 						signal_handler_disconnect tmp_handler_id
 						unmaximize
 						self.resizable = false
-						display (@@random ? @tree.random : @tree.first)
+						display (Application.random ? @tree.random : @tree.first)
 						signal_connect("configure_event") do |w, e|
 							verbose(2).puts('mainwin#configure_event')
 							@tagpopup.move
@@ -104,7 +104,7 @@ module Rimv
 
 		# Displays an image specified with the next TagTree::Leaf of the current TagTree::Leaf
 		def display_next
-			unless @@random
+			unless Application.random
 				display(@tree.next)
 			else
 				display(@tree.random)
@@ -113,7 +113,7 @@ module Rimv
 
 		# Displays an image specified with the previous TagTree::Leaf of the current TagTree::Leaf
 		def display_prev
-			unless @@random
+			unless Application.random
 				display(@tree.prev)
 			else
 				display(@tree.random_prev)

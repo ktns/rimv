@@ -43,7 +43,7 @@ module Rimv
 		# Pass through method call to $stdout if the specified
 		# verbosity level exceeds the application verbosity level
 		def method_missing name, *args, &block
-			if Rimv::App.verbosity >= @verbose_level
+			if Rimv::Application.verbosity >= @verbose_level
 				if block
 					$stdout.send(name, *block.call(*args))
 				else
@@ -66,12 +66,11 @@ module Rimv
 	class Application
 		def initialize mode = nil, path_tag = false, tag = [], random = false, score = nil, verbosity = 0
 			@mode, @path_tag, @tag, @random, @score, @verbosity = mode, path_tag, tag, random, score, verbosity
+			@@application = self
 		end
 
-		attr_accessor :verbosity
-
-		# Get/Set application mode
-		attr_accessor :mode
+		# Get/Set application parameters
+		attr_accessor :mode, :path_tag, :tag, :random, :score, :verbosity
 
 		def run
 			case @mode
@@ -92,6 +91,26 @@ module Rimv
 			else
 				raise NotImplementedError, "Unexpected mode `#{mode}'!"
 			end
+		end
+
+		def self.tag
+			@@application.tag
+		end
+
+		def self.random
+			@@application.random
+		end
+
+		def self.random= val
+			@@application.random = val
+		end
+
+		def self.score
+			@@application.score
+		end
+
+		def self.verbosity
+			@@application.verbosity rescue 0
 		end
 	end
 
