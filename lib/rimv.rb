@@ -95,8 +95,8 @@ module Rimv
 		end
 	end
 
-		# Workaround for Enumerator in ruby-1.8.x and 1.9.x
-		Enumerator = (::Enumerator rescue Enumerable::Enumerator)
+	# Workaround for Enumerator in ruby-1.8.x and 1.9.x
+	Enumerator = (::Enumerator rescue Enumerable::Enumerator)
 end
 
 require 'rimv/db'
