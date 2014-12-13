@@ -53,7 +53,7 @@ SQL
 
 				# Create tables for this application
 				def create_tables
-					@db.transaction do
+					transaction do
 						@db.execute(<<SQL)
 CREATE TABLE "img"
             (hash TEXT PRIMARY KEY NOT NULL,
@@ -83,13 +83,13 @@ SQL
 				def addimage name, img
 					name, img = name.to_s, img.to_s
 					hash = DB.digest img
-					@db.transaction do |db|
-						db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
+					transaction do
+						@db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
 INSERT INTO img (hash, img, score)
 SELECT :hash, :img, :score
 WHERE NOT EXISTS (SELECT 1 FROM img WHERE hash=:hash);
 						SQL
-						db.execute(<<-SQL, :hash => hash, :name => File.basename(name) )
+						@db.execute(<<-SQL, :hash => hash, :name => File.basename(name) )
 INSERT INTO name (hash, name)
 SELECT :hash, :name
 WHERE NOT EXISTS (SELECT 1 FROM name WHERE hash=:hash AND name=:name);
@@ -169,8 +169,12 @@ SQL
 
 				#Execute block in a transaction
 				def transaction
-					@db.transaction do
+					if @db.transaction_active?
 						yield
+					else
+						@db.transaction do
+							yield
+						end
 					end
 				end
 			end
