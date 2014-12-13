@@ -166,6 +166,13 @@ FROM tag
 GROUP BY tag
 SQL
 				end
+
+				#Execute block in a transaction
+				def transaction
+					@db.transaction do
+						yield
+					end
+				end
 			end
 		end
 	end
