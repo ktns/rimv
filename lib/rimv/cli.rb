@@ -7,6 +7,9 @@ module ::Rimv::CLI
 			'view'=>'view images in database'
 	}
 
+	class ParseError < RuntimeError
+	end
+
 	def self.parse argv=ARGV
 		mode      = nil
 		path_tag  = false
@@ -18,9 +21,7 @@ module ::Rimv::CLI
 		MODES.each do |m,desc|
 			opt.on('-'+m[0,1],'--'+m,desc) do |v|
 				if mode
-					$stderr.printf("multiple mode option specified!('%s' after '%s')\n",
-												 m, mode)
-					abort
+					raise ParseError, "multiple mode option specified!('%s' after '%s')" % [m, mode]
 				else
 					mode = m
 				end
@@ -59,7 +60,7 @@ module ::Rimv::CLI
 
 		opt.parse! argv
 
-		abort 'path_tag and tag option is mutually exclusive!' if path_tag && !tags.empty?
+		raise ParseError, 'path_tag and tag option is mutually exclusive!' if path_tag && !tags.empty?
 
 		return Application.new mode, path_tag, tags, random, score, verbosity
 	end

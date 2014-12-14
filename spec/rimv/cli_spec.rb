@@ -43,7 +43,7 @@ describe Rimv::CLI do
 			it 'should be aborted' do
 				expect{
 					Rimv::CLI.parse %w<-a -t tag -p>
-				}.to raise_error SystemExit
+				}.to raise_error Rimv::CLI::ParseError
 			end
 		end
 	end
