@@ -90,6 +90,18 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 		end
 
+		describe '#transaction' do
+			it 'should not raise error when nested' do
+				expect{
+					@adaptor.transaction do
+						@adaptor.transaction do
+							nil
+						end
+					end
+				}.not_to raise_error
+			end
+		end
+
 		after :each do
 			@adaptor.close if @adaptor
 		end
