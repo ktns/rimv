@@ -10,7 +10,7 @@ module ::Rimv::CLI
 	def self.parse argv=ARGV
 		mode      = nil
 		path_tag  = false
-		tag       = []
+		tags      = []
 		random    = false
 		score     = nil
 		verbosity = 0
@@ -55,12 +55,12 @@ module ::Rimv::CLI
 					 'tag image with directory name'){path_tag = true}
 
 		opt.on('-t TAG', '--tag=TAG',
-					 'specify tag of images to be added (or deleted with TAG-)'){|tag| tag.concat tag.split(',')}
+					 'specify tag of images to be added (or deleted with TAG-)'){|tag| tags.concat tag.split(',')}
 
 		opt.parse! argv
 
-		abort 'path_tag and tag option is mutually exclusive!' if path_tag && !tag.empty?
+		abort 'path_tag and tag option is mutually exclusive!' if path_tag && !tags.empty?
 
-		return Application.new mode, path_tag, tag, random, score, verbosity
+		return Application.new mode, path_tag, tags, random, score, verbosity
 	end
 end
