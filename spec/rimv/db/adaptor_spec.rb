@@ -13,21 +13,10 @@ describe Rimv::DB::Adaptor do
 		end
 
 		context 'with tag ending with -' do
-			before :each do
-				module Rimv
-					@@tag = ['hoge-']
-				end
-			end
-
 			it 'should invoke deltag' do
+				allow(Rimv::Application).to receive(:tag).and_return(['hoge-'])
 				expect(@adaptor).to receive(:deltag).with(anything(), 'hoge')
 				@adaptor.addfile @file
-			end
-
-			after :each do
-				module Rimv
-					@@tag = []
-				end
 			end
 		end
 	end

@@ -84,7 +84,7 @@ SQL
 					name, img = name.to_s, img.to_s
 					hash = DB.digest img
 					transaction do
-						@db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
+						@db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => Application.score || 0)
 INSERT INTO img (hash, img, score)
 SELECT :hash, :img, :score
 WHERE NOT EXISTS (SELECT 1 FROM img WHERE hash=:hash);
@@ -130,13 +130,13 @@ LIMIT 1
 				def getallhash
 					# TODO: purge and reuse the condition check clause
 					where,arg =
-						case @@score
+						case Application.score
 						when nil
 							['',[]]
 						when Integer
-							['WHERE score = ?', [@@score]]
+							['WHERE score = ?', [Application.score]]
 						when Range
-							['WHERE score BETWEEN ? AND ?', [@@score.begin, @@score.last]]
+							['WHERE score BETWEEN ? AND ?', [Application.score.begin, Application.score.last]]
 						else
 							raise ScriptError
 						end

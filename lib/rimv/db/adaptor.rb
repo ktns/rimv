@@ -27,8 +27,8 @@ module Rimv
 									unless tag == '.'
 										addtag hash, tag
 									end
-								elsif not @@tag.empty?
-									@@tag.each do |tag|
+								elsif not Application.tag.empty?
+									Application.tag.each do |tag|
 										if tag =~ /-$/
 											tag = tag.sub(/-$/,'')
 											verbose(3).puts "untagging `#{path}'(#{hash}) as `#{tag}'"

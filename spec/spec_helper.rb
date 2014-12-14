@@ -9,6 +9,7 @@ require 'rspec'
 require 'rspec/collection_matchers'
 require 'rspec/its'
 require 'rimv'
+require 'rimv/cli'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -17,6 +18,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 RSpec.configure do |config|
   
 end
+
+Rimv::App = Rimv::Application.new
 
 class TreeStub < Rimv::DB::TagTree
 	def initialize
@@ -113,6 +116,11 @@ def read_logo
 	IO.read(logo_path)
 end
 
+TAG_CHARS=("\x00".."\x7f").grep(/#{Rimv::DB::TAG_CHARS}/)
+def random_tag
+	TAG_CHARS.sample(rand(1..8)).join
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
@@ -138,11 +146,5 @@ RSpec::Matchers.define :include_only do |type|
 	failure_message do |container|
 		"expected #{container.inspect} to include only #{@type},\n" +
 		"but found #{@rejected.first.inspect}"
-	end
-end
-
-module Rimv
-	if (verbosity=ENV['VERBOSITY'].to_i) > 0
-		@@verbosity = verbosity
 	end
 end
