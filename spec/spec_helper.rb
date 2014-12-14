@@ -116,6 +116,11 @@ def read_logo
 	IO.read(logo_path)
 end
 
+TAG_CHARS=("\x00".."\x7f").grep(/#{Rimv::DB::TAG_CHARS}/)
+def random_tag
+	TAG_CHARS.sample(rand(1..8)).join
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
