@@ -3,6 +3,7 @@ require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*1, 'spec_help
 describe Rimv::CLI do
 	describe '.parse' do
 		let(:tag){random_tag}
+		let(:tag2){random_tag}
 
 		describe '-a' do
 			it 'should invoke add mode' do
@@ -36,6 +37,21 @@ describe Rimv::CLI do
 			it 'should invoke add mode with specified tag' do
 				expect(Rimv::Application).to receive(:new).with('add', anything, [tag], *[anything]*3)
 				Rimv::CLI.parse %w<-a -t> + [tag]
+			end
+		end
+
+		describe '-a -t tag,tag' do
+			it 'should invoke add mode with specified tags' do
+				expect(Rimv::Application).to receive(:new).with('add', anything, [tag,tag2], *[anything]*3)
+				Rimv::CLI.parse %w<-a -t> + ["#{tag},#{tag2}"]
+			end
+		end
+
+		describe '-a -v' do
+			it 'should be aborted' do
+				expect{
+					Rimv::CLI.parse %w<-a -v>
+				}.to raise_error Rimv::CLI::ParseError
 			end
 		end
 
