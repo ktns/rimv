@@ -1,12 +1,33 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2010, 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'simplecov'
 SimpleCov.start do
-  add_filter "/spec/"
+	add_filter "/spec/"
 end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
+require 'rspec/collection_matchers'
+require 'rspec/its'
 require 'rimv'
+require 'rimv/cli'
 
 # Requires supporting files with custom matchers and macros, etc,
 # in ./support/ and its subdirectories.
@@ -15,6 +36,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 RSpec.configure do |config|
   
 end
+
+Rimv::App = Rimv::Application.new
 
 class TreeStub < Rimv::DB::TagTree
 	def initialize
@@ -111,12 +134,17 @@ def read_logo
 	IO.read(logo_path)
 end
 
+TAG_CHARS=("\x00".."\x7f").grep(/#{Rimv::DB::TAG_CHARS}/)
+def random_tag
+	TAG_CHARS.sample(rand(1..8)).join
+end
+
 shared_examples_for 'nodes and leaves' do
 	describe '#tree' do
 		it 'should return parent tree' do
 			@tree.leaves.each do |leaf|
-				leaf.should respond_to :tree
-				leaf.tree.should equal @tree
+				expect(leaf).to respond_to :tree
+				expect(leaf.tree).to equal @tree
 			end
 		end
 	end
@@ -133,14 +161,8 @@ RSpec::Matchers.define :include_only do |type|
 		@rejected.empty?
 	end
 
-	failure_message_for_should do |container|
+	failure_message do |container|
 		"expected #{container.inspect} to include only #{@type},\n" +
 		"but found #{@rejected.first.inspect}"
-	end
-end
-
-module Rimv
-	if (verbosity=ENV['VERBOSITY'].to_i) > 0
-		@@verbosity = verbosity
 	end
 end

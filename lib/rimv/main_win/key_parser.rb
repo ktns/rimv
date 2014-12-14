@@ -1,3 +1,21 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2010, 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'rimv/keyval'
 
 class Rimv::MainWin
@@ -29,8 +47,8 @@ class Rimv::MainWin
 			}, [GDK_KEY_BackSpace] => lambda {|w|
 				w.display_prev
 			}, [GDK_KEY_r] => lambda {|w|
-				verbose(1).puts "#{@@random ? 'exit' :'enter'}ing random mode"
-				@@random = ! @@random
+				verbose(1).puts "#{Application.random ? 'exit' :'enter'}ing random mode"
+				Application.random = ! Application.random
 			}, [GDK_KEY_t,GDK_KEY_s] => lambda {|w|
 					verbose(1).puts 'toggle tag popup window'
 					w.tagpopup.toggle

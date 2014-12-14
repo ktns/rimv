@@ -1,3 +1,21 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2010, 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'rimv/db/adaptor'
 
 module Rimv
@@ -84,7 +102,7 @@ SQL
 					name, img = name.to_s, img.to_s
 					hash = DB.digest img
 					transaction do
-						@db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => @@score || 0)
+						@db.execute(<<-SQL, :hash => hash, :img => Blob.new(img), :score => Application.score || 0)
 INSERT INTO img (hash, img, score)
 SELECT :hash, :img, :score
 WHERE NOT EXISTS (SELECT 1 FROM img WHERE hash=:hash);
@@ -130,13 +148,13 @@ LIMIT 1
 				def getallhash
 					# TODO: purge and reuse the condition check clause
 					where,arg =
-						case @@score
+						case Application.score
 						when nil
 							['',[]]
 						when Integer
-							['WHERE score = ?', [@@score]]
+							['WHERE score = ?', [Application.score]]
 						when Range
-							['WHERE score BETWEEN ? AND ?', [@@score.begin, @@score.last]]
+							['WHERE score BETWEEN ? AND ?', [Application.score.begin, Application.score.last]]
 						else
 							raise ScriptError
 						end

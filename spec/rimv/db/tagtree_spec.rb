@@ -1,3 +1,21 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*2, 'spec_helper.rb']))
 
 class Rimv::DB::TagTree
@@ -17,33 +35,33 @@ describe Rimv::DB::TagTree do
 		end
 
 		it 'should be consistent' do
-			@tree.should be_consistent
+			expect(@tree).to be_consistent
 		end
 
 		it 'should not be loading' do
-			@tree.should_not be_loading
+			expect(@tree).not_to be_loading
 		end
 
 		describe 'nodes' do
 			it 'should all be enumerated by each_nodes' do
 				enumerator = @tree.nodes
 				enumerator.all? do |n|
-					n.should be_instance_of @tree.class::Node
+					expect(n).to be_instance_of @tree.class::Node
 				end
 
 				ObjectSpace.each_object(@tree.class::Node).select do |n|
 					n.tree.equal? @tree
 				end.each do |n|
-					enumerator.should be_include n
+					expect(enumerator).to be_include n
 				end
 			end
 
 			it 'should have consistent paths' do
 				@tree.each_nodes do |n|
 					path = n.path
-					path.first.should equal @tree.root
-					path.last.should equal n
-					n.to_s.should =~ /\AROOT(->((?!->).)+)*\Z/
+					expect(path.first).to equal @tree.root
+					expect(path.last).to equal n
+					expect(n.to_s).to match(/\AROOT(->((?!->).)+)*\Z/)
 				end
 			end
 
@@ -52,19 +70,19 @@ describe Rimv::DB::TagTree do
 
 		describe 'leaves' do
 			it 'should exist' do
-				@tree.leaves.count.should > 0
+				expect(@tree.leaves.count).to be > 0
 			end
 
 			it 'should all be Leaf class' do
 				@tree.each_leaves do |leaf|
-					leaf.should be_kind_of(@tree.class::Leaf)
+					expect(leaf).to be_kind_of(@tree.class::Leaf)
 				end
 			end
 
 			it 'should have sane node' do
 				@tree.each_leaves do |leaf|
-					leaf.node.should_not be_nil
-					@tree.nodes.should include leaf.node
+					expect(leaf.node).not_to be_nil
+					expect(@tree.nodes).to include leaf.node
 				end
 			end
 
@@ -74,21 +92,21 @@ describe Rimv::DB::TagTree do
 				@tree.leaves.count.times do
 					_next = @tree.next
 				end
-				_next.should_not be_nil
-				_first.should equal _next
+				expect(_next).not_to be_nil
+				expect(_first).to equal _next
 			end
 
 			it 'should all be enuemrated by #next' do
 				leaves = @tree.leaves.entries
-				lambda do
+				expect do
 					leaves.delete @tree.first
-				end.should change(leaves, :size).by(-1)
+				end.to change(leaves, :size).by(-1)
 				leaves.size.times do
-					lambda do
+					expect do
 						leaves.delete @tree.next
-					end.should change(leaves, :size).by(-1)
+					end.to change(leaves, :size).by(-1)
 				end
-				leaves.should be_empty
+				expect(leaves).to be_empty
 			end
 
 			it_should_behave_like 'nodes and leaves'
@@ -96,21 +114,21 @@ describe Rimv::DB::TagTree do
 
 		describe 'current leaf' do
 			it 'should be instance of Rimv::DB::TagTree::Leaf'do
-				@tree.current.should be_instance_of Rimv::DB::TagTree::Leaf
+				expect(@tree.current).to be_instance_of Rimv::DB::TagTree::Leaf
 			end
 
 			it 'should change after #next' do
-				lambda do
+				expect do
 					@tree.next
-				end.should change(@tree,:current)
+				end.to change(@tree,:current)
 			end
 
 			it 'should not change after next and prev' do
 				@tree.leaves.count.times do
-					lambda do
+					expect do
 						@tree.next
 						@tree.prev
-					end.should_not change(@tree, :current)
+					end.not_to change(@tree, :current)
 					@tree.next
 				end
 			end
@@ -120,23 +138,23 @@ describe Rimv::DB::TagTree do
 			shared_examples_for 'of any' do
 				before :all do
 					@orig = @tree.send(enum).max_by{|item| item.path.count}
-					@orig.path.size.should > 2
+					expect(@orig.path.size).to be > 2
 					@isotopes = @tree.isotopes @orig
 				end
 
 				it 'should all be unique' do
-					@isotopes.uniq.should == @isotopes
+					expect(@isotopes.uniq).to eq(@isotopes)
 				end
 
 				it 'should all have same tags if sorted' do
 					@isotopes.each do |i|
-						i.tags.sort.should == @orig.tags.sort
+						expect(i.tags.sort).to eq(@orig.tags.sort)
 					end
 				end
 
 				it 'should all be same class as original' do
 					@isotopes.each do |i|
-						i.should be_instance_of(@orig.class)
+						expect(i).to be_instance_of(@orig.class)
 					end
 				end
 			end
@@ -166,16 +184,16 @@ describe Rimv::DB::TagTree do
 		end
 
 		it 'should have tag nodes splitted by slash' do
-			@root_node.should_not       have_child 'a/b'
-			@root_node.should           have_child 'a'
-			@root_node['a'].should      have_child 'b'
-			@root_node[*%w<a b>].should have_child 'c'
+			expect(@root_node).not_to       have_child 'a/b'
+			expect(@root_node).to           have_child 'a'
+			expect(@root_node['a']).to      have_child 'b'
+			expect(@root_node[*%w<a b>]).to have_child 'c'
 		end
 
 		it 'should not have inverted relationship' do
-			@root_node.should_not      have_child 'b'
-			@root_node.should_not      have_child 'c'
-			@root_node['a'].should_not have_child 'c'
+			expect(@root_node).not_to      have_child 'b'
+			expect(@root_node).not_to      have_child 'c'
+			expect(@root_node['a']).not_to have_child 'c'
 		end
 
 		describe 'and with duplicate parent tags' do
@@ -184,25 +202,25 @@ describe Rimv::DB::TagTree do
 			end
 
 			it 'should have a common parent node' do
-				@root_node['c'].should have_child 'd'
-				@root_node['c'].should have_child 'e'
+				expect(@root_node['c']).to have_child 'd'
+				expect(@root_node['c']).to have_child 'e'
 			end
 
 			it 'should not have parent tag in children again' do
 				@root_node['c'].each_nodes do |child|
-					child.should_not have_child 'c'
+					expect(child).not_to have_child 'c'
 				end
 			end
 
 			it 'should return sane first leaf' do
 				@root_node['c'].each_nodes do |node|
-					node.first.to_s.should == 'fuga'
+					expect(node.first.to_s).to eq('fuga')
 				end
 			end
 
 			it 'should not have duplicate path' do
 				@root_node.each_nodes do |node|
-					node.tags.uniq!.should be_nil
+					expect(node.tags.uniq!).to be_nil
 				end
 			end
 		end
@@ -212,7 +230,7 @@ describe Rimv::DB::TagTree do
 		shared_examples_for 'single leaf' do
 			describe '#next' do
 				it 'should return the identical leaf to first one' do
-					@first.next.should == @first
+					expect(@first.next).to eq(@first)
 				end
 			end
 		end
@@ -246,24 +264,24 @@ describe Rimv::DB::TagTree do
 		end
 
 		it 'should have a node witout a leaf' do
-			@tree.nodes.should be_any do |node|
+			expect(@tree.nodes).to be_any do |node|
 				node.children.empty?
 			end
 		end
 
 		it 'should have only one leaf' do
-			@tree.leaves.count.should == 1
+			expect(@tree.leaves.count).to eq(1)
 		end
 
 		describe 'existing leaf#next' do
 			it 'should return existing leaf' do
-				@first.next.should == @first
+				expect(@first.next).to eq(@first)
 			end
 		end
 
 		describe 'existing leaf#prev' do
 			it 'should return existing leaf' do
-				@first.prev.should == @first
+				expect(@first.prev).to eq(@first)
 			end
 		end
 	end
@@ -279,25 +297,25 @@ describe Rimv::DB::TagTree do
 		end
 
 		it 'should have a node witout a leaf' do
-			@tree.nodes.select do |node|
+			expect(@tree.nodes.select do |node|
 				node.children.empty?
-			end.should have_exactly(1).node
+			end).to have_exactly(1).node
 		end
 
 		it 'should have only one leaf on the root node' do
-			@tree.leaves.should have_exactly(1).leaf
-			@tree.leaves.first.node.should == @tree.root
+			expect(@tree.leaves).to have_exactly(1).leaf
+			expect(@tree.leaves.first.node).to eq(@tree.root)
 		end
 
 		describe 'existing leaf#next' do
 			it 'should return existing leaf' do
-				@first.next.should == @first
+				expect(@first.next).to eq(@first)
 			end
 		end
 
 		describe 'existing leaf#prev' do
 			it 'should return existing leaf' do
-				@first.prev.should == @first
+				expect(@first.prev).to eq(@first)
 			end
 		end
 	end
@@ -309,9 +327,9 @@ describe Rimv::DB::TagTree do
 			end
 
 			it 'should not deadlock' do
-				lambda do
+				expect do
 					3.times{@tree.deq}
-				end.should_not raise_error
+				end.not_to raise_error
 			end
 		end
 	end

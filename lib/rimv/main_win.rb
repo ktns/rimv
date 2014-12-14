@@ -1,3 +1,21 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2010, 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require 'rimv/size'
 
 module Rimv
@@ -42,7 +60,7 @@ module Rimv
 						signal_handler_disconnect tmp_handler_id
 						unmaximize
 						self.resizable = false
-						display (@@random ? @tree.random : @tree.first)
+						display (Application.random ? @tree.random : @tree.first)
 						signal_connect("configure_event") do |w, e|
 							verbose(2).puts('mainwin#configure_event')
 							@tagpopup.move
@@ -104,7 +122,7 @@ module Rimv
 
 		# Displays an image specified with the next TagTree::Leaf of the current TagTree::Leaf
 		def display_next
-			unless @@random
+			unless Application.random
 				display(@tree.next)
 			else
 				display(@tree.random)
@@ -113,7 +131,7 @@ module Rimv
 
 		# Displays an image specified with the previous TagTree::Leaf of the current TagTree::Leaf
 		def display_prev
-			unless @@random
+			unless Application.random
 				display(@tree.prev)
 			else
 				display(@tree.random_prev)

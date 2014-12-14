@@ -1,11 +1,29 @@
+#
+# Copyright (C) Katsuhiko Nishimra 2011, 2012, 2014.
+#
+# This file is part of rimv.
+#
+# rimv is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Foobar is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+
 require File.expand_path(File.join([File.dirname(__FILE__), %w<..>*3, 'spec_helper.rb']))
 
 describe Rimv::DB::Adaptor::SQLite3 do
 	describe '.new' do
 		it 'should be a private class method' do
-			lambda do
+			expect do
 				Rimv::DB::Adaptor::SQLite3.new blank_db
-			end.should raise_error(NoMethodError)
+			end.to raise_error(NoMethodError)
 		end
 	end
 
@@ -19,7 +37,7 @@ describe Rimv::DB::Adaptor::SQLite3 do
 		describe '#addfile' do
 			it 'should return file hash' do
 				Rimv::DB::Adaptor::SQLite3.open(blank_db) do |adaptor|
-					adaptor.addfile(logo_path).should include \
+					expect(adaptor.addfile(logo_path)).to include \
 						Rimv::DB.digest IO.read(logo_path)
 				end
 			end
@@ -55,9 +73,9 @@ describe Rimv::DB::Adaptor::SQLite3 do
 
 		describe '#addtag' do
 			it 'should add tag' do
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to be_empty
 				@adaptor.addtag @hash, 'tag'
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to include 'tag'
 			end
 		end
 
@@ -67,9 +85,9 @@ describe Rimv::DB::Adaptor::SQLite3 do
 			end
 
 			it 'should delete tag' do
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should include 'tag'
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to include 'tag'
 				@adaptor.deltag @hash, 'tag'
-				@adaptor.hashtags.find{|hash,tags|hash==@hash}.last.should be_empty
+				expect(@adaptor.hashtags.find{|hash,tags|hash==@hash}.last).to be_empty
 			end
 		end
 
@@ -81,12 +99,24 @@ describe Rimv::DB::Adaptor::SQLite3 do
 
 			it 'should all be a String' do
 				@adaptor.tags.each do |tag|
-					tag.should be_a String
+					expect(tag).to be_a String
 				end
 			end
 
 			it 'should include added tag' do
-				@adaptor.tags.should include @tag
+				expect(@adaptor.tags).to include @tag
+			end
+		end
+
+		describe '#transaction' do
+			it 'should not raise error when nested' do
+				expect{
+					@adaptor.transaction do
+						@adaptor.transaction do
+							nil
+						end
+					end
+				}.not_to raise_error
 			end
 		end
 
