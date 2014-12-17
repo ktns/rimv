@@ -190,8 +190,13 @@ SQL
 					if @db.transaction_active?
 						yield
 					else
-						@db.transaction do
-							yield
+						verbose(3).puts 'Entering a DB transaction'
+						begin
+							@db.transaction do
+								return yield
+							end
+						ensure
+							verbose(3).puts 'Finished a DB transaction'
 						end
 					end
 				end
