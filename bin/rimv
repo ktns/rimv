@@ -40,4 +40,5 @@ begin
 		abort $!.message
 	end
 rescue Interrupt
+	exit 1
 end
