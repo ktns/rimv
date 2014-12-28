@@ -127,6 +127,12 @@ module Rimv
 			def getimage_bin hash
 				raise NotImplementedError
 			end
+
+			# Fallback method for adaptors without real transaction method
+			# Do nothing but yield given block.
+			def transaction
+				yield
+			end
 		end
 	end
 end

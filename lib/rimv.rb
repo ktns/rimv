@@ -96,8 +96,10 @@ module Rimv
 				raise 'No file to add!' if ARGV.empty?
 				raise "Non-integer score is not acceptable in `add' mode!" unless ! @score || @score.kind_of?(Integer)
 				DB.open do |db|
-					ARGV.each do |name|
-						db.addfile(name, @path_tag)
+					db.transaction do
+						ARGV.each do |name|
+							db.addfile(name, @path_tag)
+						end
 					end
 				end
 			when 'view',nil
